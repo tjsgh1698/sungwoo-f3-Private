@@ -3,152 +3,171 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#10264a">
-<title>3공장 사출 조건 관리판</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Be+Vietnam+Pro:wght@400;600&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#2f73d9">
+<title>3공장 사출 조건관리</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/pretendard.min.css">
 <style>
-:root{color-scheme:light dark;--bg:light-dark(#fff,#0b1322);--panel:light-dark(#f5f7fb,#111c30);--line:light-dark(#e2e7ef,#22304a);--ink:light-dark(#0f1b2d,#e8eef8);--mute:light-dark(#5b6878,#93a1b8);--navy:#10264a;--navy2:#1a3563;--blue:light-dark(#1f5fe0,#5b8cff);--blue-t:light-dark(#e8f0ff,#16264a);--run:light-dark(#139c5a,#34c97f);--run-t:light-dark(#e6f6ee,#0f2a1f);--bad:light-dark(#d92d3a,#ff5c66);--bad-t:light-dark(#fdecee,#3a1418);--warn:light-dark(#c77c00,#f0a830);--warn-t:light-dark(#fff4dd,#33270e);--stop:light-dark(#7a8696,#7f8ca3);--stop-t:light-dark(#eef1f5,#1a2436)}
-:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+:root{color-scheme:light;--ink:#1c2430;--ink2:#3b4656;--mut:#6b7684;--line:#d3d9e2;--line2:#e7ebf0;--bg:#fff;--panel:#f5f7fa;--head:#eef3f9;--pri:#2f73d9;--pri-d:#245db3;--pri-bg:#eaf2fd;--ok:#12805c;--ok-bg:#e3f5ec;--bad:#d32f2f;--bad-bg:#fdecea;--unk:#a45f00;--unk-bg:#fff3d6;--board:#1e2a3c;--run:#1f9d55;--stop:#6b7684;--alarm:#d32f2f;--mold:#c27803;--side-w:248px;--top-h:64px}
 *{box-sizing:border-box;min-width:0}
 [hidden]{display:none!important}
-html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Noto Sans KR","Be Vietnam Pro",system-ui,sans-serif;overflow-x:clip}
-.vn{font-family:"Be Vietnam Pro","Noto Sans KR",sans-serif;color:var(--mute);font-size:12px;font-weight:400}
-.app{display:grid;grid-template-columns:228px minmax(0,1fr);min-height:100%}
-aside{background:var(--navy);color:#dfe7f5;padding:20px 14px;padding-left:max(14px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px;position:sticky;top:0;height:100vh}
-.brand{display:flex;gap:10px;align-items:center}
-.logo{width:38px;height:38px;border-radius:9px;background:#e1251b;color:#fff;font:900 16px "Noto Sans KR";display:grid;place-items:center;flex:none}
-.brand b{display:block;font-size:16px;color:#fff}.brand small{font-size:10.5px;letter-spacing:.06em;color:#9fb0cc}
-.plant{border-top:1px solid #24406e;padding-top:12px;font-weight:700;color:#fff}.plant .vn{color:#9fb0cc;display:block}
-nav{display:flex;flex-direction:column;gap:3px}
-nav a{display:block;padding:9px 12px;border-radius:9px;color:#cbd6ea;text-decoration:none;font-weight:500;font-size:14px}
-nav a .vn{display:block;color:#8ea2c4;font-size:11px}
-nav a.on{background:var(--navy2);color:#fff;box-shadow:inset 3px 0 0 #5b8cff}
-nav a:hover{background:#17305a}
-nav a.new{background:#1f5fe0;color:#fff;margin-top:6px}
-nav a.new .vn{color:#d6e3ff}
-.sync{margin-top:auto;font-size:12px;color:#9fb0cc;border-top:1px solid #24406e;padding-top:12px}.sync b{color:#fff;font-weight:500}
-main{padding-block:22px 48px;padding-left:max(26px,env(safe-area-inset-left,0px));padding-right:max(26px,env(safe-area-inset-right,0px))}
-.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:16px}
-.crumb{font-size:12.5px;color:var(--mute)}
-h1{margin:4px 0 0;font-size:clamp(26px,3vw,38px);font-weight:900;letter-spacing:-.02em;line-height:1.1}
-h1 .vn{display:block;font-size:13px;letter-spacing:0;margin-top:4px}
-.ctrl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.pill{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px}
-.btn{font:inherit;font-size:13.5px;font-weight:700;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:8px 14px;cursor:pointer;min-height:40px;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-.btn:hover{border-color:var(--blue);color:var(--blue)}
-.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
-.btn.sm{min-height:32px;padding:4px 10px;font-size:12.5px}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:16px}
-.kpi{padding:12px 16px;border-right:1px solid var(--line)}.kpi:last-child{border-right:0}
-.kpi .l{font-size:13px;color:var(--mute);font-weight:500}
-.kpi .v{font-size:28px;font-weight:900;letter-spacing:-.02em;white-space:nowrap;font-variant-numeric:tabular-nums}
-.kpi .v small{font-size:13px;font-weight:500;color:var(--mute);margin-left:3px}
-.tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}
-.chip{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer;min-height:34px;white-space:nowrap}
-.chip.on{border-color:var(--ink);background:var(--ink);color:var(--bg)}
-select,input,textarea{font:inherit;font-size:16px;border:1px solid var(--line);border-radius:10px;padding:7px 10px;background:var(--bg);color:var(--ink);min-height:40px;width:100%}
+html{font-size:15px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",sans-serif;line-height:1.45;overflow-x:clip;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+.vn{display:block;font-size:.78em;font-weight:400;color:var(--mut);line-height:1.25}
+/* 위 메뉴 줄 */
+#top{height:var(--top-h);display:flex;align-items:center;background:#fff;border-bottom:1px solid #c4ccd7;position:sticky;top:0;z-index:6;padding-right:16px}
+.brand{width:var(--side-w);flex:none;display:flex;align-items:center;gap:10px;padding:0 14px;color:var(--ink);text-decoration:none}
+.logo{width:40px;height:40px;border-radius:50%;border:2px solid #d3232a;color:#d3232a;font-weight:800;display:grid;place-items:center;font-size:.95rem;flex:none}
+.brand b{display:block;font-size:.86rem;letter-spacing:.02em;white-space:nowrap}.brand small{font-size:.74rem;color:var(--mut);white-space:nowrap}
+.topnav{display:flex;align-items:stretch;height:100%;flex:1;overflow:auto;scrollbar-width:none}.topnav::-webkit-scrollbar{display:none}
+.topnav a{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 18px;font-size:1.05rem;font-weight:600;color:var(--ink);text-decoration:none;white-space:nowrap;border-bottom:3px solid transparent;border-top:3px solid transparent;line-height:1.2}
+.topnav a .vn{font-size:.6em}
+.topnav a:hover{color:var(--pri)}.topnav a.on{color:var(--pri);border-bottom-color:var(--pri)}
+.badge-n{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:var(--bad);color:#fff;font-size:.72rem;line-height:20px;text-align:center;margin-left:4px;vertical-align:2px}
+.top-r{display:flex;align-items:center;gap:8px;flex:none}
+.mes{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 12px;font-size:.82rem;font-weight:700;background:var(--ok-bg);color:var(--ok);white-space:nowrap}
+.mes i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.mes.off{background:var(--panel);color:var(--mut)}
+/* 왼쪽 빠른 보기 */
+#wrap{display:flex;min-height:calc(100vh - var(--top-h))}
+#side{width:var(--side-w);flex:none;border-right:1px solid var(--line);background:#fff;display:flex;flex-direction:column;position:sticky;top:var(--top-h);height:calc(100vh - var(--top-h));overflow:auto}
+.side-title{background:var(--pri);color:#fff;font-size:1.25rem;font-weight:800;text-align:center;padding:18px 10px;letter-spacing:-.01em}
+.side-title small{display:block;font-size:.7rem;font-weight:400;opacity:.85}
+.side-act{padding:14px;border-bottom:1px solid var(--line)}
+.side-act .btn{width:100%;justify-content:center;min-height:46px;font-size:1.05rem}
+.nsec{border-bottom:1px solid var(--line);padding:10px 0}
+.nsec-t{display:flex;align-items:center;gap:8px;padding:6px 16px;font-weight:700;font-size:1.02rem;color:var(--ink);text-decoration:none}
+.nsec-t:hover,.nsec-t.on{color:var(--pri)}
+.nsec-t svg{width:18px;height:18px;flex:none}
+.sub{display:block;padding:5px 16px 5px 36px;color:var(--ink2);text-decoration:none;font-size:.92rem;position:relative}
+.sub::before{content:"·";position:absolute;left:24px;color:var(--mut)}
+.sub:hover{color:var(--pri);background:var(--pri-bg)}
+.sub em{font-style:normal;color:var(--mut)}.sub em.red{color:var(--bad)}
+.side-foot{margin-top:auto;padding:12px 16px;font-size:.78rem;color:var(--mut);border-top:1px solid var(--line)}
+.side-foot a{color:var(--mut)}
+/* 본문 */
+#body{flex:1;min-width:0}
+main{padding:0 20px 40px}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
+.ph-t{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ph h1{margin:0;font-size:1.45rem;font-weight:800}
+.ph p{margin:0;color:var(--mut);font-size:.88rem}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:4px;padding:7px 14px;font-weight:600;font-size:.92rem;cursor:pointer;text-decoration:none;color:var(--ink);min-height:38px;white-space:nowrap}
+.btn:hover{border-color:var(--pri);color:var(--pri)}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}.btn.pri:hover{background:var(--pri-d)}
+.btn.sm{min-height:32px;padding:4px 10px;font-size:.85rem}
+.bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}
+.bar .grow{flex:1}
+.gchip{border:1px solid var(--line);background:#fff;border-radius:4px;padding:6px 12px;font-weight:600;font-size:.9rem;cursor:pointer;min-height:36px;white-space:nowrap}
+.gchip.r{border-color:#e7a1a1;color:var(--bad)}.gchip.y{border-color:#e6c27a;color:var(--unk)}
+.gchip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.stamp{color:var(--mut);font-size:.85rem;white-space:nowrap}.stamp b{color:var(--ink)}
+select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px 10px;background:#fff;min-height:38px;width:100%;font-size:16px}
 .search{flex:1 1 220px;width:auto}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
-.card{border:1px solid var(--line);border-radius:14px;background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
-.card .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:12px 14px 8px;border-top:5px solid var(--c)}
-.card .no{font-size:24px;font-weight:900;letter-spacing:-.02em;line-height:1}
-.card .no small{display:block;font-size:12px;font-weight:500;color:var(--mute);margin-top:4px;letter-spacing:0}
-.st{font-size:12px;font-weight:700;color:var(--c);background:var(--t);border-radius:6px;padding:3px 8px;white-space:nowrap;text-align:right}
-.st small{display:block;font-weight:500;font-size:11px}
-.card .bd{padding:0 14px 10px;display:flex;flex-direction:column;gap:6px;font-size:13px}
-.pn{font-weight:700;font-size:14.5px;line-height:1.3}
-.meta{color:var(--mute);font-size:12.5px}
-.alertline{color:var(--bad);font-weight:700;font-size:12.5px}
-.tbl{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
-.tbl th,.tbl td{border-top:1px solid var(--line);padding:4px 4px;text-align:right;white-space:nowrap}
-.tbl th:first-child,.tbl td:first-child{text-align:left}
-.tbl th{color:var(--mute);font-weight:500}
-.nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.nums div{background:var(--panel);border-radius:8px;padding:6px 8px}
-.nums b{display:block;font-size:16px;font-variant-numeric:tabular-nums}
-.nums span{font-size:11.5px;color:var(--mute)}
-.bad b{color:var(--bad)}.slow b{color:var(--warn)}
-.last{border-top:1px dashed var(--line);padding-top:6px;font-size:12.5px}
-.last.none{color:var(--warn)}
-.card .ft{display:flex;gap:6px;padding:8px 14px 12px;margin-top:auto}
-.card .ft .btn{flex:1;justify-content:center}
-.recs{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+/* KPI 줄 */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));border:1px solid var(--line);border-radius:4px;margin-bottom:12px;background:var(--panel)}
+.kpi{padding:10px 14px;border-right:1px solid var(--line)}.kpi:last-child{border-right:0}
+.kpi .l{font-size:.82rem;color:var(--mut)}.kpi .v{font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}.kpi .v small{font-size:.8rem;color:var(--mut);font-weight:500;margin-left:3px}
+/* 사출기 카드 판 */
+.board{background:var(--board);border-radius:6px;padding:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.mc{background:#fff;border-radius:4px;display:flex;flex-direction:column;overflow:hidden;border:2px solid var(--c)}
+.mc-h{background:var(--c);color:#fff;display:flex;align-items:center;gap:8px;padding:7px 10px}
+.mc-h .no{font-size:1.35rem;font-weight:800;line-height:1;white-space:nowrap}.mc-h .no small{font-size:.65em;font-weight:600}
+.mc-h .who{flex:1;font-size:.78rem;line-height:1.25;opacity:.95;overflow:hidden}.mc-h .who b{display:block;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc-h .st{font-weight:700;white-space:nowrap;text-align:right;font-size:.92rem}.mc-h .st small{display:block;font-size:.72rem;font-weight:500}
+.tag{display:inline-block;border-radius:3px;padding:1px 6px;font-size:.75rem;font-weight:700;background:var(--unk-bg);color:var(--unk);white-space:nowrap}
+.tag.r{background:var(--bad-bg);color:var(--bad)}.tag.g{background:var(--ok-bg);color:var(--ok)}.tag.b{background:var(--pri-bg);color:var(--pri)}
+.mc-b{padding:9px 10px;display:flex;flex-direction:column;gap:7px;font-size:.88rem;flex:1}
+.pn{font-weight:700;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub2{color:var(--mut);font-size:.8rem;margin-top:-5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.alert{border:1px solid #f2b8b5;background:var(--bad-bg);color:var(--bad);border-radius:3px;padding:3px 8px;font-size:.82rem;font-weight:600}
+.tbl{width:100%;border-collapse:collapse;font-size:.85rem;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{border:1px solid var(--line2);padding:3px 6px;text-align:right;white-space:nowrap}
+.tbl th{background:var(--head);color:var(--ink2);font-weight:600;text-align:center}
+.tbl td:first-child{text-align:left;background:var(--panel);color:var(--ink2)}
+.tbl .bad{color:var(--bad);font-weight:700}
+.kv{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px dashed var(--line2);padding-top:6px;font-size:.85rem}
+.kv span{color:var(--mut)}.kv b{font-variant-numeric:tabular-nums;text-align:right}
+.mc-f{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 10px 10px}
+.mc-f .btn{justify-content:center}
+/* 기록 목록 */
+.recs{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:4px;overflow:hidden}
 .recs>li{border-top:1px solid var(--line)}.recs>li:first-child{border-top:0}
-.rh{display:grid;grid-template-columns:74px minmax(0,1fr) auto;gap:2px 12px;padding:11px 14px;cursor:pointer;align-items:center}
-.rh:hover{background:var(--panel)}
-.rn{font-weight:900;font-size:18px}
-.rt b{font-weight:700}
-.rm{grid-column:2/4;font-size:12.5px;color:var(--mute)}
-.badge{font-size:12px;font-weight:700;border-radius:6px;padding:2px 8px;white-space:nowrap}
-.b-ok{color:var(--run);background:var(--run-t)}.b-ng{color:var(--bad);background:var(--bad-t)}.b-un{color:var(--warn);background:var(--warn-t)}
-.rd{padding:4px 14px 14px;background:var(--panel)}
-.ptbl{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
-.ptbl td,.ptbl th{border-bottom:1px solid var(--line);padding:5px 6px;text-align:left}
-.ptbl .chg{color:var(--blue);font-weight:700}
+.rh{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:2px 12px;padding:10px 14px;cursor:pointer;align-items:center}
+.rh:hover{background:var(--pri-bg)}
+.rn{font-weight:800;font-size:1.1rem}.rt b{color:var(--pri)}
+.rm{grid-column:2/4;font-size:.82rem;color:var(--mut)}
+.b-ok{background:var(--ok-bg);color:var(--ok)}.b-ng{background:var(--bad-bg);color:var(--bad)}.b-un{background:var(--unk-bg);color:var(--unk)}
+.badge{font-size:.78rem;font-weight:700;border-radius:3px;padding:2px 8px;white-space:nowrap}
+.rd{padding:6px 14px 14px;background:var(--panel)}
+.ptbl{width:100%;border-collapse:collapse;font-size:.88rem;font-variant-numeric:tabular-nums;background:#fff}
+.ptbl td,.ptbl th{border:1px solid var(--line2);padding:4px 8px;text-align:left}
+.ptbl th{background:var(--head)}
+.ptbl .chg{color:var(--pri);font-weight:700}
 .scroll{overflow-x:auto}
-.empty{padding:28px;text-align:center;color:var(--mute)}
-.lh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0}
-.lh select{width:auto}
+.empty{padding:28px;text-align:center;color:var(--mut)}
+.board .empty{grid-column:1/-1;color:#c9d3e0}
+.lh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0}.lh select{width:auto}
 .sels{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:10px}
-.grp{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
-.grp a{display:block;border:1px solid var(--line);border-radius:12px;padding:10px 12px;color:var(--ink);text-decoration:none}
-.grp a:hover{border-color:var(--blue)}
-.grp b{font-size:16px}.grp span{display:block;color:var(--mute);font-size:12.5px}
-.form{max-width:860px;display:flex;flex-direction:column;gap:14px}
-.form label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:14px}
+.grp{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.grp a{display:block;border:1px solid var(--line);border-radius:4px;padding:10px 12px;color:var(--ink);text-decoration:none;background:#fff}
+.grp a:hover{border-color:var(--pri)}.grp b{font-size:1.02rem}.grp span{display:block;color:var(--mut);font-size:.82rem}
+.note{font-size:.8rem;color:var(--mut)}
+/* 등록 양식 */
+.form{max-width:900px;display:flex;flex-direction:column;gap:14px}
+.form label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:.92rem}
 .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
-.mesbox{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:10px 14px;font-size:13px;display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px 14px}
-.mesbox b{display:block;font-size:14.5px}
-.mesbox .h{grid-column:1/-1;font-weight:700;color:var(--blue);font-size:12.5px}
-.pgrid{border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.prow{display:grid;grid-template-columns:150px minmax(0,1fr);border-top:1px solid var(--line)}
-.prow:first-child{border-top:0}
-.prow .pk{background:var(--panel);padding:8px 10px;font-weight:700;font-size:13px}
-.prow .pk span{display:block;font-weight:400;font-size:11.5px;color:var(--mute)}
+.mesbox{border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:10px 14px;font-size:.85rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px 14px}
+.mesbox b{display:block;font-size:.95rem}.mesbox .h{grid-column:1/-1;font-weight:700;color:var(--pri);font-size:.82rem}
+.pgrid{border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.prow{display:grid;grid-template-columns:150px minmax(0,1fr);border-top:1px solid var(--line)}.prow:first-child{border-top:0}
+.prow .pk{background:var(--head);padding:8px 10px;font-weight:700;font-size:.88rem}.prow .pk span{display:block;font-weight:400;font-size:.75rem;color:var(--mut)}
 .stg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;padding:8px}
-.stg div{display:grid;grid-template-columns:34px 1fr 1fr;gap:4px;align-items:center;font-size:12px;color:var(--mute)}
-.stg input{min-height:34px;padding:4px 6px;font-size:15px}
-.stg input.ch{border-color:var(--blue);background:var(--blue-t)}
-.sub{font-size:14px;font-weight:900;margin:0}
-.note{font-size:12px;color:var(--mute)}
-.login{position:fixed;inset:0;z-index:50;background:rgba(8,18,36,.6);display:grid;place-items:center;padding:16px}
-.lbox{background:var(--bg);border-radius:16px;padding:24px;width:min(360px,100%);display:flex;flex-direction:column;gap:12px}
-.lbox label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:14px}
-.admin{color:#9fb0cc;font-size:12.5px;text-decoration:none}
-@media(max-width:820px){.app{grid-template-columns:minmax(0,1fr)}aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:12px 16px;gap:10px}aside .plant,aside .sync,aside .admin{display:none}nav{flex-direction:row;overflow-x:auto;flex:1 1 100%}nav a{white-space:nowrap;padding:7px 10px}nav a .vn{display:none}nav a.new{margin-top:0}main{padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px))}.cards{grid-template-columns:minmax(0,1fr)}.prow{grid-template-columns:minmax(0,1fr)}.kpi{border-bottom:1px solid var(--line)}.rh{grid-template-columns:56px minmax(0,1fr)}.rh .badge{grid-column:2;justify-self:start}.rm{grid-column:1/-1}}
+.stg div{display:grid;grid-template-columns:34px 1fr 1fr;gap:4px;align-items:center;font-size:.8rem;color:var(--mut)}
+.stg input{min-height:34px;padding:4px 6px}
+.stg input.ch{border-color:var(--pri);background:var(--pri-bg)}
+.subh{font-size:.95rem;font-weight:800;margin:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.login{position:fixed;inset:0;z-index:50;background:rgba(8,18,36,.55);display:grid;place-items:center;padding:16px}
+.lbox{background:#fff;border-radius:6px;padding:24px;width:min(360px,100%);display:flex;flex-direction:column;gap:12px}
+.lbox label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:.92rem}
+@media(max-width:1100px){#side{display:none}.brand{width:auto}}
+@media(max-width:720px){html{font-size:14px}#top{height:auto;flex-wrap:wrap;padding:0}.brand{padding:8px 12px;flex:1}.top-r{padding-right:12px}.topnav{order:3;flex:1 1 100%;height:48px;border-top:1px solid var(--line2)}.topnav a{padding:0 12px;font-size:.95rem}.topnav a .vn{display:none}#side{display:none}main{padding:0 12px 32px}.board{grid-template-columns:minmax(0,1fr);padding:6px}.prow{grid-template-columns:minmax(0,1fr)}.rh{grid-template-columns:52px minmax(0,1fr)}.rh .badge{grid-column:2;justify-self:start}.rm{grid-column:1/-1}.mes span{display:none}#side{top:0}}
 </style>
 </head>
 <body>
-<div class="app">
-  <aside>
-    <div class="brand"><div class="logo">SW</div><div><b>성우플라텍</b><small>SEONGWOO PLATECH</small></div></div>
-    <div class="plant">3공장 · 사출팀<span class="vn">Xưởng 3 · Tổ ép nhựa</span></div>
-    <nav>
-      <a href="#machines" data-v="machines">사출기별 현황<span class="vn">Tình trạng máy</span></a>
-      <a href="#list" data-v="list">조건변경 기록<span class="vn">Lịch sử thay đổi</span></a>
-      <a href="#engineers" data-v="engineers">기사별 기록<span class="vn">Theo kỹ thuật viên</span></a>
-      <a href="#molds" data-v="molds">금형별 기록<span class="vn">Theo khuôn</span></a>
-      <a href="#new" data-v="new" class="new">+ 기록 등록<span class="vn">Thêm bản ghi</span></a>
-    </nav>
-    <a href="#" id="adm" class="admin">관리자 로그인</a>
-    <div class="sync">MES 자료 <b id="mesAt">-</b><br>MES 갱신 <b>10분마다</b></div>
+<header id="top">
+  <a class="brand" href="#machines"><div class="logo">SW</div><div><b>SUNG WOO PLATECH</b><small>성우플라텍 3공장 사출</small></div></a>
+  <nav class="topnav">
+    <a href="#machines" data-v="machines">사출기별 현황<span class="vn">Tình trạng máy</span></a>
+    <a href="#list" data-v="list">조건변경 기록<span class="vn">Lịch sử thay đổi</span></a>
+    <a href="#engineers" data-v="engineers">기사별 기록<span class="vn">Theo KTV</span></a>
+    <a href="#molds" data-v="molds">동일 금형<span class="vn">Theo khuôn</span></a>
+  </nav>
+  <div class="top-r"><span class="mes off" id="mesChip"><i></i><span id="mesAt">MES 연결 대기</span></span></div>
+</header>
+<div id="wrap">
+  <aside id="side">
+    <div class="side-title">3공장 사출 조건관리<small>Quản lý thông số ép · Xưởng 3</small></div>
+    <div class="side-act"><a class="btn pri" href="#new">✎ 기록 등록</a></div>
+    <div class="nsec"><a class="nsec-t" href="#machines" data-v="machines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>사출기별 현황</a><div id="sq-m"></div></div>
+    <div class="nsec"><a class="nsec-t" href="#list" data-v="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>조건변경 기록</a><div id="sq-l"></div></div>
+    <div class="nsec"><a class="nsec-t" href="#engineers" data-v="engineers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>사출기사별 기록</a></div>
+    <div class="nsec"><a class="nsec-t" href="#molds" data-v="molds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg>동일 금형 기록</a></div>
+    <div class="side-foot">기록은 바로 반영 · MES 숫자는 10분마다 갱신<br><a href="#" id="adm">관리자 로그인</a></div>
   </aside>
-  <main>
+  <div id="body"><main>
     <section id="v-machines">
-      <div class="top"><div><div class="crumb">3공장 › 사출기별 현황</div><h1>사출 조건 관리판<span class="vn">Bảng quản lý thông số ép nhựa · Xưởng 3</span></h1></div>
-        <div class="ctrl"><span class="pill">MES 자료 시각 <b id="mesAt2">-</b></span><button class="btn" id="refresh">새로고침</button></div></div>
-      <div class="kpis" id="kpis"></div>
-      <div class="tools" id="mchips"></div>
-      <div class="tools"><input class="search" id="mq" placeholder="호기, 금형, 제품 검색 · Tìm máy, khuôn, sản phẩm"></div>
-      <div class="cards" id="cards"></div>
+      <div class="ph"><div class="ph-t"><h1>사출기별 현황</h1><p>MES 작업(지시·양품·불량·효율)과 마지막 조건 기록을 호기별로 봅니다.</p></div><a class="btn pri" href="#new">+ 기록 등록</a></div>
+      <div class="bar"><span id="mchips" class="chips"></span><span class="grow"></span><span class="stamp">MES 자료 시각 <b id="mesAt2">-</b></span></div>
+      <div class="bar"><input class="search" id="mq" placeholder="호기, 금형, 제품 검색 · Tìm máy, khuôn, sản phẩm"><button class="btn" id="refresh">새로고침</button></div>
+      <div class="board" id="cards"></div>
     </section>
 
     <section id="v-list" hidden>
-      <div class="top"><div><div class="crumb">3공장 › 조건변경 기록</div><h1>조건변경 기록<span class="vn">Lịch sử thay đổi thông số</span></h1></div><a class="btn pri" href="#new">+ 기록 등록</a></div>
+      <div class="ph"><div class="ph-t"><h1>조건변경 기록</h1><p>사출기사가 등록한 조건 변경을 날짜·호기·기사별로 찾습니다.</p></div><a class="btn pri" href="#new">+ 기록 등록</a></div>
       <div class="kpis" id="lkpis"></div>
-      <div class="tools"><input class="search" id="lq" placeholder="검색 · Tìm khuôn, sản phẩm, nhân viên"><span id="lper"></span></div>
+      <div class="bar"><span id="lper" class="chips"></span><input class="search" id="lq" placeholder="검색 · Tìm khuôn, sản phẩm, nhân viên"></div>
       <div class="sels"><select id="lno"></select><select id="lw"></select><select id="ls"></select><select id="lk"></select></div>
       <div class="lh"><b>기록 <span id="lcnt"></span></b><select id="lsort"><option value="new">최신 일시순</option><option value="old">오래된 일시순</option><option value="no">사출기 번호순</option></select></div>
       <ul class="recs" id="recs"></ul>
@@ -156,12 +175,12 @@ select,input,textarea{font:inherit;font-size:16px;border:1px solid var(--line);b
     </section>
 
     <section id="v-group" hidden>
-      <div class="top"><div><div class="crumb" id="gcrumb"></div><h1 id="gtitle"></h1></div></div>
+      <div class="ph"><div class="ph-t"><h1 id="gtitle"></h1><p id="gdesc"></p></div></div>
       <div class="grp" id="grp"></div>
     </section>
 
     <section id="v-new" hidden>
-      <div class="top"><div><div class="crumb">3공장 › 기록 등록</div><h1>조건변경 등록<span class="vn">Thêm bản ghi thay đổi thông số</span></h1></div></div>
+      <div class="ph"><div class="ph-t"><h1>조건변경 등록</h1><p>Thêm bản ghi thay đổi thông số</p></div></div>
       <form id="fm" class="form" autocomplete="off">
         <div class="fgrid">
           <label>사출기 <span class="vn">Máy ép</span><select id="fno" required></select></label>
@@ -173,28 +192,27 @@ select,input,textarea{font:inherit;font-size:16px;border:1px solid var(--line);b
           <label>금형번호 <span class="vn">Khuôn</span><input id="fmold" required></label>
           <label>제품명 <span class="vn">Sản phẩm</span><input id="fprod"></label>
         </div>
-        <div class="ctrl"><span class="sub">조건 <span class="vn">Thông số</span></span><button type="button" class="btn sm" id="fprev">이 금형 마지막 조건 불러오기</button><span class="note" id="fprevmsg"></span></div>
+        <div class="bar"><span class="subh">조건 <span class="vn" style="display:inline">Thông số</span></span><button type="button" class="btn sm" id="fprev">이 금형 마지막 조건 불러오기</button><span class="note" id="fprevmsg"></span></div>
         <div class="pgrid" id="pgrid"></div>
         <label>변경 사유 <span class="vn">Lý do</span><input id="fr" list="reasons" required placeholder="예: 초기 가동·금형 교체, 미성형 개선"></label>
         <datalist id="reasons"></datalist>
-        <div><div class="sub">상태 <span class="vn">Trạng thái</span></div><div class="tools" id="fst"></div></div>
+        <div><div class="subh">상태 <span class="vn" style="display:inline">Trạng thái</span></div><div class="chips" id="fst" style="margin-top:6px"></div></div>
         <label>메모 <span class="vn">Ghi chú</span><textarea id="fmemo" rows="2"></textarea></label>
-        <div class="ctrl"><button class="btn pri" type="submit">등록하기 · Lưu</button><a class="btn" href="#list">취소</a><span class="note" id="fmsg"></span></div>
+        <div class="bar"><button class="btn pri" type="submit">등록하기 · Lưu</button><a class="btn" href="#list">취소</a><span class="note" id="fmsg"></span></div>
       </form>
     </section>
-  </main>
+  </main></div>
 </div>
 
 <div class="login" id="login" hidden>
   <form id="lf" class="lbox">
-    <div class="brand"><div class="logo">SW</div><div><b style="color:var(--ink)">관리자 로그인</b><small style="color:var(--mute)">Đăng nhập quản trị</small></div></div>
+    <b style="font-size:1.1rem">관리자 로그인</b>
     <label>아이디<input id="lid" required autocomplete="username"></label>
     <label>비밀번호<input id="lpw" type="password" required autocomplete="current-password"></label>
-    <div class="ctrl"><button class="btn pri" type="submit">로그인</button><button class="btn" type="button" id="lclose">닫기</button></div>
+    <div class="bar"><button class="btn pri" type="submit">로그인</button><button class="btn" type="button" id="lclose">닫기</button></div>
     <p class="note" id="lmsg"></p>
   </form>
 </div>
-
 <script>
 {
 const CFG = { pollSec: 60, sb: { url: 'https://pauyimvawypicqrqczmp.supabase.co', key: 'sb_publishable_jp_CewOxKLAT1NqWJTHTgQ_QadUCdsP' }, idDomain: 'sungwoo-f3.local' };
@@ -224,7 +242,7 @@ const KINDS = [
   ['pressure','기존 압력 기록','Áp suất cũ','',['1단','2단','3단','4단']]
 ];
 const KN = Object.fromEntries(KINDS.map(k=>[k[0],k[1]]));
-const ST = { RUN:['가동 중','Đang chạy','--run','--run-t'], ALARM:['알람','Cảnh báo','--bad','--bad-t'], MOLD:['금형 교체','Thay khuôn','--warn','--warn-t'], STOP:['비가동','Dừng','--stop','--stop-t'], PLAN:['계획 정지','Dừng KH','--stop','--stop-t'], NONE:['MES 대기','Chờ MES','--stop','--stop-t'] };
+const ST = { RUN:['가동 중','Đang chạy','--run'], ALARM:['알람','Cảnh báo','--alarm'], MOLD:['금형 교체','Thay khuôn','--mold'], STOP:['비가동','Dừng','--alarm'], PLAN:['계획 정지','Dừng KH','--stop'], NONE:['MES 대기','Chờ MES','--stop'] };
 
 /* ---------- 데이터 ---------- */
 let auth = null;
@@ -258,32 +276,40 @@ const isBad = m => m.prod+m.ng >= 20 && ngRate(m) >= 2;
 const isSlow = m => m.status==='RUN' && m.stdCt>0 && m.ct > m.stdCt*1.05;
 const noRec = m => m.mold && !lastRec(m.no, m.mold);
 const test = { all:()=>true, run:m=>m.status==='RUN', stop:m=>m.status!=='RUN'&&m.status!=='NONE', bad:isBad, slow:isSlow, norec:noRec };
+const CHIPC = { stop:'r', bad:'r', slow:'y', norec:'y' };
+function setMes(){ const t = mesAt ? `MES ${fmt(new Date(mesAt))} 기준` : 'MES 연결 대기'; $('mesAt').textContent = t; $('mesChip').classList.toggle('off', !mesAt); $('mesAt2').textContent = mesAt ? fmt(new Date(mesAt)) : '연결 대기'; }
+function sideCounts(){
+  const sq = (k,t,n,red) => `<a class="sub" href="#${k}">${t} <em class="${red&&n?'red':''}">(${n})</em></a>`;
+  $('sq-m').innerHTML = [['bad','불량 알림',1],['run','가동 중',0],['stop','비가동 중',1],['norec','현재 금형 기록 없음',1]].map(([k,t,r])=>sq('m-'+k,t,M.filter(test[k]).length,r)).join('');
+  const today = new Date().setHours(0,0,0,0);
+  $('sq-l').innerHTML = sq('l-all','전체 기록',R.length) + sq('l-today','오늘 등록',R.filter(r=>r._at>=today).length) + sq('l-un','미확인',R.filter(r=>r.status==='미확인').length,1) + sq('l-ng','이상 보고',R.filter(r=>r.status==='이상').length,1);
+}
 function renderMachines(){
-  const run = M.filter(m=>m.status==='RUN').length, prod = M.reduce((a,m)=>a+m.prod,0), ng = M.reduce((a,m)=>a+m.ng,0);
-  const today = R.filter(r=>r._at.toDateString()===new Date().toDateString()).length;
-  $('kpis').innerHTML = [['가동',run,`/ ${NOS.length}대`],['생산 양품',prod.toLocaleString(),'EA'],['불량률',((prod+ng)?ng/(prod+ng)*100:0).toFixed(2),'%'],['불량 알림',M.filter(isBad).length,'대'],['오늘 조건기록',today,'건']]
-    .map(([l,v,u])=>`<div class="kpi"><div class="l">${l}</div><div class="v">${v}<small>${u}</small></div></div>`).join('');
-  $('mchips').innerHTML = FILTERS.map(([k,t])=>`<button class="chip${mf===k?' on':''}" data-mf="${k}">${t} ${M.filter(test[k]).length}</button>`).join('');
+  setMes(); sideCounts();
+  $('mchips').innerHTML = FILTERS.map(([k,t])=>`<button class="gchip ${CHIPC[k]||''}${mf===k?' on':''}" data-mf="${k}">${t} ${M.filter(test[k]).length}${k==='all'?'대':''}</button>`).join('');
   const q = $('mq').value.trim().replace(/호기$/,'');
   const list = M.filter(m=>test[mf](m) && (!q || `${m.no} ${m.mold} ${m.part} ${m.worker}`.includes(q)));
   $('cards').innerHTML = list.length ? list.map(card).join('') : '<div class="empty">조건에 맞는 사출기가 없습니다</div>';
-  $('mesAt').textContent = $('mesAt2').textContent = mesAt ? fmt(new Date(mesAt)) : 'MES 연결 대기';
 }
 function card(m){
-  const s = ST[m.status] || ST.STOP, lr = lastRec(m.no, m.mold) || lastRec(m.no);
-  const eff = m.target ? Math.round(m.prod/m.target*100) : 0, rate = ngRate(m);
-  const since = m.since ? `${fmt(new Date(m.since))}부터` : '';
-  return `<div class="card" style="--c:var(${s[2]});--t:var(${s[3]})">
-    <div class="hd"><div class="no">${m.no}호기<small>${esc(m.mold||'금형 정보 없음')}${m.worker?' · '+esc(m.worker):''}</small></div>
-      <div class="st">${s[0]}${m.status!=='RUN'&&m.alarm?' · '+esc(m.alarm):''}<small>${since}</small></div></div>
-    <div class="bd">
-      ${m.part?`<div class="pn">${esc(m.part)}</div>`:(lr?`<div class="pn">${esc(lr.product)}</div><div class="meta">마지막 기록 기준 제품</div>`:'')}
-      ${isBad(m)?`<div class="alertline">⚠ 불량 알림 · 불량률 ${rate.toFixed(1)}%</div>`:''}
-      ${m.status!=='NONE'?`<div class="scroll"><table class="tbl"><tr><th>지시</th><th>양품</th><th>불량</th><th>효율</th></tr><tr><td>${m.target.toLocaleString()}</td><td>${m.prod.toLocaleString()}</td><td>${m.ng.toLocaleString()}</td><td>${eff}%</td></tr></table></div>
-      <div class="nums"><div class="${isBad(m)?'bad':''}"><span>불량률</span><b>${rate.toFixed(1)}%</b></div><div><span>C/T 기준</span><b>${m.stdCt?m.stdCt+'s':'-'}</b></div><div class="${isSlow(m)?'slow':''}"><span>C/T 실</span><b>${m.ct?m.ct+'s':'-'}</b></div></div>`:''}
-      ${lr?`<div class="last">마지막 조건 기록 <b>${fmt(lr._at)}</b> · ${esc(lr.technician)} · ${esc(lr.reason||lr.status)}${m.mold&&lr.mold!==m.mold?' <span class="alertline">(현재 금형 기록 없음)</span>':''}</div>`:'<div class="last none">조건 기록 없음</div>'}
+  const s = ST[m.status] || ST.STOP, lr = lastRec(m.no, m.mold) || lastRec(m.no), cur = m.mold ? lastRec(m.no, m.mold) : lr;
+  const has = m.status !== 'NONE', eff = m.target ? Math.round(m.prod/m.target*100) : 0, rate = ngRate(m), d = v => has ? v : '-';
+  const ctd = m.stdCt && m.ct ? Math.round((m.ct/m.stdCt-1)*100) : null;
+  const prod = m.part || lr?.product || '', mold = m.mold || lr?.mold || '';
+  const n = R.filter(r=>r.machine===m.no && (!mold || r.mold===mold)).length;
+  return `<div class="mc" style="--c:var(${s[2]})">
+    <div class="mc-h"><span class="no">${pad(m.no)}<small>호기</small></span><span class="who"><b>${esc(mold||'금형 정보 없음')}${m.worker?' · '+esc(m.worker):''}</b></span>
+      <span class="st">${s[0]}${m.status!=='RUN'&&m.alarm?`<small>${esc(m.alarm)}${m.since?' '+fmt(new Date(m.since)).split(' ')[1]+'~':''}</small>`:''}</span></div>
+    <div class="mc-b">
+      <div class="pn">${esc(prod||'제품 정보 없음')}</div>
+      ${isBad(m)?`<div class="alert">불량 높음 · 실불량 ${rate.toFixed(1)}%</div>`:''}
+      <div class="scroll"><table class="tbl"><tr><th></th><th>수량</th></tr>
+        <tr><td>지시수량</td><td>${d(m.target.toLocaleString())}</td></tr><tr><td>양품수량</td><td>${d(m.prod.toLocaleString())}</td></tr>
+        <tr><td>불량수량</td><td class="${m.ng?'bad':''}">${d(m.ng.toLocaleString())}</td></tr><tr><td>불량률</td><td class="${isBad(m)?'bad':''}">${d(rate.toFixed(1)+'%')}</td></tr><tr><td>생산효율</td><td>${d(eff+'%')}</td></tr></table></div>
+      <div class="kv"><span>C/T 기준 · 실 (초)</span><b>${has&&m.stdCt?m.stdCt:'-'} · ${has&&m.ct?m.ct:'-'} ${ctd!==null?`<span class="tag ${ctd>5?'':'g'}">${ctd>0?'+':''}${ctd}% ${ctd>0?'느림':'빠름'}</span>`:''}</b></div>
+      <div class="kv"><span>마지막 조건 기록</span><b>${lr?`${fmt(lr._at)} · ${esc(lr.technician)}`:'없음'} ${cur?'':'<span class="tag">현재 금형 기록 없음</span>'}</b></div>
     </div>
-    <div class="ft"><a class="btn sm" href="#list" data-go-no="${m.no}">기록 보기</a><a class="btn sm pri" href="#new" data-new-no="${m.no}">조건 등록</a></div>
+    <div class="mc-f"><a class="btn sm" href="#list" data-go-no="${m.no}">기록 ${n}건 보기</a><a class="btn sm pri" href="#new" data-new-no="${m.no}">+ 등록</a></div>
   </div>`;
 }
 
@@ -301,7 +327,7 @@ const bc = { 정상:'b-ok', 이상:'b-ng', 미확인:'b-un' };
 function changed(r){ return (r.parameters||[]).filter(p=>p.after!==''&&p.after!=null&&String(p.after)!==String(p.before)); }
 function summary(r){ const c = changed(r); return c.length ? c.slice(0,3).map(p=>`${KN[p.kind]||p.kind}${p.stage?' '+p.stage:''} ${p.before}→<b>${p.after}</b>`).join(', ') + (c.length>3?` 외 ${c.length-3}`:'') : `조건 ${(r.parameters||[]).length}개 기록`; }
 function renderList(){
-  $('lper').innerHTML = [['1','오늘'],['7','7일'],['30','30일'],['all','전체']].map(([v,t])=>`<button class="chip${lf.p===v?' on':''}" data-p="${v}">${t}</button>`).join(' ');
+  $('lper').innerHTML = [['1','오늘'],['7','7일'],['30','30일'],['all','전체']].map(([v,t])=>`<button class="gchip${lf.p===v?' on':''}" data-p="${v}">${t}</button>`).join(' ');
   const q = $('lq').value.trim(), no = $('lno').value, w = $('lw').value, st = $('ls').value, k = $('lk').value;
   const from = lf.p==='all' ? 0 : lf.p==='1' ? new Date().setHours(0,0,0,0) : Date.now() - (+lf.p)*86400000;
   let r = R.filter(x => x._at >= from && (!no||x.machine==no) && (!w||x.technician===w) && (!st||x.status===st) && (!k||(x.parameters||[]).some(p=>p.kind===k))
@@ -326,8 +352,8 @@ function detail(x){
 /* ---------- 기사별 / 금형별 ---------- */
 function renderGroup(kind){
   const key = kind==='engineers' ? 'technician' : 'mold';
-  $('gcrumb').textContent = kind==='engineers' ? '3공장 › 기사별 기록' : '3공장 › 금형별 기록';
-  $('gtitle').innerHTML = kind==='engineers' ? '기사별 기록<span class="vn">Theo kỹ thuật viên</span>' : '금형별 기록<span class="vn">Theo khuôn</span>';
+  $('gdesc').textContent = kind==='engineers' ? '기사별로 등록한 조건 기록을 모아 봅니다.' : '같은 금형의 기록을 모아 봅니다. 누르면 그 금형 기록만 보입니다.';
+  $('gtitle').textContent = kind==='engineers' ? '사출기사별 기록' : '동일 금형 기록';
   const g = new Map(); R.forEach(r=>{ const k = r[key]||'(미입력)'; const a = g.get(k)||{n:0,last:r,bad:0,machines:new Set(),prod:r.product}; a.n++; if(r._at>a.last._at)a.last=r; if(r.status==='이상')a.bad++; a.machines.add(r.machine); g.set(k,a); });
   $('grp').innerHTML = [...g.entries()].sort((a,b)=>b[1].last._at-a[1].last._at).map(([k,a])=>`<a href="#list" data-gk="${key}" data-gv="${esc(k)}"><b>${esc(k)}</b> · ${a.n}건${a.bad?` · <span style="color:var(--bad)">이상 ${a.bad}</span>`:''}<span>${key==='mold'?esc(a.prod)+' · ':''}${[...a.machines].sort((x,y)=>x-y).slice(0,6).map(n=>n+'호기').join(', ')}</span><span>마지막 ${fmt(a.last._at)}</span></a>`).join('');
 }
@@ -352,7 +378,7 @@ function initForm(){
   $('fw').innerHTML = opt('','기사 선택 · Chọn KTV') + [...new Set(WORKERS.concat(R.map(r=>r.technician).filter(Boolean)))].map(w=>opt(w,w)).join('');
   $('fat').value = now.toISOString().slice(0,16);
   $('reasons').innerHTML = REASONS.map(r=>`<option value="${esc(r)}">`).join('');
-  $('fst').innerHTML = ['정상','이상','미확인'].map(s=>`<button type="button" class="chip${fst===s?' on':''}" data-s="${s}">${s}</button>`).join('');
+  $('fst').innerHTML = ['정상','이상','미확인'].map(s=>`<button type="button" class="gchip${fst===s?' on':''}" data-s="${s}">${s}</button>`).join('');
   $('fmold').value = ''; $('fprod').value = ''; $('fprevmsg').textContent = '';
   if (pre?.copy){ const r = R.find(x=>x.id===pre.copy); if (r){ $('fno').value = r.machine; $('fmold').value = r.mold; $('fprod').value = r.product; fillFrom(r); } }
   else pgrid();
@@ -380,9 +406,12 @@ $('fm').addEventListener('submit', async e=>{
 /* ---------- 화면 전환 / 이벤트 ---------- */
 const VIEWS = ['machines','list','engineers','molds','new'];
 function route(){
-  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'machines';
+  let h = location.hash.slice(1);
+  if (h.startsWith('m-')){ mf = h.slice(2); history.replaceState(null,'','#machines'); h = 'machines'; }
+  if (h.startsWith('l-')){ const k = h.slice(2); fillSel(); ['lno','lw','ls','lk'].forEach(id=>$(id).value=''); $('lq').value=''; lf.p = k==='today' ? '1' : 'all'; if (k==='un') $('ls').value='미확인'; if (k==='ng') $('ls').value='이상'; history.replaceState(null,'','#list'); h = 'list'; }
+  const v = VIEWS.includes(h) ? h : 'machines';
   $('v-machines').hidden = v!=='machines'; $('v-list').hidden = v!=='list'; $('v-group').hidden = !['engineers','molds'].includes(v); $('v-new').hidden = v!=='new';
-  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v));
+  document.querySelectorAll('[data-v]').forEach(a=>a.classList.toggle('on', a.dataset.v===v)); sideCounts();
   if (v==='machines') renderMachines();
   if (v==='list'){ fillSel(); renderList(); }
   if (v==='engineers'||v==='molds') renderGroup(v);
@@ -394,7 +423,7 @@ document.addEventListener('click', e=>{
   if (t.dataset.mf){ mf = t.dataset.mf; renderMachines(); }
   else if (t.dataset.p){ lf.p = t.dataset.p; renderList(); }
   else if (t.dataset.open){ lf.open = lf.open===t.dataset.open ? null : t.dataset.open; renderList(); }
-  else if (t.dataset.goNo){ fillSel(); $('lno').value = t.dataset.goNo; lf.p = 'all'; }
+  else if (t.dataset.goNo){ fillSel(); ['lw','ls','lk'].forEach(id=>$(id).value=''); $('lq').value=''; $('lno').value = t.dataset.goNo; lf.p = 'all'; }
   else if (t.dataset.newNo){ pre = { no:+t.dataset.newNo }; }
   else if (t.dataset.copy){ pre = { copy:t.dataset.copy }; }
   else if (t.dataset.gk){ fillSel(); lf.p = 'all'; ['lno','lw','ls','lk'].forEach(id=>$(id).value=''); $('lq').value = ''; if (t.dataset.gk==='technician') $('lw').value = t.dataset.gv; else $('lq').value = t.dataset.gv; }
@@ -412,9 +441,9 @@ if (auth) $('adm').textContent = `관리자 로그아웃 (${auth.user})`;
 
 async function refresh(){
   try { await load(); const v = location.hash.slice(1); if (v!=='new') route(); else renderMachinesSilently(); }
-  catch(err){ $('mesAt').textContent = '연결 실패 · 재시도 중'; console.error(err); }
+  catch(err){ $('mesAt').textContent = '연결 실패 · 재시도 중'; $('mesChip').classList.add('off'); console.error(err); }
 }
-function renderMachinesSilently(){ $('mesAt').textContent = mesAt ? fmt(new Date(mesAt)) : 'MES 연결 대기'; }
+function renderMachinesSilently(){ setMes(); }
 refresh().then(()=>{ if (location.hash==='#new') route(); });
 setInterval(refresh, CFG.pollSec*1000);
 }
