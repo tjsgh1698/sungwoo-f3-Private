@@ -106,19 +106,32 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .mc-f{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 12px 12px}
 .mc-f .btn{justify-content:center}
 /* 기록 목록 */
-.recs{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:4px;overflow:hidden}
-.recs>li{border-top:1px solid var(--line)}.recs>li:first-child{border-top:0}
-.rh{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:2px 12px;padding:10px 14px;cursor:pointer;align-items:center}
-.rh:hover{background:var(--pri-bg)}
-.rn{font-weight:800;font-size:1.1rem}.rt b{color:var(--pri)}
-.rm{grid-column:2/4;font-size:.82rem;color:var(--mut)}
 .b-ok{background:var(--ok-bg);color:var(--ok)}.b-ng{background:var(--bad-bg);color:var(--bad)}.b-un{background:var(--unk-bg);color:var(--unk)}
 .badge{font-size:.78rem;font-weight:700;border-radius:3px;padding:2px 8px;white-space:nowrap}
-.rd{padding:6px 14px 14px;background:var(--panel)}
-.ptbl{width:100%;border-collapse:collapse;font-size:.88rem;font-variant-numeric:tabular-nums;background:#fff}
-.ptbl td,.ptbl th{border:1px solid var(--line2);padding:4px 8px;text-align:left}
-.ptbl th{background:var(--head)}
-.ptbl .chg{color:var(--pri);font-weight:700}
+.recs{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.rrow{display:grid;grid-template-columns:92px 58px minmax(0,1.3fr) 64px minmax(0,2.2fr) minmax(0,1fr) 62px;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line2);cursor:pointer;font-size:.88rem}
+.rrow:hover{background:var(--pri-bg)}
+.rrow.open{background:var(--pri-bg);box-shadow:inset 3px 0 0 var(--pri)}
+.rhead{background:var(--head);font-weight:700;color:var(--ink2);font-size:.8rem;cursor:default;border-top:0}.rhead:hover{background:var(--head)}
+.c-at b{display:block;font-variant-numeric:tabular-nums}.c-at small{color:var(--mut)}
+.c-no{font-weight:900;font-size:1.15rem;color:#10264a}.c-no small{font-size:.6em;color:var(--mut);font-weight:600}
+.c-mold b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.c-mold small{display:block;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-who{font-weight:600}
+.c-chg{display:flex;flex-wrap:wrap;gap:4px}
+.cg{display:inline-flex;align-items:baseline;gap:4px;border-radius:5px;background:var(--pri-bg);padding:2px 7px;font-size:.78rem;white-space:nowrap;font-variant-numeric:tabular-nums}
+.cg em{font-style:normal;color:var(--ink2)}.cg s{text-decoration:none;color:var(--mut)}.cg b{color:var(--pri)}
+.cg.more{background:var(--panel);color:var(--mut)}.cg.none{background:var(--panel);color:var(--mut)}
+.c-why{color:var(--ink2);font-size:.84rem;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.rd{padding:12px 14px 14px;background:var(--panel);border-top:1px solid var(--line2)}
+.pm{display:grid;grid-template-columns:130px minmax(0,1fr);border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
+.pm>div{padding:6px 10px;border-top:1px solid var(--line2);font-size:.85rem}
+.pm>div:nth-child(-n+2){border-top:0}
+.pm .k{background:var(--head);font-weight:700}.pm .k small{display:block;font-weight:400;color:var(--mut);font-size:.75rem}
+.pm .v{display:flex;flex-wrap:wrap;gap:5px}
+.sv{display:inline-flex;flex-direction:column;align-items:center;min-width:58px;border:1px solid var(--line2);border-radius:5px;padding:2px 6px;font-variant-numeric:tabular-nums}
+.sv small{font-size:.7rem;color:var(--mut)}.sv b{font-weight:600}
+.sv.ch{border-color:var(--pri);background:var(--pri-bg)}.sv.ch b{color:var(--pri)}.sv.ch s{text-decoration:line-through;color:var(--mut);font-size:.75rem}
+.rd-meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:.84rem;align-items:center}.rd-meta span{color:var(--mut)}
 .scroll{overflow-x:auto}
 .empty{padding:28px;text-align:center;color:var(--mut)}
 .board .empty{grid-column:1/-1}
@@ -164,7 +177,8 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .lbox{background:#fff;border-radius:6px;padding:24px;width:min(360px,100%);display:flex;flex-direction:column;gap:12px}
 .lbox label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:.92rem}
 @media(max-width:1100px){#side{display:none}.brand{width:auto}}
-@media(max-width:720px){html{font-size:14px}#top{height:auto;flex-wrap:wrap;padding:0}.brand{padding:8px 12px;flex:1}.top-r{padding-right:12px}.topnav{order:3;flex:1 1 100%;height:48px;border-top:1px solid rgba(255,255,255,.12)}.today{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.td{padding:8px 10px}.td .v{font-size:1.25rem}.td .l{font-size:.72rem}.td:nth-child(n+4){display:none}.ph p{display:none}.topnav a{padding:0 12px;font-size:.95rem}.topnav a .vn{display:none}#side{display:none}main{padding:0 12px 32px}.board{grid-template-columns:minmax(0,1fr);padding:6px}.prow{grid-template-columns:minmax(0,1fr)}.rh{grid-template-columns:52px minmax(0,1fr)}.rh .badge{grid-column:2;justify-self:start}.rm{grid-column:1/-1}.mes span{display:none}#side{top:0}}
+@media(max-width:900px){.rhead{display:none}.rrow{grid-template-columns:52px minmax(0,1fr) auto;grid-template-areas:"no mold st" "no chg chg" "at at who";gap:4px 10px}.c-no{grid-area:no;align-self:start}.c-mold{grid-area:mold}.c-st{grid-area:st}.c-chg{grid-area:chg}.c-at{grid-area:at;font-size:.78rem;color:var(--mut)}.c-at b{display:inline;margin-right:4px}.c-who{grid-area:who;font-size:.8rem;justify-self:end}.c-why{display:none}.pm{grid-template-columns:minmax(0,1fr)}.pm>div:nth-child(2){border-top:1px solid var(--line2)}}
+@media(max-width:720px){html{font-size:14px}#top{height:auto;flex-wrap:wrap;padding:0}.brand{padding:8px 12px;flex:1}.top-r{padding-right:12px}.topnav{order:3;flex:1 1 100%;height:48px;padding:0 4px;border-top:1px solid rgba(255,255,255,.12)}.today{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.td{padding:8px 10px}.td .v{font-size:1.25rem}.td .l{font-size:.72rem}.td:nth-child(n+4){display:none}.ph p{display:none}.topnav a{padding:0 12px;font-size:.95rem}.topnav a .vn{display:none}#side{display:none}main{padding:0 12px 32px}.board{grid-template-columns:minmax(0,1fr);padding:6px}.prow{grid-template-columns:minmax(0,1fr)}.rh{grid-template-columns:52px minmax(0,1fr)}.rh .badge{grid-column:2;justify-self:start}.rm{grid-column:1/-1}.mes span{display:none}#side{top:0}}
 </style>
 </head>
 <body>
@@ -393,7 +407,10 @@ function fillSel(){
 }
 const bc = { 정상:'b-ok', 이상:'b-ng', 미확인:'b-un' };
 function changed(r){ return (r.parameters||[]).filter(p=>p.after!==''&&p.after!=null&&String(p.after)!==String(p.before)); }
-function summary(r){ const c = changed(r); return c.length ? c.slice(0,3).map(p=>`${KN[p.kind]||p.kind}${p.stage?' '+p.stage:''} ${p.before}→<b>${p.after}</b>`).join(', ') + (c.length>3?` 외 ${c.length-3}`:'') : `조건 ${(r.parameters||[]).length}개 기록`; }
+const unit = p => p.unit && p.unit!=='미확인' ? p.unit : '';
+function chips(r){ const c = changed(r);
+  if (!c.length) return `<span class="cg none">조건 ${(r.parameters||[]).length}개 기록 (변경 없음)</span>`;
+  return c.slice(0,4).map(p=>`<span class="cg"><em>${esc(KN[p.kind]||p.kind)}${p.stage?' '+esc(p.stage):''}</em><s>${esc(p.before||'-')}</s>→<b>${esc(p.after)}</b></span>`).join('') + (c.length>4?`<span class="cg more">+${c.length-4}</span>`:''); }
 function renderList(){
   $('lper').innerHTML = [['1','오늘'],['7','7일'],['30','30일'],['all','전체']].map(([v,t])=>`<button class="gchip${lf.p===v?' on':''}" data-p="${v}">${t}</button>`).join(' ');
   const q = $('lq').value.trim(), no = $('lno').value, w = $('lw').value, st = $('ls').value, k = $('lk').value;
@@ -404,17 +421,28 @@ function renderList(){
   $('lkpis').innerHTML = [['조회 기록',r.length,'건'],['사출기',new Set(r.map(x=>x.machine)).size,`/ ${NOS.length}대`],['금형',new Set(r.map(x=>x.mold)).size,'개'],['이상 보고',r.filter(x=>x.status==='이상').length,'건']]
     .map(([l,v,u])=>`<div class="kpi"><div class="l">${l}</div><div class="v">${v}<small>${u}</small></div></div>`).join('');
   $('lcnt').textContent = r.length + '건';
-  $('recs').innerHTML = r.length ? r.slice(0,300).map(x=>`<li><div class="rh" data-open="${esc(x.id)}"><span class="rn">${x.machine}호기</span><span class="rt">${summary(x)}</span><span class="badge ${bc[x.status]||'b-un'}">${esc(x.status||'-')}</span>
-      <span class="rm">${fmt(x._at)} · ${esc(x.technician)} · ${esc(x.mold)} · ${esc(x.product)}${x.reason?' · '+esc(x.reason):''}</span></div>${lf.open===x.id?detail(x):''}</li>`).join('')
+  const wd = ['일','월','화','수','목','금','토'];
+  $('recs').innerHTML = r.length ? `<li class="rrow rhead"><span>일시</span><span>호기</span><span>금형 · 제품</span><span>기사</span><span>바뀐 조건 (전 → 후)</span><span>사유</span><span>상태</span></li>` +
+    r.slice(0,300).map(x=>`<li><div class="rrow${lf.open===x.id?' open':''}" data-open="${esc(x.id)}">
+      <span class="c-at"><b>${x._at.getMonth()+1}/${x._at.getDate()} (${wd[x._at.getDay()]})</b><small>${pad(x._at.getHours())}:${pad(x._at.getMinutes())}</small></span>
+      <span class="c-no">${x.machine}<small>호기</small></span>
+      <span class="c-mold"><b>${esc(x.mold||'-')}</b><small>${esc(x.product||'')}</small></span>
+      <span class="c-who">${esc(x.technician||'-')}</span>
+      <span class="c-chg">${chips(x)}</span>
+      <span class="c-why">${esc(x.reason||'')}</span>
+      <span class="c-st"><span class="badge ${bc[x.status]||'b-un'}">${esc(x.status||'-')}</span></span></div>${lf.open===x.id?detail(x):''}</li>`).join('')
     : '<li class="empty">조건에 맞는 기록이 없습니다 · Không có bản ghi</li>';
 }
 function detail(x){
-  const rows = (x.parameters||[]).map(p=>{ const ch = p.after!==''&&p.after!=null&&String(p.after)!==String(p.before);
-    return `<tr><td>${esc(KN[p.kind]||p.kind)}</td><td>${esc(p.stage)}</td><td>${esc(p.before)}</td><td class="${ch?'chg':''}">${ch?esc(p.after):''}</td><td>${esc(p.unit==='미확인'?'':p.unit)}</td></tr>`; }).join('');
-  const mat = x.material?.materials?.length ? `원재료 ${x.material.materials.map(esc).join(', ')}` : '';
-  return `<div class="rd"><div class="scroll"><table class="ptbl"><tr><th>항목</th><th>단</th><th>변경 전</th><th>변경 후</th><th>단위</th></tr>${rows}</table></div>
-    <p class="note">${[mat, x.notes?'메모: '+esc(x.notes):'', x.operator?'작업자 '+esc(x.operator):''].filter(Boolean).join(' · ')}</p>
-    <a class="btn sm" href="#new" data-copy="${esc(x.id)}">이 조건으로 새 기록</a></div>`;
+  const by = new Map(); (x.parameters||[]).forEach(p=>{ if (!by.has(p.kind)) by.set(p.kind, []); by.get(p.kind).push(p); });
+  const order = KINDS.map(k=>k[0]).concat([...by.keys()].filter(k=>!KN[k]));
+  const rows = order.filter(k=>by.has(k)).map(k=>{ const ps = by.get(k), u = unit(ps[0]);
+    return `<div class="k">${esc(KN[k]||k)}${u?`<small>${esc(u)}</small>`:''}</div><div class="v">${ps.map(p=>{ const ch = p.after!==''&&p.after!=null&&String(p.after)!==String(p.before);
+      return `<span class="sv${ch?' ch':''}"><small>${esc(p.stage||'값')}</small>${ch?`<s>${esc(p.before||'-')}</s><b>${esc(p.after)}</b>`:`<b>${esc(p.before||p.after||'-')}</b>`}</span>`; }).join('')}</div>`; }).join('');
+  const mat = x.material?.materials?.length ? x.material.materials.map(esc).join(', ') : '';
+  return `<div class="rd"><div class="pm">${rows || '<div class="k">조건</div><div class="v">기록된 조건 없음</div>'}</div>
+    <div class="rd-meta">${x.reason?`<span>사유</span><b>${esc(x.reason)}</b>`:''}${mat?`<span>원재료</span><b>${mat}</b>`:''}${x.notes?`<span>메모</span><b>${esc(x.notes)}</b>`:''}${x.operator?`<span>작업자</span><b>${esc(x.operator)}</b>`:''}
+    <a class="btn sm" href="#new" data-copy="${esc(x.id)}" style="margin-left:auto">이 조건으로 새 기록</a></div></div>`;
 }
 
 /* ---------- 기사별 / 금형별 ---------- */
