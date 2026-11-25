@@ -39,3 +39,12 @@ alter table logbook enable row level security;
 create policy "all read logbook" on logbook for select to anon, authenticated using (true);
 create policy "all add logbook" on logbook for insert to anon, authenticated with check (true);
 grant select, insert on public.logbook to anon, authenticated;
+
+-- 렌즈 한도기준 (기존 일지 사이트에서 15건 이전, 사진은 회전 반영 JPEG data URL)
+create table if not exists lens_limits (
+  id text primary key, product text, side text, defect text, status text, date text,
+  data jsonb not null, img text, created_at timestamptz default now(), updated_at timestamptz default now());
+alter table lens_limits enable row level security;
+create policy "all read lens" on lens_limits for select to anon, authenticated using (true);
+create policy "all add lens" on lens_limits for insert to anon, authenticated with check (true);
+grant select, insert on public.lens_limits to anon, authenticated;
