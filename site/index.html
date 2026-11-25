@@ -133,7 +133,7 @@ select,input,textarea{font:inherit;font-size:16px;border:1px solid var(--line);b
       <a href="#new" data-v="new" class="new">+ 기록 등록<span class="vn">Thêm bản ghi</span></a>
     </nav>
     <a href="#" id="adm" class="admin">관리자 로그인</a>
-    <div class="sync">MES 자료 <b id="mesAt">-</b><br>자동 갱신 <b>30초</b></div>
+    <div class="sync">MES 자료 <b id="mesAt">-</b><br>MES 갱신 <b>10분마다</b></div>
   </aside>
   <main>
     <section id="v-machines">
@@ -197,7 +197,7 @@ select,input,textarea{font:inherit;font-size:16px;border:1px solid var(--line);b
 
 <script>
 {
-const CFG = { pollSec: 30, sb: { url: 'https://pauyimvawypicqrqczmp.supabase.co', key: 'sb_publishable_jp_CewOxKLAT1NqWJTHTgQ_QadUCdsP' }, idDomain: 'sungwoo-f3.local' };
+const CFG = { pollSec: 60, sb: { url: 'https://pauyimvawypicqrqczmp.supabase.co', key: 'sb_publishable_jp_CewOxKLAT1NqWJTHTgQ_QadUCdsP' }, idDomain: 'sungwoo-f3.local' };
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad = n => String(n).padStart(2,'0');

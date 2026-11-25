@@ -3,7 +3,7 @@
 폰·PC 어디서나 로그인해서 보는 3공장 사이트. MES 설비 현황(보기 전용) + 사출 조건변경 등록/기록.
 
 ```
-회사 PC (uploader) --30초마다 MES 값만--> Supabase (DB·로그인) <--- 사이트 (Netlify, site/)
+회사 PC (uploader) --10분마다 MES 값만--> Supabase (DB·로그인) <--- 사이트 (Netlify, site/)
        │ 읽기 전용                                              조건변경: 등록만 가능
    MES DB (MS SQL, 사내)                                        MES 값: 보기만 가능
 ```
@@ -21,3 +21,7 @@
 
 ## 계정
 - 로그인 아이디 `0121` = Supabase 사용자 `0121@sungwoo-f3.local`. 신규 가입은 막혀 있음(관리자가 Supabase에서 추가).
+
+## 회사 PC 업로더 (Node 불필요)
+uploader 폴더를 PC에 두고 env.example 을 .env 로 복사해 값 입력 → `powershell -ExecutionPolicy Bypass -File uploader.ps1 -Dry` 로 시험 → install-task.bat 으로 10분마다 자동 실행.
+MES DB 접속정보는 MES 프로그램 안에 암호화돼 있어 IT/SWIT 에서 읽기 전용 계정을 받아야 함.
