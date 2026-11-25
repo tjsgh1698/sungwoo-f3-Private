@@ -1,4 +1,4 @@
-# 3공장 MES → 사이트 업로더 (Node 없이 Windows PowerShell 만으로 동작, 읽기 전용 조회)
+﻿# 3공장 MES → 사이트 업로더 (Node 없이 Windows PowerShell 만으로 동작, 읽기 전용 조회)
 # 같은 폴더의 .env 에서 설정을 읽음 (KEY=값 한 줄씩):
 #   MES_SERVER  MES_PORT  MES_DB  MES_USER  MES_PW   ← IT/SWIT 에서 받은 읽기 전용 계정
 #   MES_PLANT   (3공장 PLANT_CODE)
