@@ -15,24 +15,24 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Ma
 button,input,select,textarea{font:inherit;color:inherit}
 .vn{display:block;font-size:.78em;font-weight:400;color:var(--mut);line-height:1.25}
 /* 위 메뉴 줄 */
-#top{height:var(--top-h);display:flex;align-items:center;background:#fff;border-bottom:1px solid #c4ccd7;box-shadow:inset 0 3px 0 #d3232a;position:sticky;top:0;z-index:6;padding-right:16px}
-.brand{width:var(--side-w);flex:none;display:flex;align-items:center;gap:10px;padding:0 14px;color:var(--ink);text-decoration:none}
-.logo{width:40px;height:40px;border-radius:50%;border:2px solid #d3232a;color:#d3232a;font-weight:800;display:grid;place-items:center;font-size:.95rem;flex:none}
-.brand b{display:block;font-size:.86rem;letter-spacing:.02em;white-space:nowrap}.brand small{font-size:.74rem;color:var(--mut);white-space:nowrap}
+#top{height:var(--top-h);display:flex;align-items:center;background:#10264a;color:#fff;border-bottom:3px solid #d3232a;position:sticky;top:0;z-index:6;padding-right:16px}
+.brand{width:var(--side-w);flex:none;display:flex;align-items:center;gap:10px;padding:0 14px;color:#fff;text-decoration:none}
+.logo{width:40px;height:40px;border-radius:10px;background:#d3232a;color:#fff;font-weight:800;display:grid;place-items:center;font-size:.95rem;flex:none}
+.brand b{display:block;font-size:.86rem;letter-spacing:.02em;white-space:nowrap}.brand small{font-size:.74rem;color:#a9b8d3;white-space:nowrap}
 .topnav{display:flex;align-items:stretch;height:100%;flex:1;overflow:auto;scrollbar-width:none}.topnav::-webkit-scrollbar{display:none}
-.topnav a{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 18px;font-size:1.05rem;font-weight:600;color:var(--ink);text-decoration:none;white-space:nowrap;border-bottom:3px solid transparent;border-top:3px solid transparent;line-height:1.2}
-.topnav a .vn{font-size:.6em}
-.topnav a:hover{color:var(--pri)}.topnav a.on{color:var(--pri);border-bottom-color:var(--pri)}
+.topnav a{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 18px;font-size:1.05rem;font-weight:600;color:#dbe3f0;text-decoration:none;white-space:nowrap;border-bottom:3px solid transparent;border-top:3px solid transparent;line-height:1.2}
+.topnav a .vn{font-size:.6em;color:#8ea2c4}
+.topnav a:hover{color:#fff;background:rgba(255,255,255,.06)}.topnav a.on{color:#fff;border-bottom-color:#ff5a4f;background:rgba(255,255,255,.08)}
 .badge-n{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:var(--bad);color:#fff;font-size:.72rem;line-height:20px;text-align:center;margin-left:4px;vertical-align:2px}
 .top-r{display:flex;align-items:center;gap:8px;flex:none}
-.mes{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 12px;font-size:.82rem;font-weight:700;background:var(--ok-bg);color:var(--ok);white-space:nowrap}
+.mes{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 12px;font-size:.82rem;font-weight:700;background:rgba(52,201,127,.18);color:#6ee7a8;white-space:nowrap}
 .mes i{width:8px;height:8px;border-radius:50%;background:currentColor}
-.mes.off{background:var(--panel);color:var(--mut)}
+.mes.off{background:rgba(255,255,255,.1);color:#a9b8d3}
 /* 왼쪽 빠른 보기 */
 #wrap{display:flex;min-height:calc(100vh - var(--top-h))}
 #side{width:var(--side-w);flex:none;border-right:1px solid var(--line);background:#fff;display:flex;flex-direction:column;position:sticky;top:var(--top-h);height:calc(100vh - var(--top-h));overflow:auto}
-.side-title{background:#10264a;border-bottom:4px solid #d3232a;color:#fff;font-size:1.25rem;font-weight:800;text-align:center;padding:18px 10px;letter-spacing:-.01em}
-.side-title small{display:block;font-size:.7rem;font-weight:400;opacity:.85}
+.side-title{background:#f3f6fb;color:#10264a!important;border-bottom:1px solid var(--line);color:#fff;font-size:1.25rem;font-weight:800;text-align:center;padding:18px 10px;letter-spacing:-.01em}
+.side-title small{display:block;font-size:.7rem;font-weight:400;color:var(--mut)}
 .side-act{padding:14px;border-bottom:1px solid var(--line)}
 .side-act .btn{width:100%;justify-content:center;min-height:46px;font-size:1.05rem}
 .nsec{border-bottom:1px solid var(--line);padding:10px 0}
@@ -69,26 +69,41 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .kpi{padding:10px 14px;border-right:1px solid var(--line)}.kpi:last-child{border-right:0}
 .kpi .l{font-size:.82rem;color:var(--mut)}.kpi .v{font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}.kpi .v small{font-size:.8rem;color:var(--mut);font-weight:500;margin-left:3px}
 /* 사출기 카드 판 */
-.board{background:var(--board);border-radius:6px;padding:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
-.mc{background:#fff;border-radius:4px;display:flex;flex-direction:column;overflow:hidden;border:2px solid var(--c)}
-.mc-h{background:var(--c);color:#fff;display:flex;align-items:center;gap:8px;padding:7px 10px}
-.mc-h .no{font-size:1.35rem;font-weight:800;line-height:1;white-space:nowrap}.mc-h .no small{font-size:.65em;font-weight:600}
-.mc-h .who{flex:1;font-size:.78rem;line-height:1.25;opacity:.95;overflow:hidden}.mc-h .who b{display:block;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mc-h .st{font-weight:700;white-space:nowrap;text-align:right;font-size:.92rem}.mc-h .st small{display:block;font-size:.72rem;font-weight:500}
+.today{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.td{border-radius:10px;padding:12px 14px;background:var(--panel);border:1px solid var(--line2);display:flex;flex-direction:column;gap:2px}
+.td .l{font-size:.8rem;color:var(--mut);font-weight:600}.td .v{font-size:1.7rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}.td .v small{font-size:.8rem;color:var(--mut);font-weight:500;margin-left:3px}
+.td.navy{background:#10264a;border-color:#10264a;color:#fff}.td.navy .l,.td.navy .v small{color:#a9b8d3}
+.td .meter{height:5px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden;margin-top:6px}.td .meter i{display:block;height:100%;background:#34c97f}
+.lane{margin-bottom:18px}
+.lane-h{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid #10264a}
+.lane-h b{font-size:1.1rem;font-weight:800;color:#10264a}.lane-h span{color:var(--mut);font-size:.85rem}
+.lane-h .dots{margin-left:auto;display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}.lane-h .dots i{width:9px;height:9px;border-radius:2px;background:var(--c)}
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.mc{background:#fff;border:1px solid var(--line);border-left:5px solid var(--c);border-radius:8px;display:flex;flex-direction:column;overflow:hidden;transition:box-shadow .15s}
+.mc:hover{box-shadow:0 4px 14px rgba(16,38,74,.12)}
+.mc-h{display:flex;align-items:flex-start;gap:10px;padding:10px 12px 6px}
+.mc-h .no{font-size:1.9rem;font-weight:900;line-height:.95;color:#10264a;letter-spacing:-.03em;white-space:nowrap}.mc-h .no small{font-size:.42em;font-weight:700;color:var(--mut);margin-left:1px}
+.mc-h .who{flex:1;font-size:.8rem;color:var(--mut);line-height:1.3;overflow:hidden}.mc-h .who b{display:block;color:var(--ink);font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 9px;font-size:.78rem;font-weight:700;white-space:nowrap;color:var(--c);background:color-mix(in srgb,var(--c) 12%,#fff)}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+.pill.run i{animation:blink 1.6s infinite}@keyframes blink{50%{opacity:.25}}
 .tag{display:inline-block;border-radius:3px;padding:1px 6px;font-size:.75rem;font-weight:700;background:var(--unk-bg);color:var(--unk);white-space:nowrap}
 .tag.r{background:var(--bad-bg);color:var(--bad)}.tag.g{background:var(--ok-bg);color:var(--ok)}.tag.b{background:var(--pri-bg);color:var(--pri)}
-.mc-b{padding:9px 10px;display:flex;flex-direction:column;gap:7px;font-size:.88rem;flex:1}
+.mc-b{padding:0 12px 10px;display:flex;flex-direction:column;gap:8px;font-size:.88rem;flex:1}
 .pn{font-weight:700;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sub2{color:var(--mut);font-size:.8rem;margin-top:-5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.alert{border:1px solid #f2b8b5;background:var(--bad-bg);color:var(--bad);border-radius:3px;padding:3px 8px;font-size:.82rem;font-weight:600}
-.tbl{width:100%;border-collapse:collapse;font-size:.85rem;font-variant-numeric:tabular-nums}
-.tbl th,.tbl td{border:1px solid var(--line2);padding:3px 6px;text-align:right;white-space:nowrap}
-.tbl th{background:var(--head);color:var(--ink2);font-weight:600;text-align:center}
-.tbl td:first-child{text-align:left;background:var(--panel);color:var(--ink2)}
-.tbl .bad{color:var(--bad);font-weight:700}
-.kv{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px dashed var(--line2);padding-top:6px;font-size:.85rem}
-.kv span{color:var(--mut)}.kv b{font-variant-numeric:tabular-nums;text-align:right}
-.mc-f{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 10px 10px}
+.alert{border-radius:6px;background:var(--bad-bg);color:var(--bad);padding:4px 8px;font-size:.82rem;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.stats div{background:var(--panel);border-radius:6px;padding:5px 6px;text-align:center}
+.stats span{display:block;font-size:.72rem;color:var(--mut)}.stats b{font-size:1rem;font-variant-numeric:tabular-nums}
+.stats .bad b{color:var(--bad)}
+.rate{display:flex;align-items:center;gap:8px;font-size:.82rem}.rate span{color:var(--mut);white-space:nowrap}.rate .bar2{flex:1;height:6px;border-radius:3px;background:var(--line2);overflow:hidden}.rate .bar2 i{display:block;height:100%;background:var(--ok)}.rate .bar2 i.hi{background:var(--bad)}.rate b{font-variant-numeric:tabular-nums}
+.kv{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.84rem}
+.kv span{color:var(--mut);white-space:nowrap}.kv b{font-variant-numeric:tabular-nums;text-align:right;font-weight:600}
+.lastrec{display:flex;align-items:center;gap:8px;border-top:1px dashed var(--line);padding-top:8px;font-size:.82rem}
+.av{width:26px;height:26px;border-radius:50%;background:#10264a;color:#fff;display:grid;place-items:center;font-size:.72rem;font-weight:700;flex:none}
+.av.none{background:var(--unk-bg);color:var(--unk)}
+.lastrec div{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lastrec small{color:var(--mut)}
+.mc-f{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 12px 12px}
 .mc-f .btn{justify-content:center}
 /* 기록 목록 */
 .recs{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:4px;overflow:hidden}
@@ -106,7 +121,7 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .ptbl .chg{color:var(--pri);font-weight:700}
 .scroll{overflow-x:auto}
 .empty{padding:28px;text-align:center;color:var(--mut)}
-.board .empty{grid-column:1/-1;color:#c9d3e0}
+.board .empty{grid-column:1/-1}
 .lh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0}.lh select{width:auto}
 .sels{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:10px}
 .grp{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
@@ -154,7 +169,7 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 </head>
 <body>
 <header id="top">
-  <a class="brand" href="#machines"><div class="logo">SW</div><div><b>SUNG WOO PLATECH</b><small>성우플라텍 <b style="display:inline;color:#d3232a">3공장</b> 사출</small></div></a>
+  <a class="brand" href="#machines"><div class="logo">SW</div><div><b>SUNG WOO PLATECH</b><small>성우플라텍 <b style="display:inline;color:#ff8a80">3공장</b> 사출</small></div></a>
   <nav class="topnav">
     <a href="#machines" data-v="machines">사출기별 현황<span class="vn">Tình trạng máy</span></a>
     <a href="#list" data-v="list">조건변경 기록<span class="vn">Lịch sử thay đổi</span></a>
@@ -178,9 +193,10 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
   <div id="body"><main>
     <section id="v-machines">
       <div class="ph"><div class="ph-t"><h1>사출기별 현황</h1><p>MES 작업(지시·양품·불량·효율)과 마지막 조건 기록을 호기별로 봅니다.</p></div><a class="btn pri" href="#new">+ 기록 등록</a></div>
+      <div class="today" id="today"></div>
       <div class="bar"><span id="mchips" class="chips"></span><span class="grow"></span><span class="stamp">MES 자료 시각 <b id="mesAt2">-</b></span></div>
       <div class="bar"><input class="search" id="mq" placeholder="호기, 금형, 제품 검색 · Tìm máy, khuôn, sản phẩm"><button class="btn" id="refresh">새로고침</button></div>
-      <div class="board" id="cards"></div>
+      <div id="cards"></div>
     </section>
 
     <section id="v-list" hidden>
@@ -326,12 +342,22 @@ function sideCounts(){
   const today = new Date().setHours(0,0,0,0);
   $('sq-l').innerHTML = sq('l-all','전체 기록',R.length) + sq('l-today','오늘 등록',R.filter(r=>r._at>=today).length) + sq('l-un','미확인',R.filter(r=>r.status==='미확인').length,1) + sq('l-ng','이상 보고',R.filter(r=>r.status==='이상').length,1);
 }
+const LANES = [['1라인','1~14호기',n=>n<=14],['2라인','15~28호기',n=>n>=15&&n<=28],['3라인','31~45호기',n=>n>=31]];
 function renderMachines(){
   setMes(); sideCounts();
+  const run = M.filter(m=>m.status==='RUN').length, prod = M.reduce((a,m)=>a+m.prod,0), ng = M.reduce((a,m)=>a+m.ng,0);
+  const today = new Date().setHours(0,0,0,0), tr = R.filter(r=>r._at>=today);
+  $('today').innerHTML = `<div class="td navy"><span class="l">지금 가동</span><span class="v">${run}<small>/ ${NOS.length}대</small></span><span class="meter"><i style="width:${run/NOS.length*100}%"></i></span></div>
+    <div class="td"><span class="l">오늘 양품</span><span class="v">${mesAt?prod.toLocaleString():'-'}<small>EA</small></span></div>
+    <div class="td"><span class="l">불량률</span><span class="v" style="color:${(prod+ng)&&ng/(prod+ng)>=.02?'var(--bad)':'inherit'}">${mesAt&&(prod+ng)?(ng/(prod+ng)*100).toFixed(2):'-'}<small>%</small></span></div>
+    <div class="td"><span class="l">오늘 조건 기록</span><span class="v">${tr.length}<small>건</small></span></div>
+    <div class="td"><span class="l">미확인 · 이상</span><span class="v">${R.filter(r=>r.status==='미확인').length}<small>· <b style="color:var(--bad)">${R.filter(r=>r.status==='이상').length}</b></small></span></div>`;
   $('mchips').innerHTML = FILTERS.map(([k,t])=>`<button class="gchip ${CHIPC[k]||''}${mf===k?' on':''}" data-mf="${k}">${t} ${M.filter(test[k]).length}${k==='all'?'대':''}</button>`).join('');
   const q = $('mq').value.trim().replace(/호기$/,'');
   const list = M.filter(m=>test[mf](m) && (!q || `${m.no} ${m.mold} ${m.part} ${m.worker}`.includes(q)));
-  $('cards').innerHTML = list.length ? list.map(card).join('') : '<div class="empty">조건에 맞는 사출기가 없습니다</div>';
+  $('cards').innerHTML = list.length ? LANES.map(([t,sub,f])=>{ const ms = list.filter(m=>f(m.no)), all = M.filter(m=>f(m.no)); if (!ms.length) return '';
+    return `<section class="lane"><div class="lane-h"><b>${t}</b><span>${sub} · 가동 ${all.filter(m=>m.status==='RUN').length}/${all.length}</span><span class="dots">${all.map(m=>`<i style="--c:var(${(ST[m.status]||ST.STOP)[2]})" title="${m.no}호기 ${(ST[m.status]||ST.STOP)[0]}"></i>`).join('')}</span></div><div class="board">${ms.map(card).join('')}</div></section>`; }).join('')
+    : '<div class="empty">조건에 맞는 사출기가 없습니다</div>';
 }
 function card(m){
   const s = ST[m.status] || ST.STOP, lr = lastRec(m.no, m.mold) || lastRec(m.no), cur = m.mold ? lastRec(m.no, m.mold) : lr;
@@ -340,18 +366,18 @@ function card(m){
   const prod = m.part || lr?.product || '', mold = m.mold || lr?.mold || '';
   const n = R.filter(r=>r.machine===m.no && (!mold || r.mold===mold)).length;
   return `<div class="mc" style="--c:var(${s[2]})">
-    <div class="mc-h"><span class="no">${pad(m.no)}<small>호기</small></span><span class="who"><b>${esc(mold||'금형 정보 없음')}${m.worker?' · '+esc(m.worker):''}</b></span>
-      <span class="st">${s[0]}${m.status!=='RUN'&&m.alarm?`<small>${esc(m.alarm)}${m.since?' '+fmt(new Date(m.since)).split(' ')[1]+'~':''}</small>`:''}</span></div>
+    <div class="mc-h"><span class="no">${m.no}<small>호기</small></span><span class="who"><b>${esc(mold||'금형 정보 없음')}</b>${m.worker?esc(m.worker):has?'':'MES 연결 전'}</span>
+      <span class="pill ${m.status==='RUN'?'run':''}"><i></i>${s[0]}</span></div>
     <div class="mc-b">
-      <div class="pn">${esc(prod||'제품 정보 없음')}</div>
+      <div class="pn" title="${esc(prod)}">${esc(prod||'제품 정보 없음')}</div>
+      ${m.status!=='RUN'&&m.alarm?`<div class="alert" style="background:color-mix(in srgb,var(--c) 10%,#fff);color:var(--c)">${esc(m.alarm)}${m.since?' · '+fmt(new Date(m.since))+'부터':''}</div>`:''}
       ${isBad(m)?`<div class="alert">불량 높음 · 실불량 ${rate.toFixed(1)}%</div>`:''}
-      <div class="scroll"><table class="tbl"><tr><th></th><th>수량</th></tr>
-        <tr><td>지시수량</td><td>${d(m.target.toLocaleString())}</td></tr><tr><td>양품수량</td><td>${d(m.prod.toLocaleString())}</td></tr>
-        <tr><td>불량수량</td><td class="${m.ng?'bad':''}">${d(m.ng.toLocaleString())}</td></tr><tr><td>불량률</td><td class="${isBad(m)?'bad':''}">${d(rate.toFixed(1)+'%')}</td></tr><tr><td>생산효율</td><td>${d(eff+'%')}</td></tr></table></div>
-      <div class="kv"><span>C/T 기준 · 실 (초)</span><b>${has&&m.stdCt?m.stdCt:'-'} · ${has&&m.ct?m.ct:'-'} ${ctd!==null?`<span class="tag ${ctd>5?'':'g'}">${ctd>0?'+':''}${ctd}% ${ctd>0?'느림':'빠름'}</span>`:''}</b></div>
-      <div class="kv"><span>마지막 조건 기록</span><b>${lr?`${fmt(lr._at)} · ${esc(lr.technician)}`:'없음'} ${cur?'':'<span class="tag">현재 금형 기록 없음</span>'}</b></div>
+      <div class="stats"><div><span>지시</span><b>${d(m.target.toLocaleString())}</b></div><div><span>양품</span><b>${d(m.prod.toLocaleString())}</b></div><div class="${m.ng?'bad':''}"><span>불량</span><b>${d(m.ng.toLocaleString())}</b></div><div><span>효율</span><b>${d(eff+'%')}</b></div></div>
+      <div class="rate"><span>불량률</span><span class="bar2"><i class="${isBad(m)?'hi':''}" style="width:${has?Math.min(100,rate*10):0}%"></i></span><b class="${isBad(m)?'red':''}" style="${isBad(m)?'color:var(--bad)':''}">${d(rate.toFixed(1)+'%')}</b></div>
+      <div class="kv"><span>C/T 기준 · 실</span><b>${has&&m.stdCt?m.stdCt+'s':'-'} · ${has&&m.ct?m.ct+'s':'-'} ${ctd!==null?`<span class="tag ${ctd>5?'':'g'}">${ctd>0?'+':''}${ctd}%</span>`:''}</b></div>
+      <div class="lastrec">${lr?`<span class="av">${esc((lr.technician||'?').slice(0,2))}</span><div><b>${esc(lr.reason||lr.status||'조건 기록')}</b><br><small>${fmt(lr._at)} · ${esc(lr.technician)}</small></div>`:'<span class="av none">!</span><div><small>조건 기록 없음</small></div>'}${lr&&!cur?'<span class="tag">현재 금형 기록 없음</span>':''}</div>
     </div>
-    <div class="mc-f"><a class="btn sm" href="#list" data-go-no="${m.no}">기록 ${n}건 보기</a><a class="btn sm pri" href="#new" data-new-no="${m.no}">+ 등록</a></div>
+    <div class="mc-f"><a class="btn sm" href="#list" data-go-no="${m.no}">기록 ${n}건</a><a class="btn sm pri" href="#new" data-new-no="${m.no}">+ 조건 등록</a></div>
   </div>`;
 }
 
