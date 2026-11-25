@@ -22,3 +22,8 @@ create policy "add changes" on condition_changes for insert to authenticated wit
 create policy "anon read live" on machines_live for select to anon using (true);
 create policy "anon read changes" on condition_changes for select to anon using (true);
 create policy "anon add changes" on condition_changes for insert to anon with check (true);
+-- 새 Supabase 프로젝트는 테이블 권한이 자동으로 안 붙음
+grant select on public.machines_live to anon, authenticated;
+grant select, insert on public.condition_changes to anon, authenticated;
+grant usage, select on sequence public.condition_changes_id_seq to anon, authenticated;
+grant select, insert, update on public.machines_live to service_role;

@@ -192,7 +192,7 @@ select,input,textarea{font:inherit;font-size:16px;border:1px solid var(--line);b
           <input class="search" id="q" placeholder="호기, 품명, 금형 검색 · Tìm máy, sản phẩm" aria-label="검색">
         </div>
         <div class="floor" id="floor"></div>
-        <p class="note">현재 화면은 목업 데이터입니다. MES 연결 후 같은 화면에 실제 값이 들어갑니다. 파란 점은 오늘 사출 일지에 조건변경이 등록된 설비입니다.</p>
+        <p class="note">MES 값은 회사 PC에서 30초마다 올라옵니다. 파란 점은 오늘 사출 일지에 조건변경이 등록된 설비입니다.</p>
       </section>
       <div class="side">
         <div class="card">
@@ -344,6 +344,9 @@ async function sbLoad(){
   const [ms, ch] = await Promise.all([ sb('machines_live?select=*&order=no'), sb(`condition_changes?select=*&created_at=gte.${since}&order=created_at.desc&limit=2000`) ]);
   const machines = ms.map(m => { const h = (prevCt.get(m.no) || []).concat(+m.ct).slice(-24); prevCt.set(m.no, h);
     return { ...m, stdCt:+m.std_ct, ct:+m.ct, since:new Date(m.since || m.updated_at).getTime(), cts:h }; });
+  const have = new Set(machines.map(m=>m.no));
+  NOS.filter(n=>!have.has(n)).forEach(no=>machines.push({ no, status:'STOP', part:'MES 연결 대기', mold:'-', cav:1, stdCt:0, ct:0, target:0, prod:0, ng:0, worker:'', alarm:'', since:Date.now(), cts:[] }));
+  machines.sort((a,b)=>a.no-b.no);
   const at = ms.reduce((a,m)=>m.updated_at > a ? m.updated_at : a, '');
   return { machines, source: at ? `MES · ${hms(new Date(at))} 기준` : 'MES 대기 중',
     changes: ch.map(c => ({ ...c, from:+c.from_v, to:+c.to_v, at:new Date(c.created_at) })) };
@@ -382,7 +385,7 @@ function kpis(){
   const ctOk = ms.filter(m=>m.status==='RUN' && m.ct <= m.stdCt*1.05).length;
   const k = [
     ['가동 설비', `${run}<small>/ ${n}대</small>`, `가동률 ${Math.round(run/n*100)}%`, run/n],
-    ['생산 실적', `${prod.toLocaleString()}<small>EA</small>`, `목표 ${tgt.toLocaleString()} 대비 ${Math.round(prod/tgt*100)}%`, prod/tgt],
+    ['생산 실적', `${prod.toLocaleString()}<small>EA</small>`, `목표 ${tgt.toLocaleString()} 대비 ${tgt?Math.round(prod/tgt*100):0}%`, tgt?prod/tgt:0],
     ['불량률', `${(ng/Math.max(prod,1)*100).toFixed(2)}<small>%</small>`, `불량 ${ng.toLocaleString()} EA`, null],
     ['알람', `${by('ALARM')}<small>대</small>`, `금형교체 ${by('MOLD')} · 비가동 ${by('STOP')+by('PLAN')}`, null],
     ['사이클 정상', `${ctOk}<small>/ ${run}대</small>`, '표준 CT +5% 이내', run ? ctOk/run : 0]
