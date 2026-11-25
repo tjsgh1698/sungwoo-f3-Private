@@ -27,3 +27,15 @@ grant select on public.machines_live to anon, authenticated;
 grant select, insert on public.condition_changes to anon, authenticated;
 grant usage, select on sequence public.condition_changes_id_seq to anon, authenticated;
 grant select, insert, update on public.machines_live to service_role;
+
+-- 사출 조건 일지 (기존 일지 사이트 기록 형식 그대로 data에 보관)
+create table if not exists logbook (
+  id text primary key default gen_random_uuid()::text,
+  machine int, mold text, product text, technician text, status text, reason text,
+  recorded_at timestamptz, created_at timestamptz default now(), updated_at timestamptz default now(),
+  data jsonb not null);
+create index if not exists logbook_recorded on logbook (recorded_at desc);
+alter table logbook enable row level security;
+create policy "all read logbook" on logbook for select to anon, authenticated using (true);
+create policy "all add logbook" on logbook for insert to anon, authenticated with check (true);
+grant select, insert on public.logbook to anon, authenticated;
