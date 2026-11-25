@@ -1,0 +1,1 @@
+{ "name": "f3-uploader", "private": true, "main": "uploader.js", "scripts": { "start": "node uploader.js" }, "dependencies": { "mssql": "^11.0.1" } }

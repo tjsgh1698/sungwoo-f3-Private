@@ -1,0 +1,566 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#10264a"></head><body>
+<title>3공장 사출 관제</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Be+Vietnam+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE work: 현장 관제판, 조용하고 정확하게
+   IDEA 3공장 바닥 배치도. 사출기 43대가 라인별로 놓인 실제 평면처럼 보이는 판
+   PICTURE 상태색 타일로 된 설비 배치도(1~3라인), 각 타일에 진행률과 사이클
+   COLOUR 흰 바탕, 성우 네이비 사이드바, 성우 블루 강조, 상태색(초록 가동, 빨강 알람, 호박 금형교체, 회색 정지)
+   TYPE Noto Sans KR 900 제목 + Noto Sans KR 본문, 베트남어 보조 Be Vietnam Pro
+   LAYOUT 노트북: 사이드바 | 요약 수치 + 배치도 | 조건변경 피드. 폰: 상단바, 수치, 배치도, 피드 순 */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0b1322);--panel:light-dark(#f6f8fb,#111c30);--line:light-dark(#e3e8ef,#22304a);--ink:light-dark(#0f1b2d,#e8eef8);--mute:light-dark(#5b6878,#93a1b8);--navy:#10264a;--navy2:#1a3563;--blue:light-dark(#1f5fe0,#5b8cff);--blue-t:light-dark(#e8f0ff,#16264a);--run:light-dark(#139c5a,#34c97f);--run-t:light-dark(#e6f6ee,#0f2a1f);--alarm:light-dark(#d92d3a,#ff5c66);--alarm-t:light-dark(#fdecee,#3a1418);--mold:light-dark(#c77c00,#f0a830);--mold-t:light-dark(#fff4dd,#33270e);--stop:light-dark(#7a8696,#7f8ca3);--stop-t:light-dark(#eef1f5,#1a2436);--plan:light-dark(#6a5acd,#9b8cff);--plan-t:light-dark(#efedfc,#211d3d)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Noto Sans KR","Be Vietnam Pro",system-ui,sans-serif;overflow-x:clip}
+.vn{font-family:"Be Vietnam Pro","Noto Sans KR",sans-serif;color:var(--mute);font-size:12px;font-weight:400}
+.app{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100%}
+aside{background:var(--navy);color:#dfe7f5;padding:20px 14px;padding-left:max(14px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:18px}
+.brand{display:flex;gap:10px;align-items:center}
+.logo{width:38px;height:38px;border-radius:9px;background:#e1251b;color:#fff;font:900 16px "Noto Sans KR";display:grid;place-items:center}
+.brand b{display:block;font-size:16px;color:#fff}
+.brand small{font-size:10.5px;letter-spacing:.06em;color:#9fb0cc}
+.plant{border-top:1px solid #24406e;padding-top:14px;font-weight:700;color:#fff}
+.plant .vn{color:#9fb0cc;display:block}
+nav{display:flex;flex-direction:column;gap:4px}
+nav a{display:block;padding:10px 12px;border-radius:9px;color:#cbd6ea;text-decoration:none;font-weight:500;font-size:14px}
+nav a .vn{display:block;color:#8ea2c4;font-size:11px}
+nav a.on{background:var(--navy2);color:#fff;box-shadow:inset 3px 0 0 #5b8cff}
+nav a:hover{background:#17305a}
+.sync{margin-top:auto;font-size:12px;color:#9fb0cc;border-top:1px solid #24406e;padding-top:12px}
+.sync b{color:#fff;font-weight:500}
+main{padding-block:22px 40px;padding-left:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px))}
+.top{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end;justify-content:space-between}
+.crumb{font-size:12.5px;color:var(--mute)}
+h1{margin:4px 0 0;font-size:clamp(28px,3.2vw,40px);font-weight:900;letter-spacing:-.02em;line-height:1.1}
+h1 .vn{display:block;font-size:13px;letter-spacing:0;margin-top:4px}
+.ctrl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 8px;font-size:13px;background:var(--bg)}
+.ring{width:26px;height:26px}
+.ring circle{fill:none;stroke-width:3}
+.btn{font:inherit;font-size:13.5px;font-weight:700;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:9px 14px;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;margin:22px 0 18px;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.kpi{padding:14px 18px;border-right:1px solid var(--line)}
+.kpi:last-child{border-right:0}
+.kpi .l{font-size:13px;color:var(--mute);font-weight:500}
+.kpi .v{font-size:30px;font-weight:900;letter-spacing:-.02em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:14px;font-weight:500;color:var(--mute);margin-left:3px}
+.kpi .d{font-size:12px;color:var(--mute)}
+.bar{height:5px;background:var(--line);border-radius:3px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--blue);border-radius:3px;transition:width .6s}
+.body{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.chip{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer;display:flex;gap:6px;align-items:center;min-height:34px}
+.chip.on{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.search{flex:1 1 200px;font:inherit;font-size:16px;border:1px solid var(--line);border-radius:10px;padding:7px 12px;background:var(--bg);color:var(--ink);min-height:38px}
+.floor{border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:14px;display:flex;flex-direction:column;gap:14px}
+.lane-h{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:700;margin:0 2px 8px}
+.lane-h span{color:var(--mute);font-weight:400}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.m{position:relative;text-align:left;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:9px 10px 10px;cursor:pointer;display:flex;flex-direction:column;gap:2px;border-top:4px solid var(--c);transition:transform .15s}
+.m:hover{transform:translateY(-2px);border-color:var(--c)}
+.m:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.m.fade{opacity:.28}
+.m .no{display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:17px;letter-spacing:-.01em}
+.m .st{font-size:11px;font-weight:700;color:var(--c);background:var(--t);border-radius:5px;padding:1px 6px}
+.m .pn{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m .ct{font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums;display:flex;justify-content:space-between}
+.m .ct b{color:var(--ink);font-weight:500}
+.m .mo{font-size:12px;color:var(--mute);display:flex;justify-content:space-between;gap:6px;font-variant-numeric:tabular-nums}
+.m .mo span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m .mo .ngx{color:var(--alarm);font-weight:700}
+.m .pb{height:4px;border-radius:2px;background:var(--line);overflow:hidden;margin-top:4px}
+.m .pb i{display:block;height:100%;background:var(--c)}
+.m .chg{position:absolute;top:8px;right:-5px;width:10px;height:10px;border-radius:50%;background:var(--blue);border:2px solid var(--bg)}
+.m.alarm{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 4px var(--alarm-t)}}
+@media(prefers-reduced-motion:reduce){.m.alarm{animation:none}.m{transition:none}}
+.side{display:flex;flex-direction:column;gap:16px}
+.card{border:1px solid var(--line);border-radius:14px;padding:14px}
+.card h2{font-size:15px;margin:0 0 2px;font-weight:900}
+.card h2+.vn{display:block;margin-bottom:10px}
+.feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.feed li{padding:9px 0;border-top:1px solid var(--line);font-size:13px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;cursor:pointer}
+.feed li:first-child{border-top:0}
+.feed .tag{font-weight:900;font-size:13px;white-space:nowrap}
+.feed .meta{grid-column:2;color:var(--mute);font-size:12px}
+.feed .val{font-variant-numeric:tabular-nums;white-space:nowrap}
+.feed .val s{color:var(--mute)}
+.src{font-size:11.5px;color:var(--mute);margin-top:8px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--mute)}
+.legend span{display:flex;gap:6px;align-items:center}
+.note{font-size:12px;color:var(--mute);margin-top:14px}
+dialog{border:0;padding:0;margin:0 0 0 auto;height:100%;max-height:100%;width:min(460px,100%);background:var(--bg);color:var(--ink);box-shadow:-12px 0 40px rgba(0,0,0,.18)}
+dialog::backdrop{background:rgba(8,18,36,.38)}
+.dw{padding:22px 22px 30px;padding-right:max(22px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+.dw-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.dw-h h3{margin:0;font-size:30px;font-weight:900;letter-spacing:-.02em;line-height:1.1}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.facts div{background:var(--bg);padding:9px 12px}
+.facts dt{font-size:12px;color:var(--mute)}
+.facts dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}
+.spark{position:relative;height:120px;border:1px solid var(--line);border-radius:12px}
+.spark svg{position:absolute;inset:0;width:100%;height:100%}
+.spark svg text{font-size:11px;fill:var(--mute);paint-order:stroke;stroke:var(--bg);stroke-width:4px}
+.sub{font-size:14px;font-weight:900;margin:0}
+a.btn{text-decoration:none;display:inline-flex;align-items:center}
+.filt{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.filt .tools{margin:0}
+.filt .search{flex:none}
+.sels{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+select,input,textarea{font:inherit;font-size:16px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);color:var(--ink);min-height:40px;width:100%}
+.lh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.lh select{width:auto}
+.recs{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.recs li{display:grid;grid-template-columns:78px minmax(0,1fr) auto;gap:4px 14px;padding:12px 16px;border-top:1px solid var(--line);align-items:center}
+.recs li:first-child{border-top:0}
+.recs .rn{font-weight:900;font-size:18px}
+.recs .rv{font-variant-numeric:tabular-nums}
+.recs .rv s{color:var(--mute)}
+.recs .up{color:var(--alarm)}.recs .dn{color:var(--blue)}
+.recs .rm{grid-column:2/4;font-size:12.5px;color:var(--mute)}
+.badge{font-size:12px;font-weight:700;border-radius:6px;padding:2px 8px;white-space:nowrap}
+.b-ok{color:var(--run);background:var(--run-t)}.b-ng{color:var(--alarm);background:var(--alarm-t)}.b-un{color:var(--mold);background:var(--mold-t)}
+.empty{padding:28px;text-align:center;color:var(--mute)}
+.form{max-width:760px;display:flex;flex-direction:column;gap:14px;margin-top:18px}
+.form label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:14px}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.mesbox{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:12px 14px;font-size:13.5px;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px 14px}
+.mesbox b{display:block;font-size:15px}
+.mesbox .h{grid-column:1/-1;font-weight:700;color:var(--blue);font-size:12.5px}
+.frow{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) 44px;gap:8px;margin-bottom:8px;align-items:center}
+.frow .x{min-height:40px;padding:0}
+[hidden]{display:none!important}
+.login{position:fixed;inset:0;z-index:50;background:var(--navy);display:grid;place-items:center;padding:16px}
+.lbox{background:var(--bg);border-radius:16px;padding:26px;width:min(380px,100%);display:flex;flex-direction:column;gap:12px}
+.lbox .brand b{color:var(--ink)}.lbox .brand small{color:var(--mute)}
+.lbox h2{margin:6px 0 0;font-size:24px;font-weight:900}.lbox h2 .vn{display:block}
+.lbox label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:14px}
+.tv aside{display:none}
+.tv .app{grid-template-columns:minmax(0,1fr)}
+.tv .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.tv .m .no{font-size:22px}
+@media(max-width:1100px){.body{grid-template-columns:minmax(0,1fr)}.side{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}}
+@media(max-width:600px){.fgrid{grid-template-columns:minmax(0,1fr)}.frow{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 44px}.frow select{grid-column:1/-1}.recs li{grid-template-columns:60px minmax(0,1fr)}.recs .badge{grid-column:2;justify-self:start}.recs .rm{grid-column:1/-1}}
+@media(max-width:760px){.app{grid-template-columns:minmax(0,1fr)}aside{flex-direction:row;flex-wrap:wrap;align-items:center;padding:12px 16px;gap:10px}aside .plant,aside .sync{display:none}nav{flex-direction:row;overflow-x:auto;flex:1 1 100%}nav a{white-space:nowrap;padding:7px 10px}nav a .vn{display:none}main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}.grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}.kpi{border-bottom:1px solid var(--line)}}
+</style>
+
+<div class="app" id="app">
+  <aside>
+    <div class="brand"><div class="logo">SW</div><div><b>성우플라텍</b><small>SEONGWOO PLATECH</small></div></div>
+    <div class="plant">3공장 · 사출팀<span class="vn">Xưởng 3 · Tổ ép nhựa</span></div>
+    <nav>
+      <a href="#machines" data-v="machines">설비 현황<span class="vn">Tình trạng máy</span></a>
+      <a href="#log" data-v="log">조건변경 기록<span class="vn">Lịch sử thay đổi thông số</span></a>
+      <a href="#new" data-v="new">기록 등록<span class="vn">Thêm bản ghi</span></a>
+    </nav>
+    <div class="sync">MES 연동 <b id="srcName">목업 데이터</b><br>갱신 주기 <b id="ivl">30초</b></div>
+  </aside>
+
+  <main>
+  <section id="v-machines">
+    <div class="top">
+      <div>
+        <div class="crumb">3공장 › 설비 현황</div>
+        <h1>3공장 설비 현황<span class="vn">Bảng giám sát máy ép · Xưởng 3</span></h1>
+      </div>
+      <div class="ctrl">
+        <div class="pill" title="다음 자동 갱신까지 남은 시간">
+          <svg class="ring" viewBox="0 0 26 26"><circle cx="13" cy="13" r="10" stroke="var(--line)"/><circle id="ringFg" cx="13" cy="13" r="10" stroke="var(--blue)" stroke-dasharray="62.8" stroke-dashoffset="0" transform="rotate(-90 13 13)" stroke-linecap="round"/></svg>
+          <span>마지막 갱신 <b id="lastAt">--:--:--</b></span>
+        </div>
+        <button class="btn" id="refresh">지금 새로고침</button>
+        <button class="btn" id="tvBtn">현장 모니터 모드</button>
+      </div>
+    </div>
+
+    <section class="kpis" id="kpis"></section>
+
+    <div class="body">
+      <section>
+        <div class="tools" id="tools">
+          <input class="search" id="q" placeholder="호기, 품명, 금형 검색 · Tìm máy, sản phẩm" aria-label="검색">
+        </div>
+        <div class="floor" id="floor"></div>
+        <p class="note">현재 화면은 목업 데이터입니다. MES 연결 후 같은 화면에 실제 값이 들어갑니다. 파란 점은 오늘 사출 일지에 조건변경이 등록된 설비입니다.</p>
+      </section>
+      <div class="side">
+        <div class="card">
+          <h2>알람 · 정지 설비</h2><span class="vn">Máy cảnh báo · dừng</span>
+          <ul class="feed" id="alarms"></ul>
+        </div>
+        <div class="card">
+          <h2>오늘 조건변경</h2><span class="vn">Thay đổi thông số hôm nay</span>
+          <ul class="feed" id="changes"></ul>
+          <div class="src">사출 일지(모바일) 등록분 연동</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="v-log" hidden>
+    <div class="top">
+      <div><div class="crumb">3공장 › 조건변경 기록</div><h1>사출 조건변경 관리판<span class="vn">Bảng quản lý thông số ép nhựa</span></h1></div>
+      <div class="ctrl"><a class="btn pri" href="#new">+ 기록 등록</a></div>
+    </div>
+    <section class="kpis" id="lkpis"></section>
+    <div class="card filt">
+      <input class="search" id="lq" placeholder="검색 · Tìm khuôn, sản phẩm, nhân viên" aria-label="기록 검색">
+      <div class="tools" id="lper"></div>
+      <div class="sels">
+        <select id="lno" aria-label="사출기"></select><select id="lw" aria-label="기사"></select>
+        <select id="ls" aria-label="상태"></select><select id="lp" aria-label="조건항목"></select>
+      </div>
+    </div>
+    <div class="lh"><b>변경 기록 <span class="vn">Lịch sử thay đổi</span> <span id="lcnt"></span></b>
+      <select id="lsort" aria-label="정렬"><option value="new">최신 일시순</option><option value="old">오래된 일시순</option><option value="no">사출기 번호순</option></select></div>
+    <ul class="recs" id="recs"></ul>
+    <p class="note">등록 일시는 한국시간(KST) 기준입니다. 기록은 작업자가 보고한 값이며, 등록 순간의 MES 제품·금형 정보가 함께 저장됩니다.</p>
+  </section>
+
+  <section id="v-new" hidden>
+    <div class="top"><div><div class="crumb">3공장 › 기록 등록</div><h1>조건변경 등록<span class="vn">Thêm bản ghi thay đổi thông số</span></h1></div></div>
+    <form id="fm" class="form" autocomplete="off">
+      <div class="fgrid">
+        <label>사출기 <span class="vn">Máy ép</span><select id="fno" required></select></label>
+        <label>기사 <span class="vn">Kỹ thuật viên</span><select id="fw" required></select></label>
+      </div>
+      <div class="mesbox" id="fmes"></div>
+      <div class="sub">변경 항목 <span class="vn">Thông số thay đổi</span></div>
+      <div id="frows"></div>
+      <button type="button" class="btn" id="fadd">+ 항목 추가</button>
+      <label>변경 사유 <span class="vn">Lý do</span><input id="fr" required list="reasons" placeholder="예: 미성형 개선"></label>
+      <datalist id="reasons"></datalist>
+      <div><div class="sub">상태 <span class="vn">Trạng thái</span></div><div class="tools" id="fst"></div></div>
+      <label>메모 <span class="vn">Ghi chú</span><textarea id="fmemo" rows="2"></textarea></label>
+      <div class="ctrl"><button class="btn pri" type="submit">등록하기 · Lưu</button><a class="btn" href="#log">취소</a></div>
+      <p class="note" id="fmsg"></p>
+    </form>
+  </section>
+  </main>
+</div>
+
+<div class="login" id="login" hidden>
+  <form id="lf" class="lbox">
+    <div class="brand"><div class="logo">SW</div><div><b>성우플라텍 3공장</b><small>SEONGWOO PLATECH</small></div></div>
+    <h2>사출 관제 로그인<span class="vn">Đăng nhập</span></h2>
+    <label>아이디 · ID<input id="lid" required autocomplete="username"></label>
+    <label>비밀번호 · Mật khẩu<input id="lpw" type="password" required autocomplete="current-password"></label>
+    <button class="btn pri" type="submit">로그인</button>
+    <p class="note" id="lmsg"></p>
+  </form>
+</div>
+<dialog id="dlg"><div class="dw" id="dw"></div></dialog>
+
+<script>
+{
+// 배포 설정: Supabase 주소와 공개(anon) 키를 넣으면 실제 데이터 + 로그인 사용. 비워 두면 목업으로 동작.
+const CFG = { pollSec: 30, api: null, sb: { url: 'https://pauyimvawypicqrqczmp.supabase.co', key: 'sb_publishable_jp_CewOxKLAT1NqWJTHTgQ_QadUCdsP' }, idDomain: 'sungwoo-f3.local' };
+const ST = {
+  RUN:{k:'가동',v:'Chạy',c:'--run'}, ALARM:{k:'알람',v:'Cảnh báo',c:'--alarm'},
+  MOLD:{k:'금형교체',v:'Thay khuôn',c:'--mold'}, STOP:{k:'비가동',v:'Dừng',c:'--stop'}, PLAN:{k:'계획정지',v:'Dừng KH',c:'--plan'}
+};
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+const hms = d => `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+
+/* ---------- 목업 데이터 (MES 연결 전 화면 확인용) ---------- */
+let seed = 20261125;
+const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+const pick = a => a[Math.floor(rnd() * a.length)];
+const NOS = [...Array(28)].map((_,i)=>i+1).concat([...Array(15)].map((_,i)=>i+31));
+const PARTS = ['도어트림 LH','도어트림 RH','콘솔 커버','에어벤트 하우징','글러브박스 도어','필러 트림 A','컵홀더 베젤','스위치 패널','시트백 커버','크래쉬패드 덕트','스피커 그릴','러기지 트림','미러 커버','휠하우스 커버','라디에이터 그릴'];
+const WORKERS = ['빙','티옌','최관일','롱','이용','후이','칸','토안','두안','황선호'];
+const REASONS = ['미성형 개선','버 발생','치수 보정','싱크마크','웰드라인 개선','사이클 단축','가스 자국','변형 개선'];
+const PARAMS = [['보압압력','bar'],['보압시간','s'],['사출속도','mm/s'],['사출압력','bar'],['사출위치','mm'],['계량위치','mm'],['계량속도','rpm'],['계량배압','bar'],['보압전환위치','mm'],['온수기 온도','℃'],['핫러너 온도','℃'],['냉각시간','s'],['작동유 온도','℃'],['실린더 온도','℃']];
+function mockInit(){
+  return NOS.map(no => {
+    const ton = no <= 14 ? pick([150,180,220]) : no <= 28 ? pick([280,350,450]) : pick([550,650,850]);
+    const stdCt = +(ton/12 + 18 + rnd()*12).toFixed(1);
+    const r = rnd(), status = r < .74 ? 'RUN' : r < .82 ? 'ALARM' : r < .88 ? 'MOLD' : r < .95 ? 'STOP' : 'PLAN';
+    const target = Math.round(3600*20/stdCt/10)*10 * (rnd() < .5 ? 2 : 1);
+    const prod = status === 'PLAN' ? 0 : Math.round(target * (.25 + rnd()*.5));
+    return { no, ton, status, part: pick(PARTS), mold: `M-${no<10?'0':''}${no}${pick(['A','B','C'])}-${100+Math.floor(rnd()*80)}`,
+      cav: pick([1,1,2,2,4]), stdCt, ct: +(stdCt * (.97 + rnd()*.08)).toFixed(1), target, prod,
+      ng: Math.round(prod * rnd() * .02), runMin: Math.round(300 + rnd()*200), worker: pick(WORKERS),
+      alarm: status === 'ALARM' ? pick(['금형온도 상한','사이클 지연','이젝터 이상','취출로봇 대기','쇼트 감지']) : '',
+      since: Date.now() - Math.round(rnd()*90)*60000, cts: [] };
+  });
+}
+function mockChanges(ms){
+  const now = new Date(), out = [];
+  for (let i=0;i<34;i++){
+    const m = pick(ms), [p,u] = pick(PARAMS), a = Math.round(40 + rnd()*80), b = a + (rnd()<.5?-1:1)*Math.ceil(rnd()*6), r = rnd();
+    const at = i < 8 ? new Date(now - i*31*60000 - rnd()*15*60000) : new Date(now - (1 + rnd()*6)*86400000);
+    out.push({ id:i+1, no:m.no, param:p, unit:u, from:a, to:b, worker:pick(WORKERS), at, part:m.part, mold:m.mold,
+      status: r<.78?'정상':r<.9?'이상':'미확인', memo:'', reason: pick(REASONS) });
+  }
+  return out;
+}
+let mock = mockInit(), mockChg = mockChanges(mock);
+function mockTick(sec){
+  for (const m of mock){
+    m.cts.push(m.ct); if (m.cts.length > 24) m.cts.shift();
+    if (m.status === 'RUN'){ m.prod += Math.round(sec / m.ct * m.cav); if (rnd()<.15) m.ng++; m.ct = +(m.stdCt*(.96+rnd()*.1)).toFixed(1); }
+    const r = rnd();
+    if (m.status==='RUN' && r<.015){ m.status='ALARM'; m.alarm=pick(['금형온도 상한','사이클 지연','이젝터 이상','쇼트 감지']); m.since=Date.now(); }
+    else if (m.status==='ALARM' && r<.25){ m.status='RUN'; m.alarm=''; m.since=Date.now(); }
+    else if (m.status==='MOLD' && r<.08){ m.status='RUN'; m.since=Date.now(); }
+  }
+}
+for (let i=0;i<24;i++) mockTick(0);
+
+/* ---------- 데이터 가져오기: 목업 또는 사내 서버 API ---------- */
+/* ---------- Supabase (외부 사이트) ---------- */
+const SB = !!(CFG.sb.url && CFG.sb.key);
+let auth = null;
+try { auth = JSON.parse(localStorage.getItem('f3auth') || 'null'); } catch {}
+const saveAuth = a => { auth = a; try { a ? localStorage.setItem('f3auth', JSON.stringify(a)) : localStorage.removeItem('f3auth'); } catch {} };
+async function sbAuth(body, grant){
+  const r = await fetch(`${CFG.sb.url}/auth/v1/token?grant_type=${grant}`, { method:'POST', headers:{ apikey:CFG.sb.key, 'content-type':'application/json' }, body:JSON.stringify(body) });
+  if (!r.ok) throw new Error('auth'); const j = await r.json();
+  saveAuth({ at:j.access_token, rt:j.refresh_token, exp:Date.now() + j.expires_in*1000 - 60000, user:body.email });
+}
+async function sb(path, opt = {}){
+  if (auth && Date.now() > auth.exp) await sbAuth({ refresh_token:auth.rt }, 'refresh_token').catch(()=>{ saveAuth(null); });
+  if (!auth){ showLogin(); throw new Error('login'); }
+  const r = await fetch(`${CFG.sb.url}/rest/v1/${path}`, { ...opt, headers:{ apikey:CFG.sb.key, Authorization:`Bearer ${auth.at}`, 'content-type':'application/json', ...(opt.headers||{}) } });
+  if (r.status === 401){ saveAuth(null); showLogin(); throw new Error('login'); }
+  if (!r.ok) throw new Error('db'); return r.status === 204 ? null : r.json();
+}
+const prevCt = new Map();
+async function sbLoad(){
+  const since = new Date(Date.now() - 31*86400000).toISOString();
+  const [ms, ch] = await Promise.all([ sb('machines_live?select=*&order=no'), sb(`condition_changes?select=*&created_at=gte.${since}&order=created_at.desc&limit=2000`) ]);
+  const machines = ms.map(m => { const h = (prevCt.get(m.no) || []).concat(+m.ct).slice(-24); prevCt.set(m.no, h);
+    return { ...m, stdCt:+m.std_ct, ct:+m.ct, since:new Date(m.since || m.updated_at).getTime(), cts:h }; });
+  const at = ms.reduce((a,m)=>m.updated_at > a ? m.updated_at : a, '');
+  return { machines, source: at ? `MES · ${hms(new Date(at))} 기준` : 'MES 대기 중',
+    changes: ch.map(c => ({ ...c, from:+c.from_v, to:+c.to_v, at:new Date(c.created_at) })) };
+}
+function showLogin(){ document.getElementById('login').hidden = false; }
+document.getElementById('lf').addEventListener('submit', async e => {
+  e.preventDefault(); $('lmsg').textContent = '';
+  const id = $('lid').value.trim(), email = id.includes('@') ? id : `${id}@${CFG.idDomain}`;
+  try { await sbAuth({ email, password:$('lpw').value }, 'password'); $('lpw').value=''; $('login').hidden = true; await refresh(); route(); }
+  catch { $('lmsg').textContent = '아이디 또는 비밀번호가 맞지 않습니다 · Sai ID hoặc mật khẩu'; }
+});
+
+async function load(){
+  if (SB) return sbLoad();
+  if (CFG.api){
+    const [a,b] = await Promise.all([fetch(CFG.api+'/machines').then(r=>r.json()), fetch(CFG.api+'/changes').then(r=>r.json())]);
+    return { machines:a.machines, changes:b.changes.map(c=>({...c, at:new Date(c.at)})), source:a.source || 'MES' };
+  }
+  mockTick(CFG.pollSec);
+  return { machines: mock, changes: mockChg, source:'목업 데이터' };
+}
+
+/* ---------- 화면 ---------- */
+const isToday = d => d.toDateString() === new Date().toDateString();
+const todayCh = () => data.changes.filter(c=>isToday(c.at));
+let data = { machines:[], changes:[] }, filter = 'ALL', q = '', left = CFG.pollSec;
+const $ = id => document.getElementById(id);
+const LANES = [['1라인','150~220톤',n=>n<=14],['2라인','280~450톤',n=>n>14&&n<=28],['3라인','550~850톤',n=>n>=31]];
+
+function kpis(){
+  const ms = data.machines, n = ms.length, by = s => ms.filter(m=>m.status===s).length;
+  const run = by('RUN'), tgt = ms.reduce((a,m)=>a+m.target,0), prod = ms.reduce((a,m)=>a+m.prod,0), ng = ms.reduce((a,m)=>a+m.ng,0);
+  const ctOk = ms.filter(m=>m.status==='RUN' && m.ct <= m.stdCt*1.05).length;
+  const k = [
+    ['가동 설비', `${run}<small>/ ${n}대</small>`, `가동률 ${Math.round(run/n*100)}%`, run/n],
+    ['생산 실적', `${prod.toLocaleString()}<small>EA</small>`, `목표 ${tgt.toLocaleString()} 대비 ${Math.round(prod/tgt*100)}%`, prod/tgt],
+    ['불량률', `${(ng/Math.max(prod,1)*100).toFixed(2)}<small>%</small>`, `불량 ${ng.toLocaleString()} EA`, null],
+    ['알람', `${by('ALARM')}<small>대</small>`, `금형교체 ${by('MOLD')} · 비가동 ${by('STOP')+by('PLAN')}`, null],
+    ['사이클 정상', `${ctOk}<small>/ ${run}대</small>`, '표준 CT +5% 이내', run ? ctOk/run : 0]
+  ];
+  $('kpis').innerHTML = k.map(([l,v,d,p])=>`<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div><div class="d">${d}</div>${p!=null?`<div class="bar"><i style="width:${Math.min(100,p*100)}%"></i></div>`:''}</div>`).join('');
+}
+function tools(){
+  const cnt = s => s==='ALL' ? data.machines.length : data.machines.filter(m=>m.status===s).length;
+  const chips = [['ALL','전체',null]].concat(Object.entries(ST).map(([s,o])=>[s,o.k,o.c]));
+  const html = chips.map(([s,k,c])=>`<button class="chip${filter===s?' on':''}" data-f="${s}">${c?`<span class="dot" style="background:var(${c})"></span>`:''}${k} ${cnt(s)}</button>`).join('');
+  [...$('tools').querySelectorAll('.chip')].forEach(e=>e.remove());
+  $('q').insertAdjacentHTML('beforebegin', html);
+}
+function tile(m){
+  const s = ST[m.status] || ST.STOP, c = s.c, t = c+'-t';
+  const hit = (filter==='ALL'||m.status===filter) && (!q || `${m.no}호기 ${m.part} ${m.mold}`.includes(q));
+  const chg = todayCh().some(x=>x.no===m.no), ngr = m.ng/Math.max(m.prod,1)*100;
+  const ctLine = m.status==='RUN' ? `<span>CT <b>${m.ct}</b>s</span><span>${Math.round(m.prod/Math.max(m.target,1)*100)}%</span>`
+    : m.status==='ALARM' ? `<span style="color:var(--alarm)">${esc(m.alarm)}</span>` : `<span>${elapsed(m.since)} 경과</span>`;
+  return `<button class="m${hit?'':' fade'}${m.status==='ALARM'?' alarm':''}" style="--c:var(${c});--t:var(${t})" data-no="${m.no}" aria-label="${m.no}호기 ${s.k}">
+    ${chg?'<i class="chg" title="오늘 조건변경 있음"></i>':''}
+    <span class="no">${m.no}호기<span class="st">${s.k}</span></span>
+    <span class="pn">${esc(m.part)}</span>
+    <span class="mo"><span>${esc(m.mold)}</span><span class="${ngr>=1?'ngx':''}">불량 ${ngr.toFixed(1)}%</span></span>
+    <span class="ct">${ctLine}</span>
+    <span class="pb"><i style="width:${Math.min(100,m.prod/Math.max(m.target,1)*100)}%"></i></span>
+  </button>`;
+}
+const elapsed = t => { const mi = Math.max(0,Math.round((Date.now()-t)/60000)); return mi>=60?`${Math.floor(mi/60)}시간 ${mi%60}분`:`${mi}분`; };
+function floor(){
+  $('floor').innerHTML = LANES.map(([name,ton,f])=>{
+    const ms = data.machines.filter(m=>f(m.no)), run = ms.filter(m=>m.status==='RUN').length;
+    return `<div><div class="lane-h">${name} <span>${ton} · 가동 ${run}/${ms.length}</span></div><div class="grid">${ms.map(tile).join('')}</div></div>`;
+  }).join('') + `<div class="legend">${Object.values(ST).map(o=>`<span><i class="dot" style="background:var(${o.c})"></i>${o.k} <span class="vn">${o.v}</span></span>`).join('')}<span><i class="dot" style="background:var(--blue)"></i>오늘 조건변경</span></div>`;
+}
+function side(){
+  const bad = data.machines.filter(m=>['ALARM','MOLD','STOP'].includes(m.status)).sort((a,b)=>(a.status==='ALARM'?0:1)-(b.status==='ALARM'?0:1)||a.since-b.since);
+  $('alarms').innerHTML = bad.length ? bad.slice(0,8).map(m=>`<li data-no="${m.no}"><span class="tag" style="color:var(${ST[m.status].c})">${m.no}호기</span><span>${m.status==='ALARM'?esc(m.alarm):ST[m.status].k}</span><span class="meta">${elapsed(m.since)} 경과 · ${esc(m.part)}</span></li>`).join('') : '<li>문제 설비 없음</li>';
+  const ch = todayCh().sort((a,b)=>b.at-a.at);
+  $('changes').innerHTML = ch.length ? ch.slice(0,7).map(c=>`<li data-no="${c.no}"><span class="tag">${c.no}호기</span><span>${esc(c.param)} <span class="val"><s>${esc(c.from)}</s> → <b>${esc(c.to)}</b> ${esc(c.unit)}</span></span><span class="meta">${hms(c.at).slice(0,5)} · ${esc(c.worker)} · ${esc(c.reason)}</span></li>`).join('') : '<li>오늘 등록된 변경 없음</li>';
+}
+function render(){ kpis(); tools(); floor(); side(); }
+
+function spark(m){
+  const box = $('spk'); if (!box) return;
+  const W = box.clientWidth, H = box.clientHeight, L = 34, R = 12, T = 14, B = 20, v = m.cts.length ? m.cts : [m.ct];
+  const lo = Math.min(...v, m.stdCt)*.97, hi = Math.max(...v, m.stdCt*1.05)*1.01;
+  const x = i => L + (W-L-R) * (v.length<2 ? 1 : i/(v.length-1)), y = c => T + (H-T-B) * (1-(c-lo)/(hi-lo));
+  const pts = v.map((c,i)=>`${x(i).toFixed(1)},${y(c).toFixed(1)}`).join(' ');
+  box.innerHTML = `<svg><rect x="${L}" y="${y(m.stdCt*1.05)}" width="${W-L-R}" height="${y(m.stdCt)-y(m.stdCt*1.05)}" fill="var(--run-t)"/>
+    <line x1="${L}" x2="${W-R}" y1="${y(m.stdCt)}" y2="${y(m.stdCt)}" stroke="var(--run)" stroke-dasharray="4 3"/>
+    <text x="${L-4}" y="${y(m.stdCt)+4}" text-anchor="end">${m.stdCt}</text>
+    <polyline points="${pts}" fill="none" stroke="var(--blue)" stroke-width="2"/>
+    <circle cx="${x(v.length-1)}" cy="${y(v[v.length-1])}" r="3.5" fill="var(--blue)"/>
+    <text x="${L}" y="${H-5}">최근 ${v.length}회 갱신</text><text x="${W-R}" y="${H-5}" text-anchor="end">현재 ${v[v.length-1]}s</text></svg>`;
+}
+let openNo = null;
+function detail(no){
+  const m = data.machines.find(x=>x.no===no); if (!m) return; openNo = no;
+  const s = ST[m.status], ch = todayCh().filter(c=>c.no===no).sort((a,b)=>b.at-a.at);
+  $('dw').innerHTML = `<div class="dw-h"><div><h3>${m.no}호기</h3><span class="vn">Máy ${m.no} · ${m.ton} tấn</span></div>
+    <div class="ctrl"><span class="m" style="--c:var(${s.c});--t:var(${s.c}-t);border:0;padding:0;cursor:default"><span class="st" style="font-size:13px;padding:3px 10px">${s.k}${m.alarm?' · '+esc(m.alarm):''}</span></span><a class="btn pri" href="#new" id="xn">조건 등록</a><button class="btn" id="x">닫기</button></div></div>
+    <dl class="facts" style="margin:0">
+      <div><dt>품명</dt><dd>${esc(m.part)}</dd></div><div><dt>금형</dt><dd>${esc(m.mold)} · ${m.cav}캐비티</dd></div>
+      <div><dt>생산 / 목표</dt><dd>${m.prod.toLocaleString()} / ${m.target.toLocaleString()}</dd></div><div><dt>불량</dt><dd>${m.ng} EA (${(m.ng/Math.max(m.prod,1)*100).toFixed(2)}%)</dd></div>
+      <div><dt>사이클 (현재 / 표준)</dt><dd>${m.ct}s / ${m.stdCt}s</dd></div><div><dt>형체력</dt><dd>${m.ton}톤</dd></div>
+      <div><dt>현재 상태 지속</dt><dd>${elapsed(m.since)}</dd></div><div><dt>담당 기사</dt><dd>${esc(m.worker)}</dd></div>
+    </dl>
+    <p class="sub">사이클 타임 추이</p><div class="spark" id="spk"></div>
+    <p class="sub">오늘 조건변경 (사출 일지)</p>
+    <ul class="feed">${ch.length?ch.map(c=>`<li><span class="tag">${hms(c.at).slice(0,5)}</span><span>${esc(c.param)} <span class="val"><s>${esc(c.from)}</s> → <b>${esc(c.to)}</b> ${esc(c.unit)}</span></span><span class="meta">${esc(c.worker)} · ${esc(c.reason)}</span></li>`).join(''):'<li>오늘 변경 기록 없음</li>'}</ul>`;
+  $('x').onclick = () => $('dlg').close();
+  $('xn').onclick = () => { preNo = no; $('dlg').close(); };
+  if (!$('dlg').open) $('dlg').showModal();
+  requestAnimationFrame(()=>spark(m));
+}
+$('dlg').addEventListener('close', ()=>{ openNo = null; });
+$('dlg').addEventListener('click', e=>{ if (e.target === $('dlg')) $('dlg').close(); });
+
+document.addEventListener('click', e=>{
+  const f = e.target.closest('[data-f]'); if (f){ filter = f.dataset.f; tools(); floor(); return; }
+  const n = e.target.closest('[data-no]'); if (n && !e.target.closest('dialog')) detail(+n.dataset.no);
+});
+$('q').addEventListener('input', e=>{ q = e.target.value.trim().replace(/호기$/,''); floor(); });
+$('tvBtn').addEventListener('click', ()=>{ const on = document.body.classList.toggle('tv'); $('tvBtn').textContent = on ? '일반 화면' : '현장 모니터 모드'; document.documentElement.requestFullscreen?.().catch(()=>{}); if(!on) document.exitFullscreen?.().catch(()=>{}); });
+
+/* ---------- 조건변경 기록 ---------- */
+let preNo = null;
+const lf = { p:'7' };
+const opt = (v,t,sel) => `<option value="${esc(v)}"${String(sel)===String(v)?' selected':''}>${esc(t)}</option>`;
+function fillSelects(){
+  const keep = id => $(id).value;
+  const set = (id, all, list) => { const v = keep(id); $(id).innerHTML = opt('', all) + list.map(([a,b])=>opt(a,b,v)).join(''); };
+  set('lno','전체 사출기 · Tất cả máy ép', NOS.map(n=>[n,`${n}호기 · Máy ${n}`]));
+  set('lw','전체 기사 · Tất cả kỹ thuật viên', WORKERS.map(w=>[w,w]));
+  set('ls','전체 상태 · Tất cả trạng thái', [['정상','정상 · Bình thường'],['이상','이상 · Bất thường'],['미확인','미확인 · Chưa xác nhận']]);
+  set('lp','전체 조건항목 · Tất cả thông số', PARAMS.map(([p])=>[p,p]));
+}
+function renderLog(){
+  const P = [['1','오늘'],['7','7일'],['all','전체 기간']];
+  $('lper').innerHTML = P.map(([v,t])=>`<button class="chip${lf.p===v?' on':''}" data-p="${v}">${t}</button>`).join('');
+  const qq = $('lq').value.trim(), no = $('lno').value, w = $('lw').value, st = $('ls').value, pp = $('lp').value;
+  const from = lf.p==='all' ? 0 : lf.p==='1' ? new Date().setHours(0,0,0,0) : Date.now()-7*86400000;
+  let r = data.changes.filter(c => c.at >= from && (!no||c.no==no) && (!w||c.worker===w) && (!st||c.status===st) && (!pp||c.param===pp)
+    && (!qq || `${c.no}호기 ${c.part} ${c.mold} ${c.worker} ${c.reason} ${c.param}`.includes(qq)));
+  const so = $('lsort').value;
+  r.sort((a,b)=> so==='old' ? a.at-b.at : so==='no' ? a.no-b.no||b.at-a.at : b.at-a.at);
+  const k = [['조회 기록',r.length,'건'],['조회 사출기',new Set(r.map(c=>c.no)).size,`/ ${NOS.length}대`],['변경 항목',new Set(r.map(c=>c.param)).size,'개'],['이상 보고',r.filter(c=>c.status==='이상').length,'건']];
+  $('lkpis').innerHTML = k.map(([l,v,u])=>`<div class="kpi"><div class="l">${l}</div><div class="v">${v}<small>${u}</small></div></div>`).join('');
+  $('lcnt').textContent = r.length + '건';
+  const bc = {정상:'b-ok',이상:'b-ng',미확인:'b-un'};
+  const dt = d => `${d.getMonth()+1}/${d.getDate()} ${hms(d).slice(0,5)}`;
+  $('recs').innerHTML = r.length ? r.slice(0,200).map(c=>{ const d = c.to - c.from;
+    return `<li><span class="rn">${c.no}호기</span><span><b>${esc(c.param)}</b> <span class="rv"><s>${esc(c.from)}</s> → <b>${esc(c.to)}</b> ${esc(c.unit)} <span class="${d>0?'up':'dn'}">${d>0?'▲':'▼'}${Math.abs(d).toFixed(Number.isInteger(d)?0:1)}</span></span></span>
+    <span class="badge ${bc[c.status]||'b-un'}">${esc(c.status)}</span>
+    <span class="rm">${dt(c.at)} · ${esc(c.worker)} · ${esc(c.reason)} · ${esc(c.part)} · ${esc(c.mold)}${c.memo?' · '+esc(c.memo):''}</span></li>`; }).join('')
+    : '<li class="empty">조건에 맞는 기록이 없습니다 · Không có bản ghi</li>';
+}
+['lq','lno','lw','ls','lp','lsort'].forEach(id=>$(id).addEventListener('input', renderLog));
+$('lper').addEventListener('click', e=>{ const b = e.target.closest('[data-p]'); if (b){ lf.p = b.dataset.p; renderLog(); } });
+
+/* ---------- 기록 등록 ---------- */
+let fst = '정상';
+function addRow(){
+  $('frows').insertAdjacentHTML('beforeend', `<div class="frow"><select class="fp" required aria-label="항목">${opt('','항목 선택 · Chọn thông số')}${PARAMS.map(([p,u])=>opt(p,`${p} (${u})`)).join('')}</select>
+    <input class="fa" type="number" step="any" inputmode="decimal" placeholder="변경 전" required aria-label="변경 전"><input class="fb" type="number" step="any" inputmode="decimal" placeholder="변경 후" required aria-label="변경 후">
+    <button type="button" class="btn x" aria-label="항목 삭제">✕</button></div>`);
+}
+function mesInfo(){
+  const m = data.machines.find(x=>x.no==$('fno').value);
+  $('fmes').innerHTML = m ? `<span class="h">MES 자동 입력 · ${m.no}호기 현재 정보</span><span>제품명<b>${esc(m.part)}</b></span><span>금형번호<b>${esc(m.mold)}</b></span><span>상태<b>${ST[m.status].k}</b></span><span>사이클<b>${m.ct}s / 표준 ${m.stdCt}s</b></span><span>불량률<b>${(m.ng/Math.max(m.prod,1)*100).toFixed(2)}%</b></span>` : '<span class="h">사출기를 고르면 MES 제품·금형 정보가 자동으로 붙습니다</span>';
+}
+function initForm(){
+  $('fno').innerHTML = opt('','사출기 선택 · Chọn máy') + NOS.map(n=>opt(n,`${n}호기 · Máy ${n}`, preNo)).join('');
+  if (!$('fw').options.length) $('fw').innerHTML = opt('','기사 선택 · Chọn KTV') + WORKERS.map(w=>opt(w,w)).join('');
+  $('reasons').innerHTML = REASONS.map(r=>`<option value="${esc(r)}">`).join('');
+  $('fst').innerHTML = ['정상','이상','미확인'].map(s=>`<button type="button" class="chip${fst===s?' on':''}" data-s="${s}">${s}</button>`).join('');
+  if (!$('frows').children.length) addRow();
+  preNo = null; mesInfo();
+}
+$('fno').addEventListener('input', mesInfo);
+$('fadd').addEventListener('click', addRow);
+$('frows').addEventListener('click', e=>{ if (e.target.closest('.x') && $('frows').children.length>1) e.target.closest('.frow').remove(); });
+$('fst').addEventListener('click', e=>{ const b = e.target.closest('[data-s]'); if (b){ fst = b.dataset.s; initForm(); } });
+$('fm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const no = +$('fno').value, m = data.machines.find(x=>x.no===no) || {}, at = new Date();
+  const recs = [...$('frows').children].map(r=>{ const p = r.querySelector('.fp').value, u = (PARAMS.find(x=>x[0]===p)||[])[1]||'';
+    return { no, param:p, unit:u, from:+r.querySelector('.fa').value, to:+r.querySelector('.fb').value, worker:$('fw').value,
+      reason:$('fr').value.trim(), status:fst, memo:$('fmemo').value.trim(), part:m.part||'', mold:m.mold||'', at }; });
+  try {
+    if (SB) await sb('condition_changes', { method:'POST', headers:{ Prefer:'return=minimal' }, body:JSON.stringify(recs.map(({from,to,at,...r})=>({ ...r, from_v:from, to_v:to }))) });
+    else if (CFG.api){ const res = await fetch(CFG.api+'/changes',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(recs)}); if(!res.ok) throw 0; }
+    else recs.forEach(r=>mockChg.unshift({...r, id:Date.now()+Math.random()}));
+    $('fm').reset(); $('frows').innerHTML = ''; fst = '정상'; $('fmsg').textContent = '';
+    if (!CFG.api && !SB) data.changes = mockChg; else await refresh();
+    location.hash = '#log';
+  } catch { $('fmsg').textContent = '등록 실패. 연결을 확인하고 다시 눌러 주세요.'; }
+});
+
+/* ---------- 화면 전환 ---------- */
+function route(){
+  const v = ['machines','log','new'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'machines';
+  ['machines','log','new'].forEach(x=>$('v-'+x).hidden = x!==v);
+  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on', a.dataset.v===v));
+  if (v==='log'){ fillSelects(); renderLog(); }
+  if (v==='new') initForm();
+  window.scrollTo(0,0);
+}
+addEventListener('hashchange', route);
+
+async function refresh(){
+  try {
+    data = await load();
+    $('srcName').textContent = data.source; $('lastAt').textContent = hms(new Date());
+    render(); if (openNo) detail(openNo);
+    if (!$('v-log').hidden) renderLog();
+  } catch(err){ $('lastAt').textContent = '연결 실패 · 재시도 중'; }
+  left = CFG.pollSec;
+}
+$('refresh').addEventListener('click', refresh);
+$('ivl').textContent = CFG.pollSec + '초';
+setInterval(()=>{ left--; $('ringFg').setAttribute('stroke-dashoffset', (62.8*(1-left/CFG.pollSec)).toFixed(1)); if (left<=0) refresh(); }, 1000);
+if (SB && !auth) showLogin(); else refresh().then(route);
+}
+</script>
+
+</body></html>
