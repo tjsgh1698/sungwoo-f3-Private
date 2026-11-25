@@ -17,3 +17,8 @@ create policy "read live" on machines_live for select to authenticated using (tr
 create policy "read changes" on condition_changes for select to authenticated using (true);
 create policy "add changes" on condition_changes for insert to authenticated with check (true);
 -- machines_live 쓰기는 회사 PC 업로더(service_role 키)만 가능 (RLS 우회)
+
+-- 2026-11-25: 로그인 없이 누구나 보기·등록 (수정·삭제는 여전히 불가)
+create policy "anon read live" on machines_live for select to anon using (true);
+create policy "anon read changes" on condition_changes for select to anon using (true);
+create policy "anon add changes" on condition_changes for insert to anon with check (true);
