@@ -357,7 +357,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad = n => String(n).padStart(2,'0');
 const fmt = d => d ? `${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}` : '-';
-const NOS = [...Array(28)].map((_,i)=>i+1).concat([...Array(15)].map((_,i)=>i+31));
+const NOS = [...Array(45)].map((_,i)=>i+1); // 1~45호기 (3공장 사출기 전체, MES 기준)
 const WORKERS = ['빙','티옌','최관일','롱','이용','후이','칸','토안','두안','황선호'];
 const REASONS = ['초기 가동·금형 교체','미성형 개선','버 발생','치수 보정','싱크마크','웰드라인 개선','은선 개선','흑점 개선','사이클 단축','가스 자국','변형 개선'];
 // 조건 항목: [kind, 이름, 베트남어, 단위, 단 목록]
@@ -434,7 +434,7 @@ function sideCounts(){
   if ($('sq-maint')){ const overdue = M.filter(m=>{ const r = lastMaint(m.no,'pad'); return !r || daysAgo(r._at)>=CFG.padWarnDays; }).length;
     $('sq-maint').innerHTML = `<a class="sub" href="#maint">흡착패드 교체 요망 <em class="${overdue?'red':''}">(${overdue})</em></a><a class="sub" href="#maint">전체 정비 기록 <em>(${MT.length})</em></a>`; }
 }
-const LANES = [['1라인','1~14호기',n=>n<=14],['2라인','15~28호기',n=>n>=15&&n<=28],['3라인','31~45호기',n=>n>=31]];
+const LANES = [['1라인','1~14호기',n=>n<=14],['2라인','15~28호기',n=>n>=15&&n<=28],['3라인','29~45호기',n=>n>=29]];
 function renderMachines(){
   setMes(); sideCounts();
   const run = M.filter(m=>m.status==='RUN').length, prod = M.reduce((a,m)=>a+m.prod,0), ng = M.reduce((a,m)=>a+m.ng,0);
