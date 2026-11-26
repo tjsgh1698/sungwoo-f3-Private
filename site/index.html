@@ -121,13 +121,24 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .chgn{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px;font-size:.8rem;font-weight:700;white-space:nowrap}
 .chgn.y{background:var(--pri-bg);color:var(--pri)}.chgn.n{background:var(--panel);color:var(--mut);font-weight:500}
 .rd{padding:12px 14px 14px;background:var(--panel);border-top:1px solid var(--line2)}
-.pm{columns:2 300px;column-gap:10px}
-.pr{break-inside:avoid;display:flex;gap:8px;align-items:baseline;background:#fff;border:1px solid var(--line2);border-radius:6px;padding:6px 10px;margin-bottom:6px;font-size:.88rem}
-.pr.hit{border-color:var(--pri-line);background:var(--pri-bg)}
-.pr .k{flex:none;width:92px;font-weight:700;color:var(--ink2)}.pr .k small{color:var(--mut);font-weight:400}
-.pr .vals{display:flex;flex-wrap:wrap;gap:4px 10px;font-variant-numeric:tabular-nums}
-.pr .vals span{color:var(--ink2)}.pr .vals em{font-style:normal;color:var(--mut);font-size:.82em;margin-right:2px}
-.pr .vals .ch{font-weight:800;color:var(--pri)}.pr .vals .ch s{text-decoration:line-through;color:var(--mut);font-weight:400}
+.rd-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.rd-ti{font-size:.98rem;color:var(--ink2)}.rd-ti b{color:var(--pri);font-weight:800}
+.rd-chg{margin-left:auto;background:var(--pri);color:#fff;font-weight:700;font-size:.8rem;border-radius:999px;padding:4px 12px}
+.rd-chg.n{background:var(--panel);color:var(--mut);font-weight:500;border:1px solid var(--line2)}
+.sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:10px}
+.sg{background:#fff;border:1px solid var(--line2);border-radius:10px;overflow:hidden}
+.sgh{background:var(--pri-bg);color:var(--pri);font-weight:800;font-size:.82rem;letter-spacing:.02em;padding:6px 12px;border-bottom:1px solid var(--line2)}
+.srow{display:flex;gap:10px;align-items:baseline;padding:7px 12px;font-size:.9rem;border-top:1px solid var(--line2)}
+.srow:nth-child(2){border-top:0}
+.srow.hit{background:#fffaf0}
+.srk{flex:none;width:86px;font-weight:700;color:var(--ink2);line-height:1.3}.srk small{display:block;color:var(--mut);font-weight:400;font-size:.76em}
+.srv{display:flex;flex-wrap:wrap;gap:4px 8px;font-variant-numeric:tabular-nums;align-items:baseline}
+.cl{display:inline-flex;align-items:baseline;gap:3px;color:var(--ink2)}
+.cl em{font-style:normal;color:var(--mut);font-size:.76em}
+.cl b{font-weight:600}
+.cl.chg{background:var(--pri);color:#fff;border-radius:5px;padding:1px 7px;font-weight:700}
+.cl.chg em{color:rgba(255,255,255,.75)}.cl.chg b{color:#fff;font-weight:800}
+.cl.chg s{color:rgba(255,255,255,.6);text-decoration:line-through;margin-right:2px;font-weight:400}
 .rd-meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:.86rem;align-items:center}.rd-meta span{color:var(--mut)}.rd-meta b{font-weight:700}
 .scroll{overflow-x:auto}
 .empty{padding:28px;text-align:center;color:var(--mut)}
@@ -197,7 +208,7 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .lbox{background:#fff;border-radius:6px;padding:24px;width:min(360px,100%);display:flex;flex-direction:column;gap:12px}
 .lbox label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:.92rem}
 @media(max-width:1100px){#side{display:none}.brand{width:auto}}
-@media(max-width:900px){.rhead{display:none}.rrow{grid-template-columns:50px minmax(0,1fr) auto;grid-template-areas:"no mold st" "no why chg" "at at who";gap:3px 10px;padding:10px 12px}.c-no{grid-area:no;align-self:start}.c-mold{grid-area:mold}.c-st{grid-area:st;justify-self:end}.c-chg{grid-area:chg;justify-self:end}.c-at{grid-area:at;font-size:.78rem;color:var(--mut)}.c-at b{display:inline;margin-right:4px}.c-who{grid-area:who;font-size:.8rem;justify-self:end}.c-why{grid-area:why}.pm{columns:1}}
+@media(max-width:900px){.rhead{display:none}.rrow{grid-template-columns:50px minmax(0,1fr) auto;grid-template-areas:"no mold st" "no why chg" "at at who";gap:3px 10px;padding:10px 12px}.c-no{grid-area:no;align-self:start}.c-mold{grid-area:mold}.c-st{grid-area:st;justify-self:end}.c-chg{grid-area:chg;justify-self:end}.c-at{grid-area:at;font-size:.78rem;color:var(--mut)}.c-at b{display:inline;margin-right:4px}.c-who{grid-area:who;font-size:.8rem;justify-self:end}.c-why{grid-area:why}.sheet{grid-template-columns:1fr}.srk{width:74px}}
 @media(max-width:720px){html{font-size:14px}#top{height:auto;flex-wrap:wrap;padding:0}.brand{padding:8px 12px;flex:1}.top-r{padding-right:12px}.topnav{order:3;flex:1 1 100%;height:48px;padding:0 4px;border-top:1px solid rgba(255,255,255,.12)}.today{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.td{padding:8px 10px}.td .v{font-size:1.25rem}.td .l{font-size:.72rem}.td:nth-child(n+4){display:none}.ph p{display:none}.topnav a{padding:0 12px;font-size:.95rem}.topnav a .vn{display:none}#side{display:none}main{padding:0 12px 32px}.board{grid-template-columns:minmax(0,1fr);padding:6px}.prow{grid-template-columns:minmax(0,1fr)}.rh{grid-template-columns:52px minmax(0,1fr)}.rh .badge{grid-column:2;justify-self:start}.rm{grid-column:1/-1}.mes span{display:none}#side{top:0}}
 </style>
 </head>
@@ -365,6 +376,13 @@ const KINDS = [
   ['pressure','기존 압력 기록','Áp suất cũ','',['1단','2단','3단','4단']]
 ];
 const KN = Object.fromEntries(KINDS.map(k=>[k[0],k[1]]));
+const GROUPS = [
+  ['사출', ['speed','injectionPressure','injectionPosition']],
+  ['보압', ['transfer','holding','holdingTime']],
+  ['계량', ['metering','meteringSpeed','backPressure']],
+  ['온도', ['cylinderTemperature','runner','water','hydraulicOilTemperature']],
+  ['냉각 · 기타', ['coolingTime','pressure']]
+];
 const ST = { RUN:['가동 중','Đang chạy','--run'], ALARM:['알람','Cảnh báo','--alarm'], MOLD:['금형 교체','Thay khuôn','--mold'], STOP:['비가동','Dừng','--alarm'], PLAN:['계획 정지','Dừng KH','--stop'], NONE:['MES 대기','Chờ MES','--stop'] };
 
 /* ---------- 데이터 ---------- */
@@ -491,15 +509,23 @@ function renderList(){
       <span class="c-st"><span class="badge ${bc[x.status]||'b-un'}">${esc(x.status||'-')}</span></span></div>${lf.open===x.id?detail(x):''}</li>`).join('')
     : '<li class="empty">조건에 맞는 기록이 없습니다 · Không có bản ghi</li>';
 }
+const chgd = p => p.after!==''&&p.after!=null&&String(p.after)!==String(p.before);
+const hasVal = p => (p.before!==''&&p.before!=null) || (p.after!==''&&p.after!=null);
+function cell(p, multi){ const ch = chgd(p), v = p.after!==''&&p.after!=null ? p.after : p.before;
+  return `<span class="cl${ch?' chg':''}">${multi&&p.stage?`<em>${esc(p.stage)}</em>`:''}${ch?`<s>${esc(p.before||'–')}</s><b>${esc(p.after)}</b>`:`<b>${esc(v)}</b>`}</span>`; }
 function detail(x){
-  const by = new Map(); (x.parameters||[]).forEach(p=>{ if (!by.has(p.kind)) by.set(p.kind, []); by.get(p.kind).push(p); });
-  const order = KINDS.map(k=>k[0]).concat([...by.keys()].filter(k=>!KN[k]));
-  const multi = [...by.values()].some(ps=>ps.length>1 && ps.some(p=>p.stage));
-  const rows = order.filter(k=>by.has(k)).map(k=>{ const ps = by.get(k), u = unit(ps[0]), hit = ps.some(p=>p.after!==''&&p.after!=null&&String(p.after)!==String(p.before));
-    return `<div class="pr${hit?' hit':''}"><span class="k">${esc(KN[k]||k)}${u?` <small>${esc(u)}</small>`:''}</span><span class="vals">${ps.map(p=>{ const ch = p.after!==''&&p.after!=null&&String(p.after)!==String(p.before);
-      return `<span class="${ch?'ch':''}">${multi&&p.stage?`<em>${esc(p.stage)}</em>`:''}${ch?`<s>${esc(p.before||'-')}</s> → ${esc(p.after)}`:esc(p.before||p.after||'-')}</span>`; }).join('')}</span></div>`; }).join('');
+  const by = new Map(); (x.parameters||[]).forEach(p=>{ if (hasVal(p)){ if (!by.has(p.kind)) by.set(p.kind, []); by.get(p.kind).push(p); } });
+  const chCount = [...by.values()].filter(ps=>ps.some(chgd)).length;
+  const used = new Set();
+  const sect = (title, keys)=>{ const rows = keys.filter(k=>by.has(k)).map(k=>{ used.add(k); const ps = by.get(k), u = unit(k), multi = ps.length>1 || ps.some(p=>p.stage), hit = ps.some(chgd);
+      return `<div class="srow${hit?' hit':''}"><span class="srk">${esc(KN[k]||k)}${u?` <small>${esc(u)}</small>`:''}</span><span class="srv">${ps.map(p=>cell(p,multi)).join('')}</span></div>`; }).join('');
+    return rows ? `<div class="sg"><div class="sgh">${esc(title)}</div>${rows}</div>` : ''; };
+  let sheet = GROUPS.map(([t,ks])=>sect(t,ks)).join('');
+  const extra = [...by.keys()].filter(k=>!used.has(k)); if (extra.length) sheet += sect('기타', extra);
   const mat = x.material?.materials?.length ? x.material.materials.map(esc).join(', ') : '';
-  return `<div class="rd"><div class="pm">${rows || '<div class="pr"><span class="k">조건</span><span class="vals">기록된 조건 없음</span></div>'}</div>
+  return `<div class="rd">
+    <div class="rd-top"><span class="rd-ti"><b>${x.machine}호기</b> · ${esc(x.mold||'-')}${x.product?` · ${esc(x.product)}`:''}</span>${chCount?`<span class="rd-chg">이번에 바뀐 조건 ${chCount}개</span>`:`<span class="rd-chg n">초기 등록 · 변경 없음</span>`}</div>
+    <div class="sheet">${sheet || '<div class="sg"><div class="srow"><span class="srv">기록된 조건 없음</span></div></div>'}</div>
     <div class="rd-meta">${x.reason?`<span>사유</span><b>${esc(x.reason)}</b>`:''}${(x.beam?.lh||x.beam?.rh)?`<span>배광</span><b>LH ${esc(x.beam.lh||'-')} · RH ${esc(x.beam.rh||'-')}</b>`:''}${mat?`<span>원재료</span><b>${mat}</b>`:''}${x.notes?`<span>메모</span><b>${esc(x.notes)}</b>`:''}${x.operator?`<span>작업자</span><b>${esc(x.operator)}</b>`:''}
     <a class="btn sm" href="#new" data-copy="${esc(x.id)}" style="margin-left:auto">이 조건으로 새 기록</a></div></div>`;
 }
