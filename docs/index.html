@@ -92,7 +92,8 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .mc-b{padding:0 12px 10px;display:flex;flex-direction:column;gap:8px;font-size:.88rem;flex:1}
 .pn{font-weight:700;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .alert{border-radius:6px;background:var(--bad-bg);color:var(--bad);padding:4px 8px;font-size:.82rem;font-weight:700}
-.padchk{display:flex;align-items:center;gap:6px;border-radius:7px;background:var(--unk-bg);color:var(--unk);border:1px solid #f0d08a;padding:6px 9px;font-size:.84rem;font-weight:700}
+.padchk{display:flex;align-items:center;gap:7px;border-radius:7px;background:var(--unk-bg);color:var(--unk);border:1px solid #f0d08a;padding:6px 9px;font-size:.84rem;font-weight:700}
+.padchk::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--unk);flex:none}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
 .stats div{background:var(--panel);border-radius:6px;padding:5px 6px;text-align:center}
 .stats span{display:block;font-size:.72rem;color:var(--mut)}.stats b{font-size:1rem;font-variant-numeric:tabular-nums}
@@ -245,14 +246,14 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
     <a href="#engineers" data-v="engineers">기사별 기록<span class="vn">Theo KTV</span></a>
     <a href="#molds" data-v="molds">동일 금형<span class="vn">Theo khuôn</span></a>
     <a href="#maint" data-v="maint">정비 이력<span class="vn">Bảo trì</span></a>
-    <a href="#lens" data-v="lens">🔒 렌즈 한도기준<span class="vn">Giới hạn lens</span></a>
+    <a href="#lens" data-v="lens">렌즈 한도기준<span class="vn">Giới hạn lens</span></a>
   </nav>
   <div class="top-r"><span class="mes off" id="mesChip"><i></i><span id="mesAt">MES 연결 대기</span></span></div>
 </header>
 <div id="wrap">
   <aside id="side">
     <div class="side-title">3공장 사출 조건관리<small>Quản lý thông số ép · Xưởng 3</small></div>
-    <div class="side-act"><a class="btn pri" href="#new">✎ 기록 등록</a></div>
+    <div class="side-act"><a class="btn pri" href="#new">+ 기록 등록</a></div>
     <div class="nsec"><a class="nsec-t" href="#machines" data-v="machines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>사출기별 현황</a><div id="sq-m"></div></div>
     <div class="nsec"><a class="nsec-t" href="#list" data-v="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>조건변경 기록</a><div id="sq-l"></div></div>
     <div class="nsec"><a class="nsec-t" href="#engineers" data-v="engineers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>사출기사별 기록</a></div>
@@ -307,7 +308,7 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
     <section id="v-lens" hidden>
       <div class="ph"><div class="ph-t"><h1>렌즈 한도기준</h1><p>승인된 렌즈 외관 한도 사진입니다. 빨간 원이 불량 위치입니다.</p></div><button class="btn pri" id="lnew">+ 한도 등록</button></div>
       <div id="lensLock" class="lock-in" hidden>
-        <div class="lock-card"><div class="lock-ic">🔒</div><b>관리자 전용</b><p>렌즈 한도기준은 관리자만 볼 수 있어요. 4자리 비밀번호를 입력하세요.</p>
+        <div class="lock-card"><div class="lock-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg></div><b>관리자 전용</b><p>렌즈 한도기준은 관리자만 볼 수 있어요. 4자리 비밀번호를 입력하세요.</p>
           <form id="lensPinF"><input id="lensPin" inputmode="numeric" maxlength="8" placeholder="비밀번호" autocomplete="off"><button class="btn pri" type="submit">확인</button></form>
           <p class="note" id="lensPinMsg"></p></div>
       </div>
@@ -489,7 +490,7 @@ function card(m){
     <div class="mc-h"><span class="no">${m.no}<small>호기</small></span><span class="who"><b>${esc(mold||'금형 정보 없음')}</b>${m.worker?esc(m.worker):has?'':'MES 연결 전'}</span>
       <span class="pill ${m.status==='RUN'?'run':''}"><i></i>${s[0]}</span></div>
     <div class="mc-b">
-      <div class="pntop"><div class="pnl"><div class="pn" title="${esc(prod)}">${esc(prod||'제품 정보 없음')}</div>${isCoating(m)?`<div class="padchk">🧽 코팅품 · 흡착패드 확인</div>`:''}</div>${m.item_code&&PH.has(m.item_code)?`<button type="button" class="pphoto" data-ph="${esc(m.item_code)}" title="제품 사진 크게 보기"><img loading="lazy" src="${PH.get(m.item_code)}" alt="제품 사진"></button>`:''}</div>
+      <div class="pntop"><div class="pnl"><div class="pn" title="${esc(prod)}">${esc(prod||'제품 정보 없음')}</div>${isCoating(m)?`<div class="padchk">코팅품 · 흡착패드 확인</div>`:''}</div>${m.item_code&&PH.has(m.item_code)?`<button type="button" class="pphoto" data-ph="${esc(m.item_code)}" title="제품 사진 크게 보기"><img loading="lazy" src="${PH.get(m.item_code)}" alt="제품 사진"></button>`:''}</div>
       ${m.status!=='RUN'&&m.alarm?`<div class="alert" style="background:color-mix(in srgb,var(--c) 10%,#fff);color:var(--c)">${esc(m.alarm)}${m.since?' · '+fmt(new Date(m.since))+'부터':''}</div>`:''}
       ${isBad(m)?`<div class="alert">불량 높음 · 실불량 ${rate.toFixed(1)}%</div>`:''}
       <div class="stats"><div><span>지시</span><b>${d(m.target.toLocaleString())}</b></div><div><span>양품</span><b>${d(m.prod.toLocaleString())}</b></div><div class="${m.ng?'bad':''}"><span>불량</span><b>${d(m.ng.toLocaleString())}</b></div><div><span>효율</span><b>${d(eff+'%')}</b></div></div>
@@ -497,7 +498,7 @@ function card(m){
       <div class="kv"><span>C/T 기준 · 실</span><b>${has&&m.stdCt?m.stdCt+'s':'-'} · ${has&&m.ct?m.ct+'s':'-'} ${ctd!==null?`<span class="tag ${ctd>5?'':'g'}">${ctd>0?'+':''}${ctd}%</span>`:''}</b></div>
       <div class="lastrec">${lr?`<div><b>${esc(lr.technician||'기사 미상')}</b><small>${fmt(lr._at)} 등록</small></div>`:'<div><small>조건 기록 없음</small></div>'}${lr&&!cur?'<span class="tag">이 금형 조건 미등록</span>':''}</div>
       <div class="mt-days">${['pad','clean'].map(k=>{ const r = lastMaint(m.no,k), dd = r?daysAgo(r._at):null, warn = dd!==null&&MK[k][2]&&dd>=MK[k][2];
-        return `<span class="${warn?'warn':''}">${MK[k][0]} ${r?`<b>${dd}일 전</b>${warn?' ⚠':''}`:'기록 없음'}</span>`; }).join('')}</div>
+        return `<span class="${warn?'warn':''}">${MK[k][0]} ${r?`<b>${dd}일 전</b>${warn?' 초과':''}`:'기록 없음'}</span>`; }).join('')}</div>
     </div>
     <div class="mc-f"><a class="btn sm" href="#list" ${mold?`data-go-mold="${esc(mold)}"`:`data-go-no="${m.no}"`}>${mold?'이 금형 기록':'기록'} ${n}건</a><a class="btn sm pri" href="#new" data-new-no="${m.no}">+ 조건 등록</a></div>
   </div>`;
@@ -726,7 +727,7 @@ function renderMaint(){
   const od = M.map(m=>{ const r = lastMaint(m.no,'pad'); return { no:m.no, mold:m.mold||lastRec(m.no)?.mold||'', d: r?daysAgo(r._at):null }; })
     .filter(x=>x.d===null || x.d>=CFG.padWarnDays).sort((a,b)=>(b.d??999)-(a.d??999));
   $('mtOverdue').innerHTML = od.length ? od.slice(0,12).map(x=>`<div class="od"><b>${x.no}호기</b> ${esc(x.mold||'')}<div class="d">흡착패드 ${x.d===null?'기록 없음':x.d+'일 전 · 교체 요망'}</div></div>`).join('')
-    : `<div class="ok0">흡착패드 교체가 ${CFG.padWarnDays}일 넘은 사출기가 없어요. 좋아요 👍</div>`;
+    : `<div class="ok0">흡착패드 교체가 ${CFG.padWarnDays}일 넘은 사출기가 없어요.</div>`;
   $('mtchips').innerHTML = [['all','전체'],['pad','흡착패드'],['clean','금형세척'],['etc','기타']].map(([k,t])=>`<button class="gchip${mtF===k?' on':''}" data-mtf="${k}">${t} ${MT.filter(x=>k==='all'||x.kind===k).length}</button>`).join('');
   const q = $('mtq').value.trim();
   const list = MT.filter(x=>(mtF==='all'||x.kind===mtF) && (!q || `${x.machine}호기 ${x.mold} ${x.worker} ${x.note}`.includes(q)));
