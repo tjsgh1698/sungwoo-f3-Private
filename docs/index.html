@@ -26,7 +26,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .logo{width:40px;height:40px;border-radius:10px;background:#d3232a;color:#fff;font-weight:800;display:grid;place-items:center;font-size:.95rem;flex:none}
 .brand b{display:block;font-size:.86rem;letter-spacing:.02em;white-space:nowrap}.brand small{font-size:.74rem;color:#a9b8d3;white-space:nowrap}
 .topnav{display:flex;align-items:stretch;height:100%;flex:1;overflow:auto;scrollbar-width:none}.topnav::-webkit-scrollbar{display:none}
-.topnav a{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 18px;font-size:1.05rem;font-weight:600;color:#dbe3f0;text-decoration:none;white-space:nowrap;border-bottom:3px solid transparent;border-top:3px solid transparent;line-height:1.2}
+.topnav a{flex:none;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 18px;font-size:1.05rem;font-weight:600;color:#dbe3f0;text-decoration:none;white-space:nowrap;border-bottom:3px solid transparent;border-top:3px solid transparent;line-height:1.2}
 .topnav a .vn{font-size:.6em;color:#8ea2c4}
 .topnav a:hover{color:#fff;background:rgba(255,255,255,.06)}.topnav a.on{color:#fff;border-bottom-color:#ff5a4f;background:rgba(255,255,255,.08)}
 .badge-n{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:var(--bad);color:#fff;font-size:.72rem;line-height:20px;text-align:center;margin-left:4px;vertical-align:2px}
@@ -119,6 +119,10 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .vmode{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex:none}
 .vmode button{border:0;background:#fff;color:var(--mut);font:inherit;font-size:.82rem;font-weight:700;padding:7px 14px;cursor:pointer}
 .vmode button.on{background:#10264a;color:#fff}
+.langtog{display:inline-flex;border:1px solid rgba(255,255,255,.3);border-radius:999px;overflow:hidden;flex:none}
+.langtog button{border:0;background:transparent;color:#cdd9ee;font:inherit;font-size:.8rem;font-weight:700;padding:6px 12px;cursor:pointer;white-space:nowrap}
+.langtog button.on{background:#fff;color:#10264a}
+@media(max-width:720px){.langtog button{padding:5px 10px;font-size:.78rem}}
 .lean .kv,.lean .lastrec,.lean .mt-days{display:none}
 .lean .mc-b{gap:7px;padding-bottom:12px}
 .pntop{display:flex;align-items:flex-start;gap:10px}
@@ -253,38 +257,38 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 <header id="top">
   <a class="brand" href="#machines"><div class="logo">SW</div><div><b>SUNG WOO PLATECH</b><small>성우플라텍 <b style="display:inline;color:#ff8a80">3공장</b> 사출</small></div></a>
   <nav class="topnav">
-    <a href="#machines" data-v="machines">사출기별 현황<span class="vn">Tình trạng máy</span></a>
-    <a href="#list" data-v="list">조건변경 기록<span class="vn">Lịch sử thay đổi</span></a>
-    <a href="#engineers" data-v="engineers">기사별 기록<span class="vn">Theo KTV</span></a>
-    <a href="#molds" data-v="molds">동일 금형<span class="vn">Theo khuôn</span></a>
-    <a href="#maint" data-v="maint">정비 이력<span class="vn">Bảo trì</span></a>
-    <a href="#lens" data-v="lens">렌즈 한도기준<span class="vn">Giới hạn lens</span></a>
+    <a href="#machines" data-v="machines" data-t="사출기별 현황">사출기별 현황</a>
+    <a href="#list" data-v="list" data-t="조건변경 기록">조건변경 기록</a>
+    <a href="#engineers" data-v="engineers" data-t="기사별 기록">기사별 기록</a>
+    <a href="#molds" data-v="molds" data-t="동일 금형">동일 금형</a>
+    <a href="#maint" data-v="maint" data-t="정비 이력">정비 이력</a>
+    <a href="#lens" data-v="lens" data-t="렌즈 한도기준">렌즈 한도기준</a>
   </nav>
-  <div class="top-r"><span class="mes off" id="mesChip"><i></i><span id="mesAt">MES 연결 대기</span></span></div>
+  <div class="top-r"><span class="langtog" id="langtog"></span><span class="mes off" id="mesChip"><i></i><span id="mesAt">MES 연결 대기</span></span></div>
 </header>
 <div id="wrap">
   <aside id="side">
-    <div class="side-title">3공장 사출 조건관리<small>Quản lý thông số ép · Xưởng 3</small></div>
-    <div class="side-act"><a class="btn pri" href="#new">+ 기록 등록</a></div>
-    <div class="nsec"><a class="nsec-t" href="#machines" data-v="machines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>사출기별 현황</a><div id="sq-m"></div></div>
-    <div class="nsec"><a class="nsec-t" href="#list" data-v="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>조건변경 기록</a><div id="sq-l"></div></div>
-    <div class="nsec"><a class="nsec-t" href="#engineers" data-v="engineers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>사출기사별 기록</a></div>
-    <div class="nsec"><a class="nsec-t" href="#molds" data-v="molds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg>동일 금형 기록</a></div>
-    <div class="nsec"><a class="nsec-t" href="#maint" data-v="maint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 0 1-5 5L4 17v3h3l5.7-5.7a4 4 0 0 0 5-5l-2.3 2.3-2-2 2.3-2.3z"/></svg>정비 이력</a><div id="sq-maint"></div></div>
-    <div class="nsec"><a class="nsec-t" href="#lens" data-v="lens"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>렌즈 한도기준</a><div id="sq-lens"></div></div>
-    <div class="side-foot">기록은 바로 반영 · MES 숫자는 10분마다 갱신<br><a href="#" id="adm">관리자 로그인</a></div>
+    <div class="side-title"><span data-t="3공장 사출 조건관리">3공장 사출 조건관리</span><small>Quản lý thông số ép · Xưởng 3</small></div>
+    <div class="side-act"><a class="btn pri" href="#new" data-t="+ 기록 등록">+ 기록 등록</a></div>
+    <div class="nsec"><a class="nsec-t" href="#machines" data-v="machines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span data-t="사출기별 현황">사출기별 현황</span></a><div id="sq-m"></div></div>
+    <div class="nsec"><a class="nsec-t" href="#list" data-v="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span data-t="조건변경 기록">조건변경 기록</span></a><div id="sq-l"></div></div>
+    <div class="nsec"><a class="nsec-t" href="#engineers" data-v="engineers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg><span data-t="사출기사별 기록">사출기사별 기록</span></a></div>
+    <div class="nsec"><a class="nsec-t" href="#molds" data-v="molds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg><span data-t="동일 금형 기록">동일 금형 기록</span></a></div>
+    <div class="nsec"><a class="nsec-t" href="#maint" data-v="maint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 0 1-5 5L4 17v3h3l5.7-5.7a4 4 0 0 0 5-5l-2.3 2.3-2-2 2.3-2.3z"/></svg><span data-t="정비 이력">정비 이력</span></a><div id="sq-maint"></div></div>
+    <div class="nsec"><a class="nsec-t" href="#lens" data-v="lens"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg><span data-t="렌즈 한도기준">렌즈 한도기준</span></a><div id="sq-lens"></div></div>
+    <div class="side-foot">기록은 바로 반영 · MES 숫자는 10분마다 갱신<br><a href="#" id="adm" data-t="관리자 로그인">관리자 로그인</a></div>
   </aside>
   <div id="body"><main>
     <section id="v-machines">
-      <div class="ph"><div class="ph-t"><h1>사출기별 현황</h1><p>MES 작업(지시·양품·불량·효율)과 마지막 조건 기록을 호기별로 봅니다.</p></div><a class="btn pri" href="#new">+ 기록 등록</a></div>
+      <div class="ph"><div class="ph-t"><h1 data-t="사출기별 현황">사출기별 현황</h1><p data-t="MES 작업(지시·양품·불량·효율)과 마지막 조건 기록을 호기별로 봅니다.">MES 작업(지시·양품·불량·효율)과 마지막 조건 기록을 호기별로 봅니다.</p></div><a class="btn pri" href="#new" data-t="+ 기록 등록">+ 기록 등록</a></div>
       <div class="today" id="today"></div>
-      <div class="bar"><span id="mchips" class="chips"></span><span class="grow"></span><span class="stamp">MES 자료 시각 <b id="mesAt2">-</b></span></div>
-      <div class="bar"><input class="search" id="mq" placeholder="호기, 금형, 제품 검색 · Tìm máy, khuôn, sản phẩm"><span class="vmode" id="vmode"></span><button class="btn" id="refresh">새로고침</button></div>
+      <div class="bar"><span id="mchips" class="chips"></span><span class="grow"></span><span class="stamp"><span data-t="MES 자료 시각">MES 자료 시각</span> <b id="mesAt2">-</b></span></div>
+      <div class="bar"><input class="search" id="mq" placeholder="호기, 금형, 제품 검색 · Tìm máy, khuôn, sản phẩm"><span class="vmode" id="vmode"></span><button class="btn" id="refresh" data-t="새로고침">새로고침</button></div>
       <div id="cards"></div>
     </section>
 
     <section id="v-list" hidden>
-      <div class="ph"><div class="ph-t"><h1>조건변경 기록</h1><p>사출기사가 등록한 조건 변경을 날짜·호기·기사별로 찾습니다.</p></div><a class="btn pri" href="#new">+ 기록 등록</a></div>
+      <div class="ph"><div class="ph-t"><h1 data-t="조건변경 기록">조건변경 기록</h1><p data-t="사출기사가 등록한 조건 변경을 날짜·호기·기사별로 찾습니다.">사출기사가 등록한 조건 변경을 날짜·호기·기사별로 찾습니다.</p></div><a class="btn pri" href="#new" data-t="+ 기록 등록">+ 기록 등록</a></div>
       <div class="kpis" id="lkpis"></div>
       <div class="bar"><span id="lper" class="chips"></span><input class="search" id="lq" placeholder="검색 · Tìm khuôn, sản phẩm, nhân viên"></div>
       <div class="sels"><select id="lno"></select><select id="lw"></select><select id="ls"></select><select id="lk"></select></div>
@@ -299,29 +303,29 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
     </section>
 
     <section id="v-maint" hidden>
-      <div class="ph"><div class="ph-t"><h1>정비 이력</h1><p>흡착패드 교체·금형 세척을 기록하고, 사출기별로 며칠 지났는지 봅니다.</p></div></div>
+      <div class="ph"><div class="ph-t"><h1 data-t="정비 이력">정비 이력</h1><p data-t="흡착패드 교체·금형 세척을 기록하고, 사출기별로 며칠 지났는지 봅니다.">흡착패드 교체·금형 세척을 기록하고, 사출기별로 며칠 지났는지 봅니다.</p></div></div>
       <form id="mtf" class="qreg" autocomplete="off">
         <div class="qreg-row">
-          <label>사출기<select id="mtno" required></select></label>
-          <label>기사<select id="mtw" required></select></label>
-          <label>일시<input id="mtat" type="datetime-local" required></label>
-          <label>메모(선택)<input id="mtnote" placeholder="예: 3번 패드 자국, 전체 교체"></label>
+          <label data-t="금형번호">금형번호<input id="mtmold" list="mtmolds" required autocomplete="off" placeholder="예: 2961 · Mã khuôn"><datalist id="mtmolds"></datalist></label>
+          <label data-t="기사">기사<select id="mtw" required></select></label>
+          <label data-t="일시">일시<input id="mtat" type="datetime-local" required></label>
+          <label data-t="메모(선택)">메모(선택)<input id="mtnote" placeholder="예: 3번 패드 자국, 전체 교체"></label>
         </div>
-        <div class="qreg-act"><span class="note" id="mtmsg">종류를 누르면 바로 기록돼요</span>
-          <button class="btn big pad" type="submit" data-kind="pad">흡착패드 교체 기록</button>
-          <button class="btn big clean" type="submit" data-kind="clean">금형 세척 기록</button>
-          <button class="btn big etc" type="submit" data-kind="etc">기타 정비</button></div>
+        <div class="qreg-act"><span class="note" id="mtmsg" data-t="종류를 누르면 바로 기록돼요">종류를 누르면 바로 기록돼요</span>
+          <button class="btn big pad" type="submit" data-kind="pad" data-t="흡착패드 교체 기록">흡착패드 교체 기록</button>
+          <button class="btn big clean" type="submit" data-kind="clean" data-t="금형 세척 기록">금형 세척 기록</button>
+          <button class="btn big etc" type="submit" data-kind="etc" data-t="기타 정비">기타 정비</button></div>
       </form>
       <div class="mt-sum" id="mtOverdue"></div>
-      <div class="bar"><span id="mtchips" class="chips"></span><input class="search" id="mtq" placeholder="호기, 금형, 기사, 메모 검색"></div>
+      <div class="bar"><span id="mtchips" class="chips"></span><input class="search" id="mtq" placeholder="금형, 기사, 메모 검색"></div>
       <ul class="recs" id="mtlist"></ul>
     </section>
 
     <section id="v-lens" hidden>
-      <div class="ph"><div class="ph-t"><h1>렌즈 한도기준</h1><p>승인된 렌즈 외관 한도 사진입니다. 빨간 원이 불량 위치입니다.</p></div><button class="btn pri" id="lnew">+ 한도 등록</button></div>
+      <div class="ph"><div class="ph-t"><h1 data-t="렌즈 한도기준">렌즈 한도기준</h1><p data-t="승인된 렌즈 외관 한도 사진입니다. 빨간 원이 불량 위치입니다.">승인된 렌즈 외관 한도 사진입니다. 빨간 원이 불량 위치입니다.</p></div><button class="btn pri" id="lnew" data-t="+ 한도 등록">+ 한도 등록</button></div>
       <div id="lensLock" class="lock-in" hidden>
-        <div class="lock-card"><div class="lock-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg></div><b>관리자 전용</b><p>렌즈 한도기준은 관리자만 볼 수 있어요. 4자리 비밀번호를 입력하세요.</p>
-          <form id="lensPinF"><input id="lensPin" inputmode="numeric" maxlength="8" placeholder="비밀번호" autocomplete="off"><button class="btn pri" type="submit">확인</button></form>
+        <div class="lock-card"><div class="lock-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg></div><b data-t="관리자 전용">관리자 전용</b><p data-t="렌즈 한도기준은 관리자만 볼 수 있어요. 4자리 비밀번호를 입력하세요.">렌즈 한도기준은 관리자만 볼 수 있어요. 4자리 비밀번호를 입력하세요.</p>
+          <form id="lensPinF"><input id="lensPin" inputmode="numeric" maxlength="8" placeholder="비밀번호" autocomplete="off"><button class="btn pri" type="submit" data-t="확인">확인</button></form>
           <p class="note" id="lensPinMsg"></p></div>
       </div>
       <div class="bar"><span id="lchips" class="chips"></span><input class="search" id="lensq" placeholder="제품명, 불량, 승인자 검색"></div>
@@ -377,10 +381,10 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 
 <div class="login" id="login" hidden>
   <form id="lf" class="lbox">
-    <b style="font-size:1.1rem">관리자 로그인</b>
-    <label>아이디<input id="lid" required autocomplete="username"></label>
-    <label>비밀번호<input id="lpw" type="password" required autocomplete="current-password"></label>
-    <div class="bar"><button class="btn pri" type="submit">로그인</button><button class="btn" type="button" id="lclose">닫기</button></div>
+    <b style="font-size:1.1rem" data-t="관리자 로그인">관리자 로그인</b>
+    <label data-t="아이디">아이디<input id="lid" required autocomplete="username"></label>
+    <label data-t="비밀번호">비밀번호<input id="lpw" type="password" required autocomplete="current-password"></label>
+    <div class="bar"><button class="btn pri" type="submit" data-t="로그인">로그인</button><button class="btn" type="button" id="lclose" data-t="닫기">닫기</button></div>
     <p class="note" id="lmsg"></p>
   </form>
 </div>
@@ -393,6 +397,43 @@ const pad = n => String(n).padStart(2,'0');
 const fmt = d => d ? `${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}` : '-';
 const NOS = [...Array(45)].map((_,i)=>i+1); // 1~45호기 (3공장 사출기 전체, MES 기준)
 const WORKERS = ['빙','티옌','최관일','롱','이용','후이','칸','토안','두안','황선호'];
+/* ---------- 언어 (한국어/Tiếng Việt) ---------- */
+const VI = {
+  '사출기별 현황':'Tình trạng máy ép','조건변경 기록':'Lịch sử thay đổi','기사별 기록':'Theo KTV','동일 금형':'Cùng khuôn','정비 이력':'Lịch sử bảo trì','렌즈 한도기준':'Giới hạn ngoại quan lens',
+  '사출기사별 기록':'Ghi chép theo KTV','동일 금형 기록':'Ghi chép cùng khuôn','3공장 사출 조건관리':'Quản lý thông số ép · Xưởng 3',
+  '+ 기록 등록':'+ Thêm bản ghi','새로고침':'Làm mới','관리자 로그인':'Đăng nhập quản trị','로그인':'Đăng nhập','닫기':'Đóng','확인':'Xác nhận','취소':'Hủy','등록하기':'Lưu','+ 한도 등록':'+ Thêm giới hạn','+ 조건 등록':'+ Thêm thông số',
+  '아이디':'Tài khoản','비밀번호':'Mật khẩu',
+  'MES 작업(지시·양품·불량·효율)과 마지막 조건 기록을 호기별로 봅니다.':'Xem lệnh SX (lệnh·tốt·lỗi·hiệu suất) và thông số cuối theo từng máy.',
+  '사출기사가 등록한 조건 변경을 날짜·호기·기사별로 찾습니다.':'Tìm thay đổi thông số theo ngày·máy·KTV.',
+  '흡착패드 교체·금형 세척을 기록하고, 사출기별로 며칠 지났는지 봅니다.':'Ghi thay pad hút·vệ sinh khuôn và xem đã bao nhiêu ngày.',
+  '승인된 렌즈 외관 한도 사진입니다. 빨간 원이 불량 위치입니다.':'Ảnh giới hạn ngoại quan lens đã duyệt. Vòng đỏ là vị trí lỗi.',
+  '지금 가동':'Đang chạy','오늘 양품':'Hàng tốt hôm nay','불량률':'Tỷ lệ lỗi','오늘 조건 기록':'Ghi chép hôm nay','미확인 · 이상':'Chưa XN · Bất thường',
+  '전체':'Tất cả','가동 중':'Đang chạy','비가동 중':'Dừng','불량 알림':'Cảnh báo lỗi','C/T 느림':'C/T chậm','현재 금형 조건 기록 없음':'Chưa có thông số khuôn',
+  '간단히':'Gọn','자세히':'Chi tiết',
+  '금형 정보 없음':'Chưa có khuôn','제품 정보 없음':'Chưa có sản phẩm','코팅품 · 흡착패드 확인':'Hàng phủ · Kiểm tra pad hút',
+  '지시':'Lệnh SX','양품':'Hàng tốt','불량':'Lỗi','효율':'Hiệu suất',
+  '이 금형 기록':'Bản ghi khuôn này','기록':'Bản ghi','흡착패드 교체':'Thay pad hút','금형 세척':'Vệ sinh khuôn','기타 정비':'Bảo trì khác','기록 없음':'Chưa có','초과':'Quá hạn',
+  'MES 연결 전':'Chưa kết nối MES','조건 기록 없음':'Chưa có thông số','기사 미상':'KTV ?','이 금형 조건 미등록':'Khuôn này chưa có thông số',
+  '사출기':'Máy ép','금형번호':'Mã khuôn','기사':'KTV','일시':'Thời gian','메모(선택)':'Ghi chú (tùy chọn)','종류를 누르면 바로 기록돼요':'Chọn loại để ghi ngay',
+  '흡착패드 교체 기록':'Ghi thay pad hút','금형 세척 기록':'Ghi vệ sinh khuôn','흡착패드':'Pad hút','금형세척':'Vệ sinh khuôn','기타':'Khác','종류':'Loại','금형':'Khuôn','메모':'Ghi chú',
+  '관리자 전용':'Chỉ quản trị','렌즈 한도기준은 관리자만 볼 수 있어요. 4자리 비밀번호를 입력하세요.':'Chỉ quản trị xem được. Nhập mật khẩu 4 số.',
+  '조건변경 등록':'Thêm thay đổi thông số','새 한도기준 등록':'Thêm giới hạn mới','제품명':'Sản phẩm','불량 내용':'Nội dung lỗi','위치':'Vị trí','판정':'Phán định','승인자':'Người duyệt','승인일':'Ngày duyệt','조건·메모':'Thông số·ghi chú',
+  '수정':'Sửa','삭제':'Xóa','수정 저장':'Lưu sửa',
+  '이상 보고':'Báo bất thường','조회 기록':'Bản ghi','등록':'lưu','대':' máy','건':'','호기':'','MES 자료 시각':'Cập nhật MES','불량 높음 · 실불량':'Lỗi cao · thực tế','이 금형 조건 미등록':'Khuôn này chưa có thông số','일 전':'ngày trước'
+};
+let lang = (()=>{ try { return localStorage.getItem('f3lang')==='vi' ? 'vi':'ko'; } catch { return 'ko'; } })();
+const L = s => lang==='vi' ? (VI[s] ?? s) : s;          // 한국어 문자열 → 현재 언어
+const S = a => lang==='vi' ? (a[1]||a[0]) : a[0];        // [ko,vi,...] 배열 → 현재 언어
+function applyStatic(){
+  document.documentElement.dataset.lang = lang;
+  document.querySelectorAll('[data-t]').forEach(el=>{ const tx = L(el.dataset.t);
+    if (el.children.length && el.firstChild && el.firstChild.nodeType===3) el.firstChild.nodeValue = tx; // 자식(input 등) 보존, 앞 텍스트만 교체
+    else el.textContent = tx; });
+  document.querySelectorAll('[data-tp]').forEach(el=>{ el.placeholder = L(el.dataset.tp); });
+  const lt = $('langtog'); if (lt) lt.innerHTML = [['ko','한국어'],['vi','Tiếng Việt']].map(([v,t])=>`<button data-lang="${v}" class="${lang===v?'on':''}">${t}</button>`).join('');
+  if (typeof admLabel === 'function') admLabel();
+}
+function setLang(l){ if (l!==lang){ lang = l; try { localStorage.setItem('f3lang', l); } catch {} } applyStatic(); route(); }
 const REASONS = ['초기 가동·금형 교체','미성형 개선','버 발생','치수 보정','싱크마크','웰드라인 개선','은선 개선','흑점 개선','사이클 단축','가스 자국','변형 개선'];
 // 조건 항목: [kind, 이름, 베트남어, 단위, 단 목록]
 const KINDS = [
@@ -450,6 +491,7 @@ const lastRec = (no, mold) => R.filter(r=>r.machine===no && (!mold || r.mold===m
 const ngRate = m => (m.prod+m.ng) ? m.ng/(m.prod+m.ng)*100 : 0;
 const MK = { pad:['흡착패드 교체','pad',CFG.padWarnDays], clean:['금형 세척','clean',CFG.cleanWarnDays], etc:['기타 정비','etc',0] };
 const lastMaint = (no, kind) => MT.filter(m=>m.machine===no && m.kind===kind).sort((a,b)=>b._at-a._at)[0];
+const lastMaintMold = (mold, kind) => mold ? MT.filter(m=>m.mold===mold && m.kind===kind).sort((a,b)=>b._at-a._at)[0] : undefined; // 정비이력 금형별 매칭
 const daysAgo = d => Math.floor((Date.now()-d)/86400000);
 /* 코팅품(흡착패드 교체 대상) 품번 목록 — 옆 직원 흡착패드 사이트 75품목 기준. 접미사(-M/-H) 떼고 8자리 기준번호로 매칭 */
 const COATING = new Set("00325289,00325290,00332818,00332819,00312011,00312012,00312017,00312018,00312052,00312053,00324932,00324933,00324965,00340679,00318439,00318440,00326498,00328265,00328266,00328379,00328380,00328381,00328382,00328736,00328737,00336572,00336573,00340380,00340381,00340365,00340366,00340399,00340400,00336860,00336861,00343686,00343687,00365823,00365824,00365829,00365830,00348871,00348872,00366815,00366816,00367643,00367644,00380361,00380362,00378001,00378002,00368117,00368118,00363817,00363818,00370610,00370611,00359702,00359703,00359790,00359791,00364542,00364543,00364548,00364573,00364574,00373078,00373079,00386558,00386559,00388085,00388086,00392162,00392163,00386592".split(","));
@@ -470,27 +512,27 @@ function sideCounts(){
   $('sq-m').innerHTML = [['bad','불량 알림',1],['run','가동 중',0],['stop','비가동 중',1],['norec','현재 금형 기록 없음',1]].map(([k,t,r])=>sq('m-'+k,t,M.filter(test[k]).length,r)).join('');
   const today = new Date().setHours(0,0,0,0);
   $('sq-l').innerHTML = sq('l-all','전체 기록',R.length) + sq('l-today','오늘 등록',R.filter(r=>r._at>=today).length) + sq('l-un','미확인',R.filter(r=>r.status==='미확인').length,1) + sq('l-ng','이상 보고',R.filter(r=>r.status==='이상').length,1);
-  if ($('sq-maint')){ const overdue = M.filter(m=>{ const r = lastMaint(m.no,'pad'); return !r || daysAgo(r._at)>=CFG.padWarnDays; }).length;
-    $('sq-maint').innerHTML = `<a class="sub" href="#maint">흡착패드 교체 요망 <em class="${overdue?'red':''}">(${overdue})</em></a><a class="sub" href="#maint">전체 정비 기록 <em>(${MT.length})</em></a>`; }
+  if ($('sq-maint')){ const overdue = M.filter(m=>{ if (!isCoating(m)) return false; const mold = m.mold||lastRec(m.no)?.mold; const r = lastMaintMold(mold,'pad'); return !r || daysAgo(r._at)>=CFG.padWarnDays; }).length;
+    $('sq-maint').innerHTML = `<a class="sub" href="#maint">${L('흡착패드')} ${lang==='vi'?'cần thay':'교체 요망'} <em class="${overdue?'red':''}">(${overdue})</em></a><a class="sub" href="#maint">${lang==='vi'?'Tất cả bảo trì':'전체 정비 기록'} <em>(${MT.length})</em></a>`; }
 }
 const LANES = [['1라인','1~14호기',n=>n<=14],['2라인','15~28호기',n=>n>=15&&n<=28],['3라인','29~45호기',n=>n>=29]];
 function renderMachines(){
   setMes(); sideCounts();
   const run = M.filter(m=>m.status==='RUN').length, prod = M.reduce((a,m)=>a+m.prod,0), ng = M.reduce((a,m)=>a+m.ng,0);
   const today = new Date().setHours(0,0,0,0), tr = R.filter(r=>r._at>=today);
-  $('today').innerHTML = `<div class="td navy"><span class="l">지금 가동</span><span class="v">${run}<small>/ ${NOS.length}대</small></span><span class="meter"><i style="width:${run/NOS.length*100}%"></i></span></div>
-    <div class="td"><span class="l">오늘 양품</span><span class="v">${mesAt?prod.toLocaleString():'-'}<small>EA</small></span></div>
-    <div class="td"><span class="l">불량률</span><span class="v" style="color:${(prod+ng)&&ng/(prod+ng)>=.02?'var(--bad)':'inherit'}">${mesAt&&(prod+ng)?(ng/(prod+ng)*100).toFixed(2):'-'}<small>%</small></span></div>
-    <div class="td"><span class="l">오늘 조건 기록</span><span class="v">${tr.length}<small>건</small></span></div>
-    <div class="td"><span class="l">미확인 · 이상</span><span class="v">${R.filter(r=>r.status==='미확인').length}<small>· <b style="color:var(--bad)">${R.filter(r=>r.status==='이상').length}</b></small></span></div>`;
-  $('mchips').innerHTML = FILTERS.map(([k,t])=>`<button class="gchip ${CHIPC[k]||''}${mf===k?' on':''}" data-mf="${k}">${t} ${M.filter(test[k]).length}${k==='all'?'대':''}</button>`).join('');
+  $('today').innerHTML = `<div class="td navy"><span class="l">${L('지금 가동')}</span><span class="v">${run}<small>/ ${NOS.length}${L('대')}</small></span><span class="meter"><i style="width:${run/NOS.length*100}%"></i></span></div>
+    <div class="td"><span class="l">${L('오늘 양품')}</span><span class="v">${mesAt?prod.toLocaleString():'-'}<small>EA</small></span></div>
+    <div class="td"><span class="l">${L('불량률')}</span><span class="v" style="color:${(prod+ng)&&ng/(prod+ng)>=.02?'var(--bad)':'inherit'}">${mesAt&&(prod+ng)?(ng/(prod+ng)*100).toFixed(2):'-'}<small>%</small></span></div>
+    <div class="td"><span class="l">${L('오늘 조건 기록')}</span><span class="v">${tr.length}<small>${L('건')}</small></span></div>
+    <div class="td"><span class="l">${L('미확인 · 이상')}</span><span class="v">${R.filter(r=>r.status==='미확인').length}<small>· <b style="color:var(--bad)">${R.filter(r=>r.status==='이상').length}</b></small></span></div>`;
+  $('mchips').innerHTML = FILTERS.map(([k,t])=>`<button class="gchip ${CHIPC[k]||''}${mf===k?' on':''}" data-mf="${k}">${L(t)} ${M.filter(test[k]).length}${k==='all'?L('대'):''}</button>`).join('');
   $('cards').classList.toggle('lean', lean);
-  $('vmode').innerHTML = [['1','간단히'],['0','자세히']].map(([v,t])=>`<button data-vm="${v}" class="${(v==='1')===lean?'on':''}">${t}</button>`).join('');
+  $('vmode').innerHTML = [['1','간단히'],['0','자세히']].map(([v,t])=>`<button data-vm="${v}" class="${(v==='1')===lean?'on':''}">${L(t)}</button>`).join('');
   const q = $('mq').value.trim().replace(/호기$/,'');
   const list = M.filter(m=>test[mf](m) && (!q || `${m.no} ${m.mold} ${m.part} ${m.worker}`.includes(q)));
   $('cards').innerHTML = list.length ? LANES.map(([t,sub,f])=>{ const ms = list.filter(m=>f(m.no)), all = M.filter(m=>f(m.no)); if (!ms.length) return '';
     return `<section class="lane"><div class="lane-h"><b>${t}</b><span>${sub} · 가동 ${all.filter(m=>m.status==='RUN').length}/${all.length}</span><span class="dots">${all.map(m=>`<i style="--c:var(${(ST[m.status]||ST.STOP)[2]})" title="${m.no}호기 ${(ST[m.status]||ST.STOP)[0]}"></i>`).join('')}</span></div><div class="board">${ms.map(card).join('')}</div></section>`; }).join('')
-    : '<div class="empty">조건에 맞는 사출기가 없습니다</div>';
+    : `<div class="empty">${lang==='vi'?'Không có máy phù hợp':'조건에 맞는 사출기가 없습니다'}</div>`;
 }
 function card(m){
   const s = ST[m.status] || ST.STOP, lr = lastRec(m.no, m.mold) || lastRec(m.no), cur = m.mold ? lastRec(m.no, m.mold) : lr;
@@ -499,20 +541,20 @@ function card(m){
   const prod = m.part || lr?.product || '', mold = m.mold || lr?.mold || '';
   const n = mold ? R.filter(r=>r.mold===mold).length : R.filter(r=>r.machine===m.no).length;
   return `<div class="mc" style="--c:var(${s[2]})">
-    <div class="mc-h"><span class="no">${m.no}<small>호기</small></span><span class="who"><b>${esc(mold||'금형 정보 없음')}</b>${m.worker?esc(m.worker):has?'':'MES 연결 전'}</span>
-      <span class="pill ${m.status==='RUN'?'run':''}"><i></i>${s[0]}</span></div>
+    <div class="mc-h"><span class="no">${m.no}<small>${L('호기')}</small></span><span class="who"><b>${esc(mold||L('금형 정보 없음'))}</b>${m.worker?esc(m.worker):has?'':L('MES 연결 전')}</span>
+      <span class="pill ${m.status==='RUN'?'run':''}"><i></i>${S(s)}</span></div>
     <div class="mc-b">
-      <div class="pntop"><div class="pnl"><div class="pn" title="${esc(prod)}">${esc(prod||'제품 정보 없음')}</div>${isCoating(m)?`<div class="padchk">코팅품 · 흡착패드 확인</div>`:''}</div>${m.item_code&&PH.has(m.item_code)?`<button type="button" class="pphoto" data-ph="${esc(m.item_code)}" title="제품 사진 크게 보기"><img loading="lazy" src="${PH.get(m.item_code)}" alt="제품 사진"></button>`:''}</div>
-      ${m.status!=='RUN'&&m.alarm?`<div class="alert" style="background:color-mix(in srgb,var(--c) 10%,#fff);color:var(--c)">${esc(m.alarm)}${m.since?' · '+fmt(new Date(m.since))+'부터':''}</div>`:''}
-      ${isBad(m)?`<div class="alert">불량 높음 · 실불량 ${rate.toFixed(1)}%</div>`:''}
-      <div class="stats"><div><span>지시</span><b>${d(m.target.toLocaleString())}</b></div><div><span>양품</span><b>${d(m.prod.toLocaleString())}</b></div><div class="${m.ng?'bad':''}"><span>불량</span><b>${d(m.ng.toLocaleString())}</b></div><div><span>효율</span><b>${d(eff+'%')}</b></div></div>
-      <div class="rate"><span>불량률</span><span class="bar2"><i class="${isBad(m)?'hi':''}" style="width:${has?Math.min(100,rate*10):0}%"></i></span><b class="${isBad(m)?'red':''}" style="${isBad(m)?'color:var(--bad)':''}">${d(rate.toFixed(2)+'%')}</b></div>
-      <div class="kv"><span>C/T 기준 · 실</span><b>${has&&m.stdCt?m.stdCt+'s':'-'} · ${has&&m.ct?m.ct+'s':'-'} ${ctd!==null?`<span class="tag ${ctd>5?'':'g'}">${ctd>0?'+':''}${ctd}%</span>`:''}</b></div>
-      <div class="lastrec">${lr?`<div><b>${esc(lr.technician||'기사 미상')}</b><small>${fmt(lr._at)} 등록</small></div>`:'<div><small>조건 기록 없음</small></div>'}${lr&&!cur?'<span class="tag">이 금형 조건 미등록</span>':''}</div>
-      <div class="mt-days">${['pad','clean'].map(k=>{ const r = lastMaint(m.no,k), dd = r?daysAgo(r._at):null, warn = dd!==null&&MK[k][2]&&dd>=MK[k][2];
-        return `<span class="${warn?'warn':''}">${MK[k][0]} ${r?`<b>${dd}일 전</b>${warn?' 초과':''}`:'기록 없음'}</span>`; }).join('')}</div>
+      <div class="pntop"><div class="pnl"><div class="pn" title="${esc(prod)}">${esc(prod||L('제품 정보 없음'))}</div>${isCoating(m)?`<div class="padchk">${L('코팅품 · 흡착패드 확인')}</div>`:''}</div>${m.item_code&&PH.has(m.item_code)?`<button type="button" class="pphoto" data-ph="${esc(m.item_code)}" title="제품 사진 크게 보기"><img loading="lazy" src="${PH.get(m.item_code)}" alt="제품 사진"></button>`:''}</div>
+      ${m.status!=='RUN'&&m.alarm?`<div class="alert" style="background:color-mix(in srgb,var(--c) 10%,#fff);color:var(--c)">${esc(m.alarm)}${m.since?' · '+fmt(new Date(m.since))+(lang==='vi'?'':'부터'):''}</div>`:''}
+      ${isBad(m)?`<div class="alert">${L('불량 높음 · 실불량')} ${rate.toFixed(1)}%</div>`:''}
+      <div class="stats"><div><span>${L('지시')}</span><b>${d(m.target.toLocaleString())}</b></div><div><span>${L('양품')}</span><b>${d(m.prod.toLocaleString())}</b></div><div class="${m.ng?'bad':''}"><span>${L('불량')}</span><b>${d(m.ng.toLocaleString())}</b></div><div><span>${L('효율')}</span><b>${d(eff+'%')}</b></div></div>
+      <div class="rate"><span>${L('불량률')}</span><span class="bar2"><i class="${isBad(m)?'hi':''}" style="width:${has?Math.min(100,rate*10):0}%"></i></span><b class="${isBad(m)?'red':''}" style="${isBad(m)?'color:var(--bad)':''}">${d(rate.toFixed(2)+'%')}</b></div>
+      <div class="kv"><span>C/T ${lang==='vi'?'chuẩn · thực':'기준 · 실'}</span><b>${has&&m.stdCt?m.stdCt+'s':'-'} · ${has&&m.ct?m.ct+'s':'-'} ${ctd!==null?`<span class="tag ${ctd>5?'':'g'}">${ctd>0?'+':''}${ctd}%</span>`:''}</b></div>
+      <div class="lastrec">${lr?`<div><b>${esc(lr.technician||L('기사 미상'))}</b><small>${fmt(lr._at)} ${L('등록')}</small></div>`:`<div><small>${L('조건 기록 없음')}</small></div>`}${lr&&!cur?`<span class="tag">${L('이 금형 조건 미등록')}</span>`:''}</div>
+      <div class="mt-days">${['pad','clean'].map(k=>{ const r = lastMaintMold(mold,k), dd = r?daysAgo(r._at):null, warn = dd!==null&&MK[k][2]&&dd>=MK[k][2];
+        return `<span class="${warn?'warn':''}">${L(MK[k][0])} ${r?`<b>${dd}${lang==='vi'?' '+L('일 전'):'일 전'}</b>${warn?' '+L('초과'):''}`:L('기록 없음')}</span>`; }).join('')}</div>
     </div>
-    <div class="mc-f"><a class="btn sm" href="#list" ${mold?`data-go-mold="${esc(mold)}"`:`data-go-no="${m.no}"`}>${mold?'이 금형 기록':'기록'} ${n}건</a><a class="btn sm pri" href="#new" data-new-no="${m.no}">+ 조건 등록</a></div>
+    <div class="mc-f"><a class="btn sm" href="#list" ${mold?`data-go-mold="${esc(mold)}"`:`data-go-no="${m.no}"`}>${mold?L('이 금형 기록'):L('기록')} ${n}${L('건')}</a><a class="btn sm pri" href="#new" data-new-no="${m.no}">${L('+ 조건 등록')}</a></div>
   </div>`;
 }
 
@@ -757,50 +799,53 @@ $('lform').addEventListener('submit', async e=>{
 let mtF = 'all';
 function initMaint(){
   const now = new Date(); now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
-  $('mtno').innerHTML = opt('','사출기 선택') + NOS.map(n=>opt(n,`${n}호기`)).join('');
-  $('mtw').innerHTML = opt('','기사 선택') + [...new Set(WORKERS.concat(R.map(r=>r.technician).filter(Boolean), MT.map(m=>m.worker).filter(Boolean)))].map(w=>opt(w,w)).join('');
+  // 금형번호 자동완성: 현재 설비에 올라간 금형 + 기록에 쓰인 금형 + 정비 이력 금형
+  const molds = [...new Set(M.map(m=>m.mold).concat(R.map(r=>r.mold), MT.map(m=>m.mold)).filter(Boolean))].sort();
+  $('mtmolds').innerHTML = molds.map(m=>`<option value="${esc(m)}">`).join('');
+  $('mtw').innerHTML = opt('', lang==='vi'?'Chọn KTV':'기사 선택') + [...new Set(WORKERS.concat(R.map(r=>r.technician).filter(Boolean), MT.map(m=>m.worker).filter(Boolean)))].map(w=>opt(w,w)).join('');
   $('mtat').value = now.toISOString().slice(0,16);
   renderMaint();
 }
 function renderMaint(){
-  // 교체 시기가 지난 사출기 (흡착패드)
-  const od = M.map(m=>{ const r = lastMaint(m.no,'pad'); return { no:m.no, mold:m.mold||lastRec(m.no)?.mold||'', d: r?daysAgo(r._at):null }; })
+  // 흡착패드 교체 시기가 지난 금형 (코팅품 기준, 금형별 집계)
+  const molds = [...new Set(M.filter(isCoating).map(m=>m.mold||lastRec(m.no)?.mold).filter(Boolean))];
+  const od = molds.map(mold=>{ const r = lastMaintMold(mold,'pad'); return { mold, d: r?daysAgo(r._at):null }; })
     .filter(x=>x.d===null || x.d>=CFG.padWarnDays).sort((a,b)=>(b.d??999)-(a.d??999));
-  $('mtOverdue').innerHTML = od.length ? od.slice(0,12).map(x=>`<div class="od"><b>${x.no}호기</b> ${esc(x.mold||'')}<div class="d">흡착패드 ${x.d===null?'기록 없음':x.d+'일 전 · 교체 요망'}</div></div>`).join('')
-    : `<div class="ok0">흡착패드 교체가 ${CFG.padWarnDays}일 넘은 사출기가 없어요.</div>`;
-  $('mtchips').innerHTML = [['all','전체'],['pad','흡착패드'],['clean','금형세척'],['etc','기타']].map(([k,t])=>`<button class="gchip${mtF===k?' on':''}" data-mtf="${k}">${t} ${MT.filter(x=>k==='all'||x.kind===k).length}</button>`).join('');
+  $('mtOverdue').innerHTML = od.length ? od.slice(0,12).map(x=>`<div class="od"><b>${esc(x.mold)}</b><div class="d">${L('흡착패드')} ${x.d===null?L('기록 없음'):x.d+(lang==='vi'?' '+L('일 전')+' · cần thay':'일 전 · 교체 요망')}</div></div>`).join('')
+    : `<div class="ok0">${lang==='vi'?`Không có khuôn nào quá ${CFG.padWarnDays} ngày chưa thay pad hút.`:`흡착패드 교체가 ${CFG.padWarnDays}일 넘은 금형이 없어요.`}</div>`;
+  $('mtchips').innerHTML = [['all','전체'],['pad','흡착패드'],['clean','금형세척'],['etc','기타']].map(([k,t])=>`<button class="gchip${mtF===k?' on':''}" data-mtf="${k}">${L(t)} ${MT.filter(x=>k==='all'||x.kind===k).length}</button>`).join('');
   const q = $('mtq').value.trim();
-  const list = MT.filter(x=>(mtF==='all'||x.kind===mtF) && (!q || `${x.machine}호기 ${x.mold} ${x.worker} ${x.note}`.includes(q)));
-  const wd = ['일','월','화','수','목','금','토'];
-  const gc = 'grid-template-columns:96px 54px 92px minmax(0,1.3fr) 70px minmax(0,1.6fr) 46px';
-  $('mtlist').innerHTML = list.length ? `<li class="rrow rhead" style="${gc}"><span>일시</span><span>호기</span><span>종류</span><span>금형</span><span>기사</span><span>메모</span><span></span></li>` +
+  const list = MT.filter(x=>(mtF==='all'||x.kind===mtF) && (!q || `${x.mold} ${x.worker} ${x.note}`.includes(q)));
+  const wd = lang==='vi' ? ['CN','T2','T3','T4','T5','T6','T7'] : ['일','월','화','수','목','금','토'];
+  const gc = 'grid-template-columns:96px 104px minmax(0,1.3fr) 72px minmax(0,1.6fr) 46px';
+  $('mtlist').innerHTML = list.length ? `<li class="rrow rhead" style="${gc}"><span>${L('일시')}</span><span>${L('종류')}</span><span>${L('금형')}</span><span>${L('기사')}</span><span>${L('메모')}</span><span></span></li>` +
     list.slice(0,300).map(x=>`<li><div class="rrow" style="${gc};cursor:default">
       <span class="c-at"><b>${x._at.getMonth()+1}/${x._at.getDate()} (${wd[x._at.getDay()]})</b><small>${pad(x._at.getHours())}:${pad(x._at.getMinutes())}</small></span>
-      <span class="c-no">${x.machine}<small>호기</small></span>
-      <span><span class="mk ${x.kind}">${(MK[x.kind]||['기타'])[0]}</span></span>
+      <span><span class="mk ${x.kind}">${L((MK[x.kind]||['기타'])[0])}</span></span>
       <span class="c-mold"><b>${esc(x.mold||'-')}</b></span>
       <span class="c-who">${esc(x.worker||'-')}</span>
       <span class="c-why">${esc(x.note||'')}</span>
-      <span class="c-del"><button type="button" class="delx" data-mtdel="${esc(x.id)}" title="삭제">✕</button></span></div></li>`).join('')
-    : '<li class="empty">기록이 없습니다. 위에서 종류를 눌러 첫 기록을 남겨보세요.</li>';
+      <span class="c-del"><button type="button" class="delx" data-mtdel="${esc(x.id)}" title="${L('삭제')}">✕</button></span></div></li>`).join('')
+    : `<li class="empty">${lang==='vi'?'Chưa có bản ghi. Chọn loại ở trên để ghi lần đầu.':'기록이 없습니다. 위에서 종류를 눌러 첫 기록을 남겨보세요.'}</li>`;
 }
 async function delMaint(id){ const r = MT.find(x=>x.id===id); if (!r) return;
-  if (!confirm(`${r.machine}호기 · ${(MK[r.kind]||['기타'])[0]} 기록을 삭제할까요?\n(${r._at.getMonth()+1}/${r._at.getDate()} ${r.worker||''})`)) return;
+  if (!confirm(`${r.mold||'-'} · ${L((MK[r.kind]||['기타'])[0])} ${lang==='vi'?'xóa bản ghi?':'기록을 삭제할까요?'}\n(${r._at.getMonth()+1}/${r._at.getDate()} ${r.worker||''})`)) return;
   try { await sb(`maintenance?id=eq.${encodeURIComponent(id)}`, { method:'DELETE', headers:{ Prefer:'return=minimal' } });
     MT = MT.filter(x=>x.id!==id); renderMaint(); sideCounts(); }
-  catch { alert('삭제 실패. 인터넷 확인 후 다시 시도해 주세요.'); } }
+  catch { alert(lang==='vi'?'Xóa thất bại. Kiểm tra mạng rồi thử lại.':'삭제 실패. 인터넷 확인 후 다시 시도해 주세요.'); } }
 $('mtlist').addEventListener('click', e=>{ const b = e.target.closest('[data-mtdel]'); if (b) delMaint(b.dataset.mtdel); });
 $('mtq').addEventListener('input', renderMaint);
 $('mtf').addEventListener('submit', async e=>{
   e.preventDefault(); const kind = (e.submitter&&e.submitter.dataset.kind) || 'etc';
-  if (!$('mtno').value || !$('mtw').value){ $('mtmsg').textContent = '사출기와 기사를 먼저 고르세요'; return; }
-  const no = +$('mtno').value, mold = M.find(x=>x.no===no)?.mold || lastRec(no)?.mold || '';
+  const mold = $('mtmold').value.trim();
+  if (!mold || !$('mtw').value){ $('mtmsg').textContent = lang==='vi'?'Hãy nhập mã khuôn và KTV trước':'금형번호와 기사를 먼저 입력하세요'; return; }
+  const no = M.find(x=>x.mold===mold)?.no ?? null;   // 그 금형이 지금 올라간 호기(있으면)
   const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
   const row = { id, machine:no, mold, kind, at:new Date($('mtat').value+':00+09:00').toISOString(), worker:$('mtw').value, note:$('mtnote').value.trim(), data:{ src:'f3-site' } };
-  $('mtmsg').textContent = '기록 중…';
+  $('mtmsg').textContent = lang==='vi'?'Đang ghi…':'기록 중…';
   try { await sb('maintenance', { method:'POST', headers:{ Prefer:'return=minimal' }, body:JSON.stringify(row) });
-    MT.unshift({ ...row, _at:new Date(row.at) }); $('mtnote').value=''; $('mtmsg').textContent = `${no}호기 ${MK[kind][0]} 기록됨`; renderMaint(); }
-  catch { $('mtmsg').textContent = '기록 실패. 인터넷 확인 후 다시.'; }
+    MT.unshift({ ...row, _at:new Date(row.at) }); $('mtmold').value=''; $('mtnote').value=''; $('mtmsg').textContent = lang==='vi'?`Đã ghi ${L(MK[kind][0])} · ${mold}`:`${mold} ${MK[kind][0]} 기록됨`; renderMaint(); sideCounts(); }
+  catch { $('mtmsg').textContent = lang==='vi'?'Ghi thất bại. Kiểm tra mạng rồi thử lại.':'기록 실패. 인터넷 확인 후 다시.'; }
 });
 
 /* ---------- 화면 전환 / 이벤트 ---------- */
@@ -822,6 +867,7 @@ function route(){
 addEventListener('hashchange', ()=>{ closeRec(); route(); scrollTo(0,0); });
 addEventListener('keydown', e=>{ if (e.key==='Escape') closeRec(); });
 document.addEventListener('click', e=>{
+  const lgb = e.target.closest('[data-lang]'); if (lgb){ setLang(lgb.dataset.lang); return; }
   const ph = e.target.closest('[data-ph]'); if (ph){ openPhoto(ph.dataset.ph); return; }
   const vm = e.target.closest('[data-vm]'); if (vm){ lean = vm.dataset.vm==='1'; try{ localStorage.setItem('f3lean', lean?'1':'0'); }catch(e){} renderMachines(); return; }
   const led = e.target.closest('[data-ledit]'); if (led){ e.stopPropagation(); editLens(led.dataset.ledit); return; }
@@ -842,19 +888,20 @@ document.addEventListener('click', e=>{
 $('mq').addEventListener('input', renderMachines);
 ['lq','lno','lw','ls','lk','lsort'].forEach(id=>$(id).addEventListener('input', renderList));
 $('refresh').addEventListener('click', refresh);
-$('adm').addEventListener('click', e=>{ e.preventDefault(); if (auth){ saveAuth(null); $('adm').textContent='관리자 로그인'; } else $('login').hidden = false; });
+function admLabel(){ $('adm').textContent = auth ? (lang==='vi'?`Đăng xuất (${auth.user})`:`관리자 로그아웃 (${auth.user})`) : L('관리자 로그인'); }
+$('adm').addEventListener('click', e=>{ e.preventDefault(); if (auth){ saveAuth(null); admLabel(); route(); } else $('login').hidden = false; });
 $('lclose').addEventListener('click', ()=>$('login').hidden = true);
 $('lf').addEventListener('submit', async e=>{ e.preventDefault(); const id = $('lid').value.trim(), email = id.includes('@') ? id : `${id}@${CFG.idDomain}`;
   const r = await fetch(`${CFG.sb.url}/auth/v1/token?grant_type=password`, { method:'POST', headers:{ apikey:CFG.sb.key, 'content-type':'application/json' }, body:JSON.stringify({ email, password:$('lpw').value }) });
-  if (!r.ok){ $('lmsg').textContent = '아이디 또는 비밀번호가 맞지 않습니다'; return; }
-  const j = await r.json(); saveAuth({ at:j.access_token, user:id }); $('lpw').value=''; $('login').hidden = true; $('adm').textContent = `관리자 로그아웃 (${id})`; });
-if (auth) $('adm').textContent = `관리자 로그아웃 (${auth.user})`;
+  if (!r.ok){ $('lmsg').textContent = lang==='vi'?'Tài khoản hoặc mật khẩu không đúng':'아이디 또는 비밀번호가 맞지 않습니다'; return; }
+  const j = await r.json(); saveAuth({ at:j.access_token, user:id }); $('lpw').value=''; $('login').hidden = true; admLabel(); route(); });
 
 async function refresh(){
   try { await load(); const v = location.hash.slice(1); if (!['new','lens','maint'].includes(v)) route(); else { renderMachinesSilently(); if(v==='maint') renderMaint(); } }
   catch(err){ $('mesAt').textContent = '연결 실패 · 재시도 중'; $('mesChip').classList.add('off'); console.error(err); }
 }
 function renderMachinesSilently(){ setMes(); }
+applyStatic();   // 저장된 언어로 정적 라벨·토글 초기화
 refresh().then(()=>{ if (['#new','#lens','#maint'].includes(location.hash)) route(); });
 setInterval(refresh, CFG.pollSec*1000);
 }
