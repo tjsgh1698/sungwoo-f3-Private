@@ -214,6 +214,10 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .zoom svg{width:100%;height:80vh;display:block}
 .zoom p{color:#fff;margin:8px 0 0;font-size:.9rem}
 .login{position:fixed;inset:0;z-index:50;background:rgba(8,18,36,.55);display:grid;place-items:center;padding:16px}
+.recm{position:fixed;inset:0;z-index:60;background:rgba(8,18,36,.55);display:grid;place-items:center;padding:16px;overflow:auto}
+.recin{position:relative;background:#fff;border-radius:12px;max-width:640px;width:100%;max-height:90vh;overflow:auto;padding:16px 14px 14px;box-shadow:0 20px 60px rgba(8,18,36,.4)}
+.recx{position:absolute;top:10px;right:10px;width:34px;height:34px;border:0;border-radius:8px;background:var(--panel);color:var(--ink2);font-size:1.1rem;font-weight:700;cursor:pointer;z-index:1}
+.recx:hover{background:var(--bad);color:#fff}
 .lbox{background:#fff;border-radius:6px;padding:24px;width:min(360px,100%);display:flex;flex-direction:column;gap:12px}
 .lbox label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:.92rem}
 @media(max-width:1100px){#side{display:none}.brand{width:auto}}
@@ -518,7 +522,7 @@ function renderList(){
       <span class="c-who">${esc(x.technician||'-')}</span>
       <span class="c-why">${esc(x.reason||'')}</span>
       <span class="c-chg">${chgCell(x)}</span>
-      <span class="c-st"><span class="badge ${bc[x.status]||'b-un'}">${esc(x.status||'-')}</span></span></div>${lf.open===x.id?detail(x):''}</li>`).join('')
+      <span class="c-st"><span class="badge ${bc[x.status]||'b-un'}">${esc(x.status||'-')}</span></span></div></li>`).join('')
     : '<li class="empty">조건에 맞는 기록이 없습니다 · Không có bản ghi</li>';
 }
 const chgd = p => p.after!==''&&p.after!=null&&String(p.after)!==String(p.before);
@@ -541,6 +545,14 @@ function detail(x){
     <div class="rd-meta">${x.reason?`<span>사유</span><b>${esc(x.reason)}</b>`:''}${(x.beam?.lh||x.beam?.rh)?`<span>배광</span><b>LH ${esc(x.beam.lh||'-')} · RH ${esc(x.beam.rh||'-')}</b>`:''}${mat?`<span>원재료</span><b>${mat}</b>`:''}${x.notes?`<span>메모</span><b>${esc(x.notes)}</b>`:''}${x.operator?`<span>작업자</span><b>${esc(x.operator)}</b>`:''}
     <a class="btn sm" href="#new" data-copy="${esc(x.id)}" style="margin-left:auto">이 조건으로 새 기록</a></div></div>`;
 }
+function openRec(id){ const x = R.find(r=>r.id===id); if (!x) return;
+  closeRec();
+  const z = document.createElement('div'); z.className = 'recm';
+  z.innerHTML = `<div class="recin"><button type="button" class="recx" data-recx title="닫기">✕</button>${detail(x)}</div>`;
+  z.addEventListener('click', e=>{ if (e.target===z || e.target.closest('[data-recx]') || e.target.closest('[data-copy]')) closeRec(); });
+  document.body.append(z);
+}
+function closeRec(){ document.querySelectorAll('.recm').forEach(z=>z.remove()); }
 
 /* ---------- 기사별 / 금형별 ---------- */
 function renderGroup(kind){
@@ -746,7 +758,8 @@ function route(){
   if (v==='lens') renderLens();
   if (v==='maint') initMaint();
 }
-addEventListener('hashchange', ()=>{ route(); scrollTo(0,0); });
+addEventListener('hashchange', ()=>{ closeRec(); route(); scrollTo(0,0); });
+addEventListener('keydown', e=>{ if (e.key==='Escape') closeRec(); });
 document.addEventListener('click', e=>{
   const vm = e.target.closest('[data-vm]'); if (vm){ lean = vm.dataset.vm==='1'; try{ localStorage.setItem('f3lean', lean?'1':'0'); }catch(e){} renderMachines(); return; }
   const lz = e.target.closest('[data-lz]'); if (lz){ zoomLens(lz.dataset.lz); return; }
@@ -755,7 +768,7 @@ document.addEventListener('click', e=>{
   const t = e.target.closest('[data-mf],[data-p],[data-open],[data-go-no],[data-new-no],[data-copy],[data-gk]'); if (!t) return;
   if (t.dataset.mf){ mf = t.dataset.mf; renderMachines(); }
   else if (t.dataset.p){ lf.p = t.dataset.p; renderList(); }
-  else if (t.dataset.open){ lf.open = lf.open===t.dataset.open ? null : t.dataset.open; renderList(); }
+  else if (t.dataset.open){ openRec(t.dataset.open); }
   else if (t.dataset.goNo){ fillSel(); ['lw','ls','lk'].forEach(id=>$(id).value=''); $('lq').value=''; $('lno').value = t.dataset.goNo; lf.p = 'all'; }
   else if (t.dataset.newNo){ pre = { no:+t.dataset.newNo }; }
   else if (t.dataset.copy){ pre = { copy:t.dataset.copy }; }
