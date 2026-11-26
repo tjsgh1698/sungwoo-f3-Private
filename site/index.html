@@ -92,6 +92,7 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .mc-b{padding:0 12px 10px;display:flex;flex-direction:column;gap:8px;font-size:.88rem;flex:1}
 .pn{font-weight:700;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .alert{border-radius:6px;background:var(--bad-bg);color:var(--bad);padding:4px 8px;font-size:.82rem;font-weight:700}
+.padchk{display:flex;align-items:center;gap:6px;border-radius:7px;background:var(--unk-bg);color:var(--unk);border:1px solid #f0d08a;padding:6px 9px;font-size:.84rem;font-weight:700}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
 .stats div{background:var(--panel);border-radius:6px;padding:5px 6px;text-align:center}
 .stats span{display:block;font-size:.72rem;color:var(--mut)}.stats b{font-size:1rem;font-variant-numeric:tabular-nums}
@@ -435,6 +436,9 @@ const ngRate = m => (m.prod+m.ng) ? m.ng/(m.prod+m.ng)*100 : 0;
 const MK = { pad:['흡착패드 교체','pad',CFG.padWarnDays], clean:['금형 세척','clean',CFG.cleanWarnDays], etc:['기타 정비','etc',0] };
 const lastMaint = (no, kind) => MT.filter(m=>m.machine===no && m.kind===kind).sort((a,b)=>b._at-a._at)[0];
 const daysAgo = d => Math.floor((Date.now()-d)/86400000);
+/* 코팅품(흡착패드 교체 대상) 품번 목록 — 옆 직원 흡착패드 사이트 75품목 기준. 접미사(-M/-H) 떼고 8자리 기준번호로 매칭 */
+const COATING = new Set("00325289,00325290,00332818,00332819,00312011,00312012,00312017,00312018,00312052,00312053,00324932,00324933,00324965,00340679,00318439,00318440,00326498,00328265,00328266,00328379,00328380,00328381,00328382,00328736,00328737,00336572,00336573,00340380,00340381,00340365,00340366,00340399,00340400,00336860,00336861,00343686,00343687,00365823,00365824,00365829,00365830,00348871,00348872,00366815,00366816,00367643,00367644,00380361,00380362,00378001,00378002,00368117,00368118,00363817,00363818,00370610,00370611,00359702,00359703,00359790,00359791,00364542,00364543,00364548,00364573,00364574,00373078,00373079,00386558,00386559,00388085,00388086,00392162,00392163,00386592".split(","));
+const isCoating = m => COATING.has(String(m.item_code||'').split('-')[0]);
 
 /* ---------- 사출기별 현황 (4공장식 카드) ---------- */
 let mf = 'all';
@@ -484,6 +488,7 @@ function card(m){
       <span class="pill ${m.status==='RUN'?'run':''}"><i></i>${s[0]}</span></div>
     <div class="mc-b">
       <div class="pn" title="${esc(prod)}">${esc(prod||'제품 정보 없음')}</div>
+      ${isCoating(m)?`<div class="padchk">🧽 코팅품 · 흡착패드 확인</div>`:''}
       ${m.item_code&&PH.has(m.item_code)?`<button type="button" class="pphoto" data-ph="${esc(m.item_code)}" title="제품 사진 크게 보기"><img loading="lazy" src="${PH.get(m.item_code)}" alt="제품 사진"></button>`:''}
       ${m.status!=='RUN'&&m.alarm?`<div class="alert" style="background:color-mix(in srgb,var(--c) 10%,#fff);color:var(--c)">${esc(m.alarm)}${m.since?' · '+fmt(new Date(m.since))+'부터':''}</div>`:''}
       ${isBad(m)?`<div class="alert">불량 높음 · 실불량 ${rate.toFixed(1)}%</div>`:''}
