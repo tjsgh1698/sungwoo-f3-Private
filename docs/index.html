@@ -221,6 +221,12 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .lc-b{padding:8px 10px;display:flex;flex-direction:column;gap:3px;font-size:.85rem}
 .lc-b b{font-size:.95rem}
 .lc-b .m{color:var(--mut)}
+.lc-adm{display:flex;gap:6px;margin-top:5px}
+.lc-adm button{flex:1;border-radius:6px;padding:5px 0;font-size:.8rem;font-weight:700;cursor:pointer;border:1px solid var(--line)}
+.lc-ed{background:var(--pri-bg);color:var(--pri);border-color:var(--pri-bg)}
+.lc-ed:hover{background:var(--pri);color:#fff}
+.lc-dl{background:#fff0f0;color:var(--bad);border-color:#f3c9c9}
+.lc-dl:hover{background:var(--bad);color:#fff}
 .lform{margin-top:16px;border:1px solid var(--line);border-radius:4px;padding:14px;max-width:none}
 .lpick{position:relative;max-width:640px}
 .lpick img{height:auto}
@@ -672,7 +678,7 @@ async function renderLens(){
   $('lens').innerHTML = list.length ? list.map(x=>{ const st = LST[x.status]||['-',''];
     return `<div class="lc" data-lz="${esc(x.id)}"><div class="lph" data-lid="${esc(x.id)}" role="img" aria-label="${esc(x.product)} 한도 사진"></div>
       <div class="lc-b"><b>${esc(x.product)}${x.side?' · '+esc(x.side):''}</b><span>${esc(x.defect||'-')}${x.data.position?' · '+esc(x.data.position):''}</span>
-      <span class="m"><span class="tag ${st[1]}">${st[0]}</span> ${esc(x.data.approver||'')} ${esc(x.date||'')}</span></div></div>`; }).join('') : '<div class="empty">조건에 맞는 한도기준이 없습니다</div>';
+      <span class="m"><span class="tag ${st[1]}">${st[0]}</span> ${esc(x.data.approver||'')} ${esc(x.date||'')}</span>${auth?`<div class="lc-adm"><button type="button" class="lc-ed" data-ledit="${esc(x.id)}">수정</button><button type="button" class="lc-dl" data-ldel="${esc(x.id)}">삭제</button></div>`:''}</div></div>`; }).join('') : '<div class="empty">조건에 맞는 한도기준이 없습니다</div>';
   for (const el of $('lens').querySelectorAll('.lph[data-lid]')) showLensImg(el);
 }
 // 사진과 불량 표시를 한 SVG 안에 그려서 어떤 크기에서도 위치가 맞게 함 (기존 일지 사이트와 같은 방식)
@@ -697,8 +703,22 @@ function zoomLens(id){
 }
 $('lensq').addEventListener('input', renderLens);
 $('lnew').addEventListener('click', ()=>{ $('lform').hidden = false; $('ldate').value = new Date().toISOString().slice(0,10); $('lform').scrollIntoView({behavior:'smooth'}); });
-$('lcancel').addEventListener('click', ()=>{ $('lform').reset(); $('lform').hidden = true; $('lpick').hidden = $('lpickmsg').hidden = true; lmarks = []; });
-let lnewImg = null;
+$('lcancel').addEventListener('click', ()=>{ $('lform').reset(); $('lform').hidden = true; $('lpick').hidden = $('lpickmsg').hidden = true; lmarks = []; lnewImg = null; lensEdit = null; const b = $('lform').querySelector('button[type=submit]'); if (b) b.textContent = '등록하기'; $('lmsg2').textContent = ''; });
+let lnewImg = null, lensEdit = null;
+function editLens(id){ const x = LENS.find(l=>l.id===id); if (!x) return; if (!auth){ alert('관리자 로그인 후 수정할 수 있어요.'); return; }
+  lensEdit = id; lnewImg = null; lmarks = (x.data.marks||[]).slice();
+  $('lform').hidden = false; $('lpick').hidden = true; $('lpickmsg').hidden = true; $('lsvg').innerHTML = '';
+  $('lprod').value = x.product||''; $('lside').value = x.side||''; $('ldef').value = x.defect||''; $('lpos').value = x.data.position||'';
+  $('lst').value = x.status||'OK'; $('lappr').value = x.data.approver||''; $('ldate').value = x.date||'';
+  $('lcond').value = (x.data.condition||'').startsWith('원본 사진의 표시') ? '' : (x.data.condition||'');
+  const b = $('lform').querySelector('button[type=submit]'); if (b) b.textContent = '수정 저장';
+  $('lmsg2').textContent = '사진은 그대로 두고 내용만 수정돼요. 사진을 바꾸려면 새 사진을 고르세요.';
+  $('lform').scrollIntoView({behavior:'smooth'}); }
+async function delLens(id){ const x = LENS.find(l=>l.id===id); if (!x) return; if (!auth){ alert('관리자 로그인 후 삭제할 수 있어요.'); return; }
+  if (!confirm(`'${x.product}${x.side?' '+x.side:''}' 한도기준을 삭제할까요?\n되돌릴 수 없어요.`)) return;
+  try { await sb(`lens_limits?id=eq.${encodeURIComponent(id)}`, { method:'DELETE', headers:{ Prefer:'return=minimal' } });
+    LENS = LENS.filter(l=>l.id!==id); lensImg.delete(id); renderLens(); }
+  catch { alert('삭제 실패. 관리자 로그인·인터넷을 확인해 주세요.'); } }
 $('lfile').addEventListener('change', async ()=>{
   const f = $('lfile').files[0]; if (!f) return; const bm = await createImageBitmap(f); const k = Math.min(1, 1400/Math.max(bm.width,bm.height));
   const c = document.createElement('canvas'); c.width = Math.round(bm.width*k); c.height = Math.round(bm.height*k); c.getContext('2d').drawImage(bm,0,0,c.width,c.height);
@@ -711,12 +731,26 @@ $('lpick').addEventListener('click', e=>{
   $('lsvg').innerHTML = marksSvg(lmarks, $('limg').naturalWidth, $('limg').naturalHeight);
 });
 $('lform').addEventListener('submit', async e=>{
-  e.preventDefault(); if (!lnewImg) return;
-  const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
-  const d = { id, product:$('lprod').value.trim(), side:$('lside').value, defect:$('ldef').value.trim(), position:$('lpos').value.trim(), status:$('lst').value, condition:$('lcond').value.trim(), approver:$('lappr').value.trim(), date:$('ldate').value, marks:lmarks, source:'f3-site' };
-  try { await sb('lens_limits', { method:'POST', headers:{ Prefer:'return=minimal' }, body:JSON.stringify({ id, product:d.product, side:d.side, defect:d.defect, status:d.status, date:d.date, data:d, img:lnewImg }) });
-    lensImg.set(id, lnewImg); lensSize.set(id,[$('limg').naturalWidth,$('limg').naturalHeight]); LENS.unshift({ id, product:d.product, side:d.side, defect:d.defect, status:d.status, date:d.date, data:d }); $('lcancel').click(); renderLens(); }
-  catch { $('lmsg2').textContent = '등록 실패. 인터넷 연결을 확인해 주세요.'; }
+  e.preventDefault();
+  const editing = lensEdit;
+  if (!editing && !lnewImg) return;
+  const base = editing ? (LENS.find(l=>l.id===editing)?.data || {}) : {};
+  const id = editing || (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()));
+  const d = { ...base, id, product:$('lprod').value.trim(), side:$('lside').value, defect:$('ldef').value.trim(), position:$('lpos').value.trim(), status:$('lst').value, condition:$('lcond').value.trim(), approver:$('lappr').value.trim(), date:$('ldate').value, source:'f3-site' };
+  if (lnewImg) d.marks = lmarks;                        // 새 사진을 골랐을 때만 표시 좌표 교체
+  const core = { product:d.product, side:d.side, defect:d.defect, status:d.status, date:d.date, data:d };
+  try {
+    if (editing){
+      const body = { ...core }; if (lnewImg) body.img = lnewImg;
+      await sb(`lens_limits?id=eq.${encodeURIComponent(editing)}`, { method:'PATCH', headers:{ Prefer:'return=minimal' }, body:JSON.stringify(body) });
+      if (lnewImg){ lensImg.set(editing, lnewImg); lensSize.set(editing,[$('limg').naturalWidth,$('limg').naturalHeight]); }
+      const idx = LENS.findIndex(l=>l.id===editing); if (idx>=0) LENS[idx] = { id:editing, ...core };
+    } else {
+      await sb('lens_limits', { method:'POST', headers:{ Prefer:'return=minimal' }, body:JSON.stringify({ id, ...core, img:lnewImg }) });
+      lensImg.set(id, lnewImg); lensSize.set(id,[$('limg').naturalWidth,$('limg').naturalHeight]); LENS.unshift({ id, ...core });
+    }
+    $('lcancel').click(); renderLens();
+  } catch { $('lmsg2').textContent = (editing?'수정':'등록')+' 실패. 관리자 로그인·인터넷을 확인해 주세요.'; }
 });
 
 /* ---------- 정비 이력 (흡착패드·금형세척) ---------- */
@@ -790,6 +824,8 @@ addEventListener('keydown', e=>{ if (e.key==='Escape') closeRec(); });
 document.addEventListener('click', e=>{
   const ph = e.target.closest('[data-ph]'); if (ph){ openPhoto(ph.dataset.ph); return; }
   const vm = e.target.closest('[data-vm]'); if (vm){ lean = vm.dataset.vm==='1'; try{ localStorage.setItem('f3lean', lean?'1':'0'); }catch(e){} renderMachines(); return; }
+  const led = e.target.closest('[data-ledit]'); if (led){ e.stopPropagation(); editLens(led.dataset.ledit); return; }
+  const ldl = e.target.closest('[data-ldel]'); if (ldl){ e.stopPropagation(); delLens(ldl.dataset.ldel); return; }
   const lz = e.target.closest('[data-lz]'); if (lz){ zoomLens(lz.dataset.lz); return; }
   const lfb = e.target.closest('[data-lf]'); if (lfb){ lensF = lfb.dataset.lf; renderLens(); return; }
   const mtfb = e.target.closest('[data-mtf]'); if (mtfb){ mtF = mtfb.dataset.mtf; renderMaint(); return; }

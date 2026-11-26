@@ -48,6 +48,10 @@ alter table lens_limits enable row level security;
 create policy "all read lens" on lens_limits for select to anon, authenticated using (true);
 create policy "all add lens" on lens_limits for insert to anon, authenticated with check (true);
 grant select, insert on public.lens_limits to anon, authenticated;
+-- 2026-11-27: 관리자(로그인=authenticated)만 기존 한도기준 수정·삭제 가능 (anon은 불가)
+create policy "auth upd lens" on lens_limits for update to authenticated using (true) with check (true);
+create policy "auth del lens" on lens_limits for delete to authenticated using (true);
+grant update, delete on public.lens_limits to authenticated;
 
 -- 정비 이력 (흡착패드 교체·금형 세척 등, 기사 입력)
 create table if not exists maintenance (
