@@ -109,29 +109,26 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .b-ok{background:var(--ok-bg);color:var(--ok)}.b-ng{background:var(--bad-bg);color:var(--bad)}.b-un{background:var(--unk-bg);color:var(--unk)}
 .badge{font-size:.78rem;font-weight:700;border-radius:3px;padding:2px 8px;white-space:nowrap}
 .recs{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
-.rrow{display:grid;grid-template-columns:92px 58px minmax(0,1.3fr) 64px minmax(0,2.2fr) minmax(0,1fr) 62px;gap:10px;align-items:center;padding:9px 14px;border-top:1px solid var(--line2);cursor:pointer;font-size:.88rem}
+.rrow{display:grid;grid-template-columns:96px 54px minmax(0,1.5fr) 70px minmax(0,1.4fr) 92px 60px;gap:12px;align-items:center;padding:11px 14px;border-top:1px solid var(--line2);cursor:pointer;font-size:.9rem}
 .rrow:hover{background:var(--pri-bg)}
 .rrow.open{background:var(--pri-bg);box-shadow:inset 3px 0 0 var(--pri)}
 .rhead{background:var(--head);font-weight:700;color:var(--ink2);font-size:.8rem;cursor:default;border-top:0}.rhead:hover{background:var(--head)}
 .c-at b{display:block;font-variant-numeric:tabular-nums}.c-at small{color:var(--mut)}
-.c-no{font-weight:900;font-size:1.15rem;color:#10264a}.c-no small{font-size:.6em;color:var(--mut);font-weight:600}
+.c-no{font-weight:900;font-size:1.2rem;color:#10264a}.c-no small{font-size:.58em;color:var(--mut);font-weight:600}
 .c-mold b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.c-mold small{display:block;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .c-who{font-weight:600}
-.c-chg{display:flex;flex-wrap:wrap;gap:4px}
-.cg{display:inline-flex;align-items:baseline;gap:4px;border-radius:5px;background:var(--pri-bg);padding:2px 7px;font-size:.78rem;white-space:nowrap;font-variant-numeric:tabular-nums}
-.cg em{font-style:normal;color:var(--ink2)}.cg s{text-decoration:none;color:var(--mut)}.cg b{color:var(--pri)}
-.cg.more{background:var(--panel);color:var(--mut)}.cg.none{background:var(--panel);color:var(--mut)}
-.c-why{color:var(--ink2);font-size:.84rem;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.c-why{color:var(--ink2);font-size:.86rem;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.chgn{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 10px;font-size:.8rem;font-weight:700;white-space:nowrap}
+.chgn.y{background:var(--pri-bg);color:var(--pri)}.chgn.n{background:var(--panel);color:var(--mut);font-weight:500}
 .rd{padding:12px 14px 14px;background:var(--panel);border-top:1px solid var(--line2)}
-.pm{display:grid;grid-template-columns:130px minmax(0,1fr);border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
-.pm>div{padding:6px 10px;border-top:1px solid var(--line2);font-size:.85rem}
-.pm>div:nth-child(-n+2){border-top:0}
-.pm .k{background:var(--head);font-weight:700}.pm .k small{display:block;font-weight:400;color:var(--mut);font-size:.75rem}
-.pm .v{display:flex;flex-wrap:wrap;gap:5px}
-.sv{display:inline-flex;flex-direction:column;align-items:center;min-width:58px;border:1px solid var(--line2);border-radius:5px;padding:2px 6px;font-variant-numeric:tabular-nums}
-.sv small{font-size:.7rem;color:var(--mut)}.sv b{font-weight:600}
-.sv.ch{border-color:var(--pri);background:var(--pri-bg)}.sv.ch b{color:var(--pri)}.sv.ch s{text-decoration:line-through;color:var(--mut);font-size:.75rem}
-.rd-meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:.84rem;align-items:center}.rd-meta span{color:var(--mut)}
+.pm{columns:2 300px;column-gap:10px}
+.pr{break-inside:avoid;display:flex;gap:8px;align-items:baseline;background:#fff;border:1px solid var(--line2);border-radius:6px;padding:6px 10px;margin-bottom:6px;font-size:.88rem}
+.pr.hit{border-color:var(--pri-line);background:var(--pri-bg)}
+.pr .k{flex:none;width:92px;font-weight:700;color:var(--ink2)}.pr .k small{color:var(--mut);font-weight:400}
+.pr .vals{display:flex;flex-wrap:wrap;gap:4px 10px;font-variant-numeric:tabular-nums}
+.pr .vals span{color:var(--ink2)}.pr .vals em{font-style:normal;color:var(--mut);font-size:.82em;margin-right:2px}
+.pr .vals .ch{font-weight:800;color:var(--pri)}.pr .vals .ch s{text-decoration:line-through;color:var(--mut);font-weight:400}
+.rd-meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:.86rem;align-items:center}.rd-meta span{color:var(--mut)}.rd-meta b{font-weight:700}
 .scroll{overflow-x:auto}
 .empty{padding:28px;text-align:center;color:var(--mut)}
 .board .empty{grid-column:1/-1}
@@ -156,6 +153,10 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .stg input.ch{border-color:var(--pri);background:var(--pri-bg)}
 .subh{font-size:.95rem;font-weight:800;margin:0}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
+.lock-in{display:grid;place-items:center;padding:36px 16px}
+.lock-card{max-width:360px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;padding:28px 24px;background:#fff}
+.lock-ic{font-size:2.4rem}.lock-card b{font-size:1.15rem;color:#10264a}.lock-card p{color:var(--mut);font-size:.9rem;margin:0}
+#lensPinF{display:flex;gap:8px;width:100%;margin-top:6px}#lensPin{text-align:center;letter-spacing:.3em;font-size:1.2rem}
 .lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
 .lc{border:1px solid var(--line);border-radius:4px;overflow:hidden;background:#fff;cursor:pointer;display:flex;flex-direction:column}
 .lc:hover{border-color:var(--pri)}
@@ -177,7 +178,7 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .lbox{background:#fff;border-radius:6px;padding:24px;width:min(360px,100%);display:flex;flex-direction:column;gap:12px}
 .lbox label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:.92rem}
 @media(max-width:1100px){#side{display:none}.brand{width:auto}}
-@media(max-width:900px){.rhead{display:none}.rrow{grid-template-columns:52px minmax(0,1fr) auto;grid-template-areas:"no mold st" "no chg chg" "at at who";gap:4px 10px}.c-no{grid-area:no;align-self:start}.c-mold{grid-area:mold}.c-st{grid-area:st}.c-chg{grid-area:chg}.c-at{grid-area:at;font-size:.78rem;color:var(--mut)}.c-at b{display:inline;margin-right:4px}.c-who{grid-area:who;font-size:.8rem;justify-self:end}.c-why{display:none}.pm{grid-template-columns:minmax(0,1fr)}.pm>div:nth-child(2){border-top:1px solid var(--line2)}}
+@media(max-width:900px){.rhead{display:none}.rrow{grid-template-columns:50px minmax(0,1fr) auto;grid-template-areas:"no mold st" "no why chg" "at at who";gap:3px 10px;padding:10px 12px}.c-no{grid-area:no;align-self:start}.c-mold{grid-area:mold}.c-st{grid-area:st;justify-self:end}.c-chg{grid-area:chg;justify-self:end}.c-at{grid-area:at;font-size:.78rem;color:var(--mut)}.c-at b{display:inline;margin-right:4px}.c-who{grid-area:who;font-size:.8rem;justify-self:end}.c-why{grid-area:why}.pm{columns:1}}
 @media(max-width:720px){html{font-size:14px}#top{height:auto;flex-wrap:wrap;padding:0}.brand{padding:8px 12px;flex:1}.top-r{padding-right:12px}.topnav{order:3;flex:1 1 100%;height:48px;padding:0 4px;border-top:1px solid rgba(255,255,255,.12)}.today{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.td{padding:8px 10px}.td .v{font-size:1.25rem}.td .l{font-size:.72rem}.td:nth-child(n+4){display:none}.ph p{display:none}.topnav a{padding:0 12px;font-size:.95rem}.topnav a .vn{display:none}#side{display:none}main{padding:0 12px 32px}.board{grid-template-columns:minmax(0,1fr);padding:6px}.prow{grid-template-columns:minmax(0,1fr)}.rh{grid-template-columns:52px minmax(0,1fr)}.rh .badge{grid-column:2;justify-self:start}.rm{grid-column:1/-1}.mes span{display:none}#side{top:0}}
 </style>
 </head>
@@ -189,7 +190,7 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
     <a href="#list" data-v="list">조건변경 기록<span class="vn">Lịch sử thay đổi</span></a>
     <a href="#engineers" data-v="engineers">기사별 기록<span class="vn">Theo KTV</span></a>
     <a href="#molds" data-v="molds">동일 금형<span class="vn">Theo khuôn</span></a>
-    <a href="#lens" data-v="lens">렌즈 한도기준<span class="vn">Giới hạn lens</span></a>
+    <a href="#lens" data-v="lens">🔒 렌즈 한도기준<span class="vn">Giới hạn lens</span></a>
   </nav>
   <div class="top-r"><span class="mes off" id="mesChip"><i></i><span id="mesAt">MES 연결 대기</span></span></div>
 </header>
@@ -230,6 +231,11 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 
     <section id="v-lens" hidden>
       <div class="ph"><div class="ph-t"><h1>렌즈 한도기준</h1><p>승인된 렌즈 외관 한도 사진입니다. 빨간 원이 불량 위치입니다.</p></div><button class="btn pri" id="lnew">+ 한도 등록</button></div>
+      <div id="lensLock" class="lock-in" hidden>
+        <div class="lock-card"><div class="lock-ic">🔒</div><b>관리자 전용</b><p>렌즈 한도기준은 관리자만 볼 수 있어요. 4자리 비밀번호를 입력하세요.</p>
+          <form id="lensPinF"><input id="lensPin" inputmode="numeric" maxlength="8" placeholder="비밀번호" autocomplete="off"><button class="btn pri" type="submit">확인</button></form>
+          <p class="note" id="lensPinMsg"></p></div>
+      </div>
       <div class="bar"><span id="lchips" class="chips"></span><input class="search" id="lensq" placeholder="제품명, 불량, 승인자 검색"></div>
       <div class="lgrid" id="lens"></div>
       <form id="lform" class="form lform" hidden autocomplete="off">
@@ -287,7 +293,7 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 </div>
 <script>
 {
-const CFG = { pollSec: 60, sb: { url: 'https://pauyimvawypicqrqczmp.supabase.co', key: 'sb_publishable_jp_CewOxKLAT1NqWJTHTgQ_QadUCdsP' }, idDomain: 'sungwoo-f3.local' };
+const CFG = { pollSec: 60, lensPin: '0121', sb: { url: 'https://pauyimvawypicqrqczmp.supabase.co', key: 'sb_publishable_jp_CewOxKLAT1NqWJTHTgQ_QadUCdsP' }, idDomain: 'sungwoo-f3.local' };
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad = n => String(n).padStart(2,'0');
@@ -408,9 +414,8 @@ function fillSel(){
 const bc = { 정상:'b-ok', 이상:'b-ng', 미확인:'b-un' };
 function changed(r){ return (r.parameters||[]).filter(p=>p.after!==''&&p.after!=null&&String(p.after)!==String(p.before)); }
 const unit = p => p.unit && p.unit!=='미확인' ? p.unit : '';
-function chips(r){ const c = changed(r);
-  if (!c.length) return `<span class="cg none">조건 ${(r.parameters||[]).length}개 기록 (변경 없음)</span>`;
-  return c.slice(0,4).map(p=>`<span class="cg"><em>${esc(KN[p.kind]||p.kind)}${p.stage?' '+esc(p.stage):''}</em><s>${esc(p.before||'-')}</s>→<b>${esc(p.after)}</b></span>`).join('') + (c.length>4?`<span class="cg more">+${c.length-4}</span>`:''); }
+function chgCell(r){ const c = changed(r).length, tot = (r.parameters||[]).length;
+  return c ? `<span class="chgn y">조건 ${c}개 변경</span>` : `<span class="chgn n">초기 조건 ${tot}개</span>`; }
 function renderList(){
   $('lper').innerHTML = [['1','오늘'],['7','7일'],['30','30일'],['all','전체']].map(([v,t])=>`<button class="gchip${lf.p===v?' on':''}" data-p="${v}">${t}</button>`).join(' ');
   const q = $('lq').value.trim(), no = $('lno').value, w = $('lw').value, st = $('ls').value, k = $('lk').value;
@@ -422,25 +427,26 @@ function renderList(){
     .map(([l,v,u])=>`<div class="kpi"><div class="l">${l}</div><div class="v">${v}<small>${u}</small></div></div>`).join('');
   $('lcnt').textContent = r.length + '건';
   const wd = ['일','월','화','수','목','금','토'];
-  $('recs').innerHTML = r.length ? `<li class="rrow rhead"><span>일시</span><span>호기</span><span>금형 · 제품</span><span>기사</span><span>바뀐 조건 (전 → 후)</span><span>사유</span><span>상태</span></li>` +
+  $('recs').innerHTML = r.length ? `<li class="rrow rhead"><span>일시</span><span>호기</span><span>금형 · 제품</span><span>기사</span><span>사유</span><span>조건</span><span>상태</span></li>` +
     r.slice(0,300).map(x=>`<li><div class="rrow${lf.open===x.id?' open':''}" data-open="${esc(x.id)}">
       <span class="c-at"><b>${x._at.getMonth()+1}/${x._at.getDate()} (${wd[x._at.getDay()]})</b><small>${pad(x._at.getHours())}:${pad(x._at.getMinutes())}</small></span>
       <span class="c-no">${x.machine}<small>호기</small></span>
       <span class="c-mold"><b>${esc(x.mold||'-')}</b><small>${esc(x.product||'')}</small></span>
       <span class="c-who">${esc(x.technician||'-')}</span>
-      <span class="c-chg">${chips(x)}</span>
       <span class="c-why">${esc(x.reason||'')}</span>
+      <span class="c-chg">${chgCell(x)}</span>
       <span class="c-st"><span class="badge ${bc[x.status]||'b-un'}">${esc(x.status||'-')}</span></span></div>${lf.open===x.id?detail(x):''}</li>`).join('')
     : '<li class="empty">조건에 맞는 기록이 없습니다 · Không có bản ghi</li>';
 }
 function detail(x){
   const by = new Map(); (x.parameters||[]).forEach(p=>{ if (!by.has(p.kind)) by.set(p.kind, []); by.get(p.kind).push(p); });
   const order = KINDS.map(k=>k[0]).concat([...by.keys()].filter(k=>!KN[k]));
-  const rows = order.filter(k=>by.has(k)).map(k=>{ const ps = by.get(k), u = unit(ps[0]);
-    return `<div class="k">${esc(KN[k]||k)}${u?`<small>${esc(u)}</small>`:''}</div><div class="v">${ps.map(p=>{ const ch = p.after!==''&&p.after!=null&&String(p.after)!==String(p.before);
-      return `<span class="sv${ch?' ch':''}"><small>${esc(p.stage||'값')}</small>${ch?`<s>${esc(p.before||'-')}</s><b>${esc(p.after)}</b>`:`<b>${esc(p.before||p.after||'-')}</b>`}</span>`; }).join('')}</div>`; }).join('');
+  const multi = [...by.values()].some(ps=>ps.length>1 && ps.some(p=>p.stage));
+  const rows = order.filter(k=>by.has(k)).map(k=>{ const ps = by.get(k), u = unit(ps[0]), hit = ps.some(p=>p.after!==''&&p.after!=null&&String(p.after)!==String(p.before));
+    return `<div class="pr${hit?' hit':''}"><span class="k">${esc(KN[k]||k)}${u?` <small>${esc(u)}</small>`:''}</span><span class="vals">${ps.map(p=>{ const ch = p.after!==''&&p.after!=null&&String(p.after)!==String(p.before);
+      return `<span class="${ch?'ch':''}">${multi&&p.stage?`<em>${esc(p.stage)}</em>`:''}${ch?`<s>${esc(p.before||'-')}</s> → ${esc(p.after)}`:esc(p.before||p.after||'-')}</span>`; }).join('')}</span></div>`; }).join('');
   const mat = x.material?.materials?.length ? x.material.materials.map(esc).join(', ') : '';
-  return `<div class="rd"><div class="pm">${rows || '<div class="k">조건</div><div class="v">기록된 조건 없음</div>'}</div>
+  return `<div class="rd"><div class="pm">${rows || '<div class="pr"><span class="k">조건</span><span class="vals">기록된 조건 없음</span></div>'}</div>
     <div class="rd-meta">${x.reason?`<span>사유</span><b>${esc(x.reason)}</b>`:''}${mat?`<span>원재료</span><b>${mat}</b>`:''}${x.notes?`<span>메모</span><b>${esc(x.notes)}</b>`:''}${x.operator?`<span>작업자</span><b>${esc(x.operator)}</b>`:''}
     <a class="btn sm" href="#new" data-copy="${esc(x.id)}" style="margin-left:auto">이 조건으로 새 기록</a></div></div>`;
 }
@@ -501,6 +507,16 @@ $('fm').addEventListener('submit', async e=>{
 
 /* ---------- 렌즈 한도기준 ---------- */
 let LENS = null, lensF = 'all', lmarks = [];
+let lensOK = false; try { lensOK = localStorage.getItem('f3lens') === CFG.lensPin; } catch {}
+function lensGate(){
+  const locked = !lensOK && !auth;
+  $('lensLock').hidden = !locked; $('lnew').hidden = locked;
+  $('lchips').parentElement.hidden = locked; $('lens').hidden = locked; $('lform').hidden = locked ? true : $('lform').hidden;
+  return !locked;
+}
+$('lensPinF').addEventListener('submit', e=>{ e.preventDefault();
+  if ($('lensPin').value.trim() === CFG.lensPin){ lensOK = true; try { localStorage.setItem('f3lens', CFG.lensPin); } catch {} $('lensPin').value=''; $('lensPinMsg').textContent=''; renderLens(); }
+  else $('lensPinMsg').textContent = '비밀번호가 맞지 않습니다.'; });
 const LST = { OK:['OK 한도 승인','g'], NG:['NG 불가','r'], CHECK:['확인 필요',''] };
 // 기존 일지 사이트 표시는 원본 사진 좌표 + 회전값 → 회전해 저장한 사진에 맞게 좌표 변환
 function rotMarks(d){ const r = ((d.rotation||0)%360+360)%360; return (d.marks||[]).map(m=>{ const p = r===90?[1-m.y,m.x]:r===180?[1-m.x,1-m.y]:r===270?[m.y,1-m.x]:[m.x,m.y]; return {x:p[0],y:p[1],radius:m.radius}; }); }
@@ -508,6 +524,7 @@ const marksSvg = (marks, w, h) => marks.map(m=>{ const rr = m.radius*Math.min(w,
 const lensImg = new Map();
 async function loadLens(){ LENS = await sb('lens_limits?select=id,product,side,defect,status,date,data&order=date.desc.nullslast'); }
 async function renderLens(){
+  if (!lensGate()) return;
   if (!LENS){ $('lens').innerHTML = '<div class="empty">불러오는 중…</div>'; try { await loadLens(); } catch { $('lens').innerHTML = '<div class="empty">불러오지 못했어요. 새로고침해 주세요.</div>'; return; } }
   $('lchips').innerHTML = [['all','전체'],['OK','OK 한도 승인'],['NG','NG 불가'],['CHECK','확인 필요']].map(([k,t])=>`<button class="gchip ${k==='NG'?'r':k==='CHECK'?'y':''}${lensF===k?' on':''}" data-lf="${k}">${t} ${LENS.filter(x=>k==='all'||x.status===k).length}</button>`).join('');
   const q = $('lensq').value.trim().toLowerCase();
