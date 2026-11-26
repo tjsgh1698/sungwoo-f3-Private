@@ -111,6 +111,9 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .vmode button.on{background:#10264a;color:#fff}
 .lean .kv,.lean .lastrec,.lean .mt-days{display:none}
 .lean .mc-b{gap:7px;padding-bottom:12px}
+.pphoto{border:1px solid var(--line);background:#f4f6fa;border-radius:8px;padding:0;overflow:hidden;cursor:pointer;width:100%;height:120px;display:block}
+.pphoto img{width:100%;height:100%;object-fit:contain;display:block}
+.pphoto:hover{border-color:#10264a}
 /* 기록 목록 */
 .b-ok{background:var(--ok-bg);color:var(--ok)}.b-ng{background:var(--bad-bg);color:var(--bad)}.b-un{background:var(--unk-bg);color:var(--unk)}
 .badge{font-size:.78rem;font-weight:700;border-radius:3px;padding:2px 8px;white-space:nowrap}
@@ -218,6 +221,9 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .recin{position:relative;background:#fff;border-radius:12px;max-width:640px;width:100%;max-height:90vh;overflow:auto;padding:16px 14px 14px;box-shadow:0 20px 60px rgba(8,18,36,.4)}
 .recx{position:absolute;top:10px;right:10px;width:34px;height:34px;border:0;border-radius:8px;background:var(--panel);color:var(--ink2);font-size:1.1rem;font-weight:700;cursor:pointer;z-index:1}
 .recx:hover{background:var(--bad);color:#fff}
+.recin.phm{max-width:94vw;padding:0;background:transparent;box-shadow:none}
+.recin.phm img{max-width:100%;max-height:88vh;border-radius:10px;display:block;margin:auto}
+.recin.phm .recx{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 .lbox{background:#fff;border-radius:6px;padding:24px;width:min(360px,100%);display:flex;flex-direction:column;gap:12px}
 .lbox label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:.92rem}
 @media(max-width:1100px){#side{display:none}.brand{width:auto}}
@@ -407,10 +413,11 @@ async function sb(path, opt = {}){
   if (r.status === 401 && auth){ saveAuth(null); return sb(path, opt); }
   if (!r.ok) throw new Error(await r.text()); return r.status === 201 || r.status === 204 ? null : r.json();
 }
-let M = [], R = [], MT = [], mesAt = null;
+let M = [], R = [], MT = [], mesAt = null, PH = new Map();
 const ctHist = new Map();
 async function load(){
-  const [ms, rs, mts] = await Promise.all([ sb('machines_live?select=*&order=no'), R.length ? sb(`logbook?select=data&updated_at=gt.${encodeURIComponent(R.reduce((a,r)=>r.updatedAt>a?r.updatedAt:a,''))}&limit=1000`) : sb('logbook?select=data&order=recorded_at.desc&limit=5000'), sb('maintenance?select=*&order=at.desc&limit=2000') ]);
+  const [ms, rs, mts, phs] = await Promise.all([ sb('machines_live?select=*&order=no'), R.length ? sb(`logbook?select=data&updated_at=gt.${encodeURIComponent(R.reduce((a,r)=>r.updatedAt>a?r.updatedAt:a,''))}&limit=1000`) : sb('logbook?select=data&order=recorded_at.desc&limit=5000'), sb('maintenance?select=*&order=at.desc&limit=2000'), sb('item_photos?select=item_code,img').catch(()=>[]) ]);
+  PH = new Map((phs||[]).map(p=>[p.item_code, p.img]));
   MT = mts.map(m=>({ ...m, _at:new Date(m.at) }));
   const got = new Map(ms.map(m=>[+m.no, m]));
   mesAt = ms.reduce((a,m)=>m.updated_at > a ? m.updated_at : a, '') || null;
@@ -475,6 +482,7 @@ function card(m){
       <span class="pill ${m.status==='RUN'?'run':''}"><i></i>${s[0]}</span></div>
     <div class="mc-b">
       <div class="pn" title="${esc(prod)}">${esc(prod||'제품 정보 없음')}</div>
+      ${m.item_code&&PH.has(m.item_code)?`<button type="button" class="pphoto" data-ph="${esc(m.item_code)}" title="제품 사진 크게 보기"><img loading="lazy" src="${PH.get(m.item_code)}" alt="제품 사진"></button>`:''}
       ${m.status!=='RUN'&&m.alarm?`<div class="alert" style="background:color-mix(in srgb,var(--c) 10%,#fff);color:var(--c)">${esc(m.alarm)}${m.since?' · '+fmt(new Date(m.since))+'부터':''}</div>`:''}
       ${isBad(m)?`<div class="alert">불량 높음 · 실불량 ${rate.toFixed(1)}%</div>`:''}
       <div class="stats"><div><span>지시</span><b>${d(m.target.toLocaleString())}</b></div><div><span>양품</span><b>${d(m.prod.toLocaleString())}</b></div><div class="${m.ng?'bad':''}"><span>불량</span><b>${d(m.ng.toLocaleString())}</b></div><div><span>효율</span><b>${d(eff+'%')}</b></div></div>
@@ -553,6 +561,11 @@ function openRec(id){ const x = R.find(r=>r.id===id); if (!x) return;
   document.body.append(z);
 }
 function closeRec(){ document.querySelectorAll('.recm').forEach(z=>z.remove()); }
+function openPhoto(code){ const src = PH.get(code); if (!src) return; closeRec();
+  const z = document.createElement('div'); z.className = 'recm';
+  z.innerHTML = `<div class="recin phm"><button type="button" class="recx" data-recx title="닫기">✕</button><img src="${src}" alt="제품 사진"></div>`;
+  z.addEventListener('click', ()=>closeRec()); document.body.append(z);
+}
 
 /* ---------- 기사별 / 금형별 ---------- */
 function renderGroup(kind){
@@ -761,6 +774,7 @@ function route(){
 addEventListener('hashchange', ()=>{ closeRec(); route(); scrollTo(0,0); });
 addEventListener('keydown', e=>{ if (e.key==='Escape') closeRec(); });
 document.addEventListener('click', e=>{
+  const ph = e.target.closest('[data-ph]'); if (ph){ openPhoto(ph.dataset.ph); return; }
   const vm = e.target.closest('[data-vm]'); if (vm){ lean = vm.dataset.vm==='1'; try{ localStorage.setItem('f3lean', lean?'1':'0'); }catch(e){} renderMachines(); return; }
   const lz = e.target.closest('[data-lz]'); if (lz){ zoomLens(lz.dataset.lz); return; }
   const lfb = e.target.closest('[data-lf]'); if (lfb){ lensF = lfb.dataset.lf; renderLens(); return; }
