@@ -310,8 +310,13 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
           <label>금형번호 <span class="vn">Khuôn</span><input id="fmold" required></label>
           <label>제품명 <span class="vn">Sản phẩm</span><input id="fprod"></label>
         </div>
-        <div class="bar"><span class="subh">조건 <span class="vn" style="display:inline">Thông số</span></span><button type="button" class="btn sm" id="fprev">이 금형 마지막 조건 불러오기</button><span class="note" id="fprevmsg"></span></div>
+        <div class="bar"><span class="subh">조건 <span class="vn" style="display:inline">Thông số</span></span></div>
         <div class="pgrid" id="pgrid"></div>
+        <div><div class="subh">배광 (측정) <span class="vn" style="display:inline">Phối sáng · LH/RH 따로</span></div>
+          <div class="fgrid" style="margin-top:6px">
+            <label>배광 LH<input id="fblh" placeholder="예: 양호 / NG / 측정값"></label>
+            <label>배광 RH<input id="fbrh" placeholder="예: 양호 / NG / 측정값"></label>
+          </div></div>
         <label>변경 사유 <span class="vn">Lý do</span><input id="fr" list="reasons" required placeholder="예: 초기 가동·금형 교체, 미성형 개선"></label>
         <datalist id="reasons"></datalist>
         <div><div class="subh">상태 <span class="vn" style="display:inline">Trạng thái</span></div><div class="chips" id="fst" style="margin-top:6px"></div></div>
@@ -495,7 +500,7 @@ function detail(x){
       return `<span class="${ch?'ch':''}">${multi&&p.stage?`<em>${esc(p.stage)}</em>`:''}${ch?`<s>${esc(p.before||'-')}</s> → ${esc(p.after)}`:esc(p.before||p.after||'-')}</span>`; }).join('')}</span></div>`; }).join('');
   const mat = x.material?.materials?.length ? x.material.materials.map(esc).join(', ') : '';
   return `<div class="rd"><div class="pm">${rows || '<div class="pr"><span class="k">조건</span><span class="vals">기록된 조건 없음</span></div>'}</div>
-    <div class="rd-meta">${x.reason?`<span>사유</span><b>${esc(x.reason)}</b>`:''}${mat?`<span>원재료</span><b>${mat}</b>`:''}${x.notes?`<span>메모</span><b>${esc(x.notes)}</b>`:''}${x.operator?`<span>작업자</span><b>${esc(x.operator)}</b>`:''}
+    <div class="rd-meta">${x.reason?`<span>사유</span><b>${esc(x.reason)}</b>`:''}${(x.beam?.lh||x.beam?.rh)?`<span>배광</span><b>LH ${esc(x.beam.lh||'-')} · RH ${esc(x.beam.rh||'-')}</b>`:''}${mat?`<span>원재료</span><b>${mat}</b>`:''}${x.notes?`<span>메모</span><b>${esc(x.notes)}</b>`:''}${x.operator?`<span>작업자</span><b>${esc(x.operator)}</b>`:''}
     <a class="btn sm" href="#new" data-copy="${esc(x.id)}" style="margin-left:auto">이 조건으로 새 기록</a></div></div>`;
 }
 
@@ -529,14 +534,12 @@ function initForm(){
   $('fat').value = now.toISOString().slice(0,16);
   $('reasons').innerHTML = REASONS.map(r=>`<option value="${esc(r)}">`).join('');
   $('fst').innerHTML = ['정상','이상','미확인'].map(s=>`<button type="button" class="gchip${fst===s?' on':''}" data-s="${s}">${s}</button>`).join('');
-  $('fmold').value = ''; $('fprod').value = ''; $('fprevmsg').textContent = '';
-  if (pre?.copy){ const r = R.find(x=>x.id===pre.copy); if (r){ $('fno').value = r.machine; $('fmold').value = r.mold; $('fprod').value = r.product; fillFrom(r); } }
+  $('fmold').value = ''; $('fprod').value = ''; $('fblh').value = ''; $('fbrh').value = '';
+  if (pre?.copy){ const r = R.find(x=>x.id===pre.copy); if (r){ $('fno').value = r.machine; $('fmold').value = r.mold; $('fprod').value = r.product; $('fblh').value = r.beam?.lh||''; $('fbrh').value = r.beam?.rh||''; fillFrom(r); } }
   else pgrid();
   mesInfo(); pre = null;
 }
 $('fno').addEventListener('input', ()=>{ $('fmold').value=''; $('fprod').value=''; mesInfo(); });
-$('fprev').addEventListener('click', ()=>{ const r = lastRec(+$('fno').value, $('fmold').value) || R.filter(x=>x.mold===$('fmold').value).sort((a,b)=>b._at-a._at)[0];
-  if (r){ fillFrom(r); $('fprevmsg').textContent = `${fmt(r._at)} ${r.technician} 기록을 "변경 전"에 채웠어요`; } else $('fprevmsg').textContent = '이 금형의 이전 기록이 없어요'; });
 $('pgrid').addEventListener('input', e=>{ if (e.target.classList.contains('pa')){ const b = e.target.previousElementSibling; e.target.classList.toggle('ch', e.target.value!=='' && e.target.value!==b.value); } });
 $('fst').addEventListener('click', e=>{ const b = e.target.closest('[data-s]'); if (b){ fst = b.dataset.s; [...$('fst').children].forEach(c=>c.classList.toggle('on', c===b)); } });
 $('fm').addEventListener('submit', async e=>{
@@ -545,7 +548,7 @@ $('fm').addEventListener('submit', async e=>{
   if (!params.length){ $('fmsg').textContent = '조건을 하나 이상 입력해 주세요'; return; }
   const now = new Date().toISOString(), id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
   const rec = { id, recordedAt:$('fat').value, machine:+$('fno').value, machineLabel:'', mold:$('fmold').value.trim(), product:$('fprod').value.trim(), operator:'', technician:$('fw').value,
-    reason:$('fr').value.trim(), status:fst, result:'', notes:$('fmemo').value.trim(), parameters:params, createdAt:now, updatedAt:now, revision:1, source:'f3-site' };
+    reason:$('fr').value.trim(), status:fst, result:'', notes:$('fmemo').value.trim(), parameters:params, beam:{ lh:$('fblh').value.trim(), rh:$('fbrh').value.trim() }, createdAt:now, updatedAt:now, revision:1, source:'f3-site' };
   try {
     await sb('logbook', { method:'POST', headers:{ Prefer:'return=minimal' }, body:JSON.stringify({ id, machine:rec.machine, mold:rec.mold, product:rec.product, technician:rec.technician, status:rec.status, reason:rec.reason, recorded_at:rec.recordedAt+':00+09:00', data:rec }) });
     R.push({ ...rec, _at:new Date(rec.recordedAt+':00+09:00') });
