@@ -307,8 +307,8 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
         </div>
         <div class="mesbox" id="fmes"></div>
         <div class="fgrid">
-          <label>금형번호 <span class="vn">Khuôn</span><input id="fmold" required></label>
-          <label>제품명 <span class="vn">Sản phẩm</span><input id="fprod"></label>
+          <label>금형번호 <span class="vn">Khuôn</span><input id="fmold" list="molds" required><datalist id="molds"></datalist></label>
+          <label>제품명 <span class="vn">Sản phẩm</span><input id="fprod" placeholder="금형번호 입력 시 자동"></label>
         </div>
         <div class="bar"><span class="subh">조건 <span class="vn" style="display:inline">Thông số</span></span></div>
         <div class="pgrid" id="pgrid"></div>
@@ -533,6 +533,7 @@ function initForm(){
   $('fw').innerHTML = opt('','기사 선택 · Chọn KTV') + [...new Set(WORKERS.concat(R.map(r=>r.technician).filter(Boolean)))].map(w=>opt(w,w)).join('');
   $('fat').value = now.toISOString().slice(0,16);
   $('reasons').innerHTML = REASONS.map(r=>`<option value="${esc(r)}">`).join('');
+  $('molds').innerHTML = [...new Set(M.map(m=>m.mold).concat(R.map(r=>r.mold)).filter(Boolean))].sort().map(md=>`<option value="${esc(md)}">`).join('');
   $('fst').innerHTML = ['정상','이상','미확인'].map(s=>`<button type="button" class="gchip${fst===s?' on':''}" data-s="${s}">${s}</button>`).join('');
   $('fmold').value = ''; $('fprod').value = ''; $('fblh').value = ''; $('fbrh').value = '';
   if (pre?.copy){ const r = R.find(x=>x.id===pre.copy); if (r){ $('fno').value = r.machine; $('fmold').value = r.mold; $('fprod').value = r.product; $('fblh').value = r.beam?.lh||''; $('fbrh').value = r.beam?.rh||''; fillFrom(r); } }
@@ -540,6 +541,9 @@ function initForm(){
   mesInfo(); pre = null;
 }
 $('fno').addEventListener('input', ()=>{ $('fmold').value=''; $('fprod').value=''; mesInfo(); });
+function prodForMold(mold){ if (!mold) return ''; const mm = M.find(m=>m.mold && m.mold===mold && m.part); if (mm) return mm.part;
+  const r = R.filter(x=>x.mold===mold && x.product).sort((a,b)=>b._at-a._at)[0]; return r ? r.product : ''; }
+$('fmold').addEventListener('input', ()=>{ const p = prodForMold($('fmold').value.trim()); if (p) $('fprod').value = p; });
 $('pgrid').addEventListener('input', e=>{ if (e.target.classList.contains('pa')){ const b = e.target.previousElementSibling; e.target.classList.toggle('ch', e.target.value!=='' && e.target.value!==b.value); } });
 $('fst').addEventListener('click', e=>{ const b = e.target.closest('[data-s]'); if (b){ fst = b.dataset.s; [...$('fst').children].forEach(c=>c.classList.toggle('on', c===b)); } });
 $('fm').addEventListener('submit', async e=>{
