@@ -114,7 +114,9 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .vmode button.on{background:#10264a;color:#fff}
 .lean .kv,.lean .lastrec,.lean .mt-days{display:none}
 .lean .mc-b{gap:7px;padding-bottom:12px}
-.pphoto{align-self:flex-end;flex:none;border:1px solid var(--line);background:#f4f6fa;border-radius:8px;padding:0;overflow:hidden;cursor:zoom-in;width:84px;height:84px;display:block;margin-top:-2px}
+.pntop{display:flex;align-items:flex-start;gap:10px}
+.pnl{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+.pphoto{flex:none;border:1px solid var(--line);background:#f4f6fa;border-radius:8px;padding:0;overflow:hidden;cursor:zoom-in;width:84px;height:84px;display:block}
 .pphoto img{width:100%;height:100%;object-fit:cover;display:block}
 .pphoto:hover{border-color:#10264a}
 /* 기록 목록 */
@@ -487,9 +489,7 @@ function card(m){
     <div class="mc-h"><span class="no">${m.no}<small>호기</small></span><span class="who"><b>${esc(mold||'금형 정보 없음')}</b>${m.worker?esc(m.worker):has?'':'MES 연결 전'}</span>
       <span class="pill ${m.status==='RUN'?'run':''}"><i></i>${s[0]}</span></div>
     <div class="mc-b">
-      <div class="pn" title="${esc(prod)}">${esc(prod||'제품 정보 없음')}</div>
-      ${isCoating(m)?`<div class="padchk">🧽 코팅품 · 흡착패드 확인</div>`:''}
-      ${m.item_code&&PH.has(m.item_code)?`<button type="button" class="pphoto" data-ph="${esc(m.item_code)}" title="제품 사진 크게 보기"><img loading="lazy" src="${PH.get(m.item_code)}" alt="제품 사진"></button>`:''}
+      <div class="pntop"><div class="pnl"><div class="pn" title="${esc(prod)}">${esc(prod||'제품 정보 없음')}</div>${isCoating(m)?`<div class="padchk">🧽 코팅품 · 흡착패드 확인</div>`:''}</div>${m.item_code&&PH.has(m.item_code)?`<button type="button" class="pphoto" data-ph="${esc(m.item_code)}" title="제품 사진 크게 보기"><img loading="lazy" src="${PH.get(m.item_code)}" alt="제품 사진"></button>`:''}</div>
       ${m.status!=='RUN'&&m.alarm?`<div class="alert" style="background:color-mix(in srgb,var(--c) 10%,#fff);color:var(--c)">${esc(m.alarm)}${m.since?' · '+fmt(new Date(m.since))+'부터':''}</div>`:''}
       ${isBad(m)?`<div class="alert">불량 높음 · 실불량 ${rate.toFixed(1)}%</div>`:''}
       <div class="stats"><div><span>지시</span><b>${d(m.target.toLocaleString())}</b></div><div><span>양품</span><b>${d(m.prod.toLocaleString())}</b></div><div class="${m.ng?'bad':''}"><span>불량</span><b>${d(m.ng.toLocaleString())}</b></div><div><span>효율</span><b>${d(eff+'%')}</b></div></div>
