@@ -48,3 +48,13 @@ alter table lens_limits enable row level security;
 create policy "all read lens" on lens_limits for select to anon, authenticated using (true);
 create policy "all add lens" on lens_limits for insert to anon, authenticated with check (true);
 grant select, insert on public.lens_limits to anon, authenticated;
+
+-- 정비 이력 (흡착패드 교체·금형 세척 등, 기사 입력)
+create table if not exists maintenance (
+  id text primary key, machine int, mold text, kind text, at timestamptz,
+  worker text, note text, data jsonb, created_at timestamptz default now());
+create index if not exists maintenance_m on maintenance (machine, at desc);
+alter table maintenance enable row level security;
+create policy "all read maint" on maintenance for select to anon, authenticated using (true);
+create policy "all add maint" on maintenance for insert to anon, authenticated with check (true);
+grant select, insert on public.maintenance to anon, authenticated;
