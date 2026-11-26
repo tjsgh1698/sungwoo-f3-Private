@@ -105,6 +105,11 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .lastrec div{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lastrec small{color:var(--mut)}
 .mc-f{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 12px 12px}
 .mc-f .btn{justify-content:center}
+.vmode{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex:none}
+.vmode button{border:0;background:#fff;color:var(--mut);font:inherit;font-size:.82rem;font-weight:700;padding:7px 14px;cursor:pointer}
+.vmode button.on{background:#10264a;color:#fff}
+.lean .kv,.lean .lastrec,.lean .mt-days{display:none}
+.lean .mc-b{gap:7px;padding-bottom:12px}
 /* 기록 목록 */
 .b-ok{background:var(--ok-bg);color:var(--ok)}.b-ng{background:var(--bad-bg);color:var(--bad)}.b-un{background:var(--unk-bg);color:var(--unk)}
 .badge{font-size:.78rem;font-weight:700;border-radius:3px;padding:2px 8px;white-space:nowrap}
@@ -245,7 +250,7 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
       <div class="ph"><div class="ph-t"><h1>사출기별 현황</h1><p>MES 작업(지시·양품·불량·효율)과 마지막 조건 기록을 호기별로 봅니다.</p></div><a class="btn pri" href="#new">+ 기록 등록</a></div>
       <div class="today" id="today"></div>
       <div class="bar"><span id="mchips" class="chips"></span><span class="grow"></span><span class="stamp">MES 자료 시각 <b id="mesAt2">-</b></span></div>
-      <div class="bar"><input class="search" id="mq" placeholder="호기, 금형, 제품 검색 · Tìm máy, khuôn, sản phẩm"><button class="btn" id="refresh">새로고침</button></div>
+      <div class="bar"><input class="search" id="mq" placeholder="호기, 금형, 제품 검색 · Tìm máy, khuôn, sản phẩm"><span class="vmode" id="vmode"></span><button class="btn" id="refresh">새로고침</button></div>
       <div id="cards"></div>
     </section>
 
@@ -419,6 +424,7 @@ const daysAgo = d => Math.floor((Date.now()-d)/86400000);
 
 /* ---------- 사출기별 현황 (4공장식 카드) ---------- */
 let mf = 'all';
+let lean = (()=>{ try { return localStorage.getItem('f3lean') !== '0'; } catch(e){ return true; } })();
 const FILTERS = [['all','전체'],['run','가동 중'],['stop','비가동 중'],['bad','불량 알림'],['slow','C/T 느림'],['norec','현재 금형 조건 기록 없음']];
 const isBad = m => m.prod+m.ng >= 20 && ngRate(m) >= 2;
 const isSlow = m => m.status==='RUN' && m.stdCt>0 && m.ct > m.stdCt*1.05;
@@ -445,6 +451,8 @@ function renderMachines(){
     <div class="td"><span class="l">오늘 조건 기록</span><span class="v">${tr.length}<small>건</small></span></div>
     <div class="td"><span class="l">미확인 · 이상</span><span class="v">${R.filter(r=>r.status==='미확인').length}<small>· <b style="color:var(--bad)">${R.filter(r=>r.status==='이상').length}</b></small></span></div>`;
   $('mchips').innerHTML = FILTERS.map(([k,t])=>`<button class="gchip ${CHIPC[k]||''}${mf===k?' on':''}" data-mf="${k}">${t} ${M.filter(test[k]).length}${k==='all'?'대':''}</button>`).join('');
+  $('cards').classList.toggle('lean', lean);
+  $('vmode').innerHTML = [['1','간단히'],['0','자세히']].map(([v,t])=>`<button data-vm="${v}" class="${(v==='1')===lean?'on':''}">${t}</button>`).join('');
   const q = $('mq').value.trim().replace(/호기$/,'');
   const list = M.filter(m=>test[mf](m) && (!q || `${m.no} ${m.mold} ${m.part} ${m.worker}`.includes(q)));
   $('cards').innerHTML = list.length ? LANES.map(([t,sub,f])=>{ const ms = list.filter(m=>f(m.no)), all = M.filter(m=>f(m.no)); if (!ms.length) return '';
@@ -739,6 +747,7 @@ function route(){
 }
 addEventListener('hashchange', ()=>{ route(); scrollTo(0,0); });
 document.addEventListener('click', e=>{
+  const vm = e.target.closest('[data-vm]'); if (vm){ lean = vm.dataset.vm==='1'; try{ localStorage.setItem('f3lean', lean?'1':'0'); }catch(e){} renderMachines(); return; }
   const lz = e.target.closest('[data-lz]'); if (lz){ zoomLens(lz.dataset.lz); return; }
   const lfb = e.target.closest('[data-lf]'); if (lfb){ lensF = lfb.dataset.lf; renderLens(); return; }
   const mtfb = e.target.closest('[data-mtf]'); if (mtfb){ mtF = mtfb.dataset.mtf; renderMaint(); return; }
