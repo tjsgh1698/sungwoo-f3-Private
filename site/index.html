@@ -490,7 +490,7 @@ function card(m){
       <div class="stats"><div><span>지시</span><b>${d(m.target.toLocaleString())}</b></div><div><span>양품</span><b>${d(m.prod.toLocaleString())}</b></div><div class="${m.ng?'bad':''}"><span>불량</span><b>${d(m.ng.toLocaleString())}</b></div><div><span>효율</span><b>${d(eff+'%')}</b></div></div>
       <div class="rate"><span>불량률</span><span class="bar2"><i class="${isBad(m)?'hi':''}" style="width:${has?Math.min(100,rate*10):0}%"></i></span><b class="${isBad(m)?'red':''}" style="${isBad(m)?'color:var(--bad)':''}">${d(rate.toFixed(2)+'%')}</b></div>
       <div class="kv"><span>C/T 기준 · 실</span><b>${has&&m.stdCt?m.stdCt+'s':'-'} · ${has&&m.ct?m.ct+'s':'-'} ${ctd!==null?`<span class="tag ${ctd>5?'':'g'}">${ctd>0?'+':''}${ctd}%</span>`:''}</b></div>
-      <div class="lastrec">${lr?`<div><b>${esc(lr.reason||lr.status||'조건 기록')}</b><small>${fmt(lr._at)} · ${esc(lr.technician)}</small></div>`:'<div><small>조건 기록 없음</small></div>'}${lr&&!cur?'<span class="tag">이 금형 조건 미등록</span>':''}</div>
+      <div class="lastrec">${lr?`<div><b>${esc(lr.technician||'기사 미상')}</b><small>${fmt(lr._at)} 등록</small></div>`:'<div><small>조건 기록 없음</small></div>'}${lr&&!cur?'<span class="tag">이 금형 조건 미등록</span>':''}</div>
       <div class="mt-days">${['pad','clean'].map(k=>{ const r = lastMaint(m.no,k), dd = r?daysAgo(r._at):null, warn = dd!==null&&MK[k][2]&&dd>=MK[k][2];
         return `<span class="${warn?'warn':''}">${MK[k][0]} ${r?`<b>${dd}일 전</b>${warn?' ⚠':''}`:'기록 없음'}</span>`; }).join('')}</div>
     </div>
