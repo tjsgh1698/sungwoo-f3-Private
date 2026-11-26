@@ -57,4 +57,5 @@ create index if not exists maintenance_m on maintenance (machine, at desc);
 alter table maintenance enable row level security;
 create policy "all read maint" on maintenance for select to anon, authenticated using (true);
 create policy "all add maint" on maintenance for insert to anon, authenticated with check (true);
-grant select, insert on public.maintenance to anon, authenticated;
+create policy "all del maint" on maintenance for delete to anon, authenticated using (true);
+grant select, insert, delete on public.maintenance to anon, authenticated;

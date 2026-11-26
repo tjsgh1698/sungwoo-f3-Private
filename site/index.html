@@ -111,6 +111,9 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .recs{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
 .rrow{display:grid;grid-template-columns:96px 54px minmax(0,1.5fr) 70px minmax(0,1.4fr) 92px 60px;gap:12px;align-items:center;padding:11px 14px;border-top:1px solid var(--line2);cursor:pointer;font-size:.9rem}
 .rrow:hover{background:var(--pri-bg)}
+.c-del{display:flex;justify-content:flex-end}
+.delx{border:1px solid var(--line2);background:#fff;color:var(--mut);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:.8rem;line-height:1;display:flex;align-items:center;justify-content:center}
+.delx:hover{border-color:var(--bad);background:#fff0f0;color:var(--bad)}
 .rrow.open{background:var(--pri-bg);box-shadow:inset 3px 0 0 var(--pri)}
 .rhead{background:var(--head);font-weight:700;color:var(--ink2);font-size:.8rem;cursor:default;border-top:0}.rhead:hover{background:var(--head)}
 .c-at b{display:block;font-variant-numeric:tabular-nums}.c-at small{color:var(--mut)}
@@ -687,16 +690,24 @@ function renderMaint(){
   const q = $('mtq').value.trim();
   const list = MT.filter(x=>(mtF==='all'||x.kind===mtF) && (!q || `${x.machine}호기 ${x.mold} ${x.worker} ${x.note}`.includes(q)));
   const wd = ['일','월','화','수','목','금','토'];
-  $('mtlist').innerHTML = list.length ? `<li class="rrow rhead" style="grid-template-columns:96px 54px 92px minmax(0,1.3fr) 70px minmax(0,1.6fr)"><span>일시</span><span>호기</span><span>종류</span><span>금형</span><span>기사</span><span>메모</span></li>` +
-    list.slice(0,300).map(x=>`<li><div class="rrow" style="grid-template-columns:96px 54px 92px minmax(0,1.3fr) 70px minmax(0,1.6fr);cursor:default">
+  const gc = 'grid-template-columns:96px 54px 92px minmax(0,1.3fr) 70px minmax(0,1.6fr) 40px';
+  $('mtlist').innerHTML = list.length ? `<li class="rrow rhead" style="${gc}"><span>일시</span><span>호기</span><span>종류</span><span>금형</span><span>기사</span><span>메모</span><span></span></li>` +
+    list.slice(0,300).map(x=>`<li><div class="rrow" style="${gc};cursor:default">
       <span class="c-at"><b>${x._at.getMonth()+1}/${x._at.getDate()} (${wd[x._at.getDay()]})</b><small>${pad(x._at.getHours())}:${pad(x._at.getMinutes())}</small></span>
       <span class="c-no">${x.machine}<small>호기</small></span>
       <span><span class="mk ${x.kind}">${(MK[x.kind]||['기타'])[0]}</span></span>
       <span class="c-mold"><b>${esc(x.mold||'-')}</b></span>
       <span class="c-who">${esc(x.worker||'-')}</span>
-      <span class="c-why">${esc(x.note||'')}</span></div></li>`).join('')
+      <span class="c-why">${esc(x.note||'')}</span>
+      <span class="c-del"><button type="button" class="delx" data-mtdel="${esc(x.id)}" title="삭제">✕</button></span></div></li>`).join('')
     : '<li class="empty">기록이 없습니다. 위에서 종류를 눌러 첫 기록을 남겨보세요.</li>';
 }
+async function delMaint(id){ const r = MT.find(x=>x.id===id); if (!r) return;
+  if (!confirm(`${r.machine}호기 · ${(MK[r.kind]||['기타'])[0]} 기록을 삭제할까요?\n(${r._at.getMonth()+1}/${r._at.getDate()} ${r.worker||''})`)) return;
+  try { await sb(`maintenance?id=eq.${encodeURIComponent(id)}`, { method:'DELETE', headers:{ Prefer:'return=minimal' } });
+    MT = MT.filter(x=>x.id!==id); renderMaint(); sideCounts(); }
+  catch { alert('삭제 실패. 인터넷 확인 후 다시 시도해 주세요.'); } }
+$('mtlist').addEventListener('click', e=>{ const b = e.target.closest('[data-mtdel]'); if (b) delMaint(b.dataset.mtdel); });
 $('mtq').addEventListener('input', renderMaint);
 $('mtf').addEventListener('submit', async e=>{
   e.preventDefault(); const kind = (e.submitter&&e.submitter.dataset.kind) || 'etc';
