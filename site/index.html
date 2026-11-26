@@ -469,7 +469,7 @@ function card(m){
   const has = m.status !== 'NONE', eff = m.target ? Math.round(m.prod/m.target*100) : 0, rate = ngRate(m), d = v => has ? v : '-';
   const ctd = m.stdCt && m.ct ? Math.round((m.ct/m.stdCt-1)*100) : null;
   const prod = m.part || lr?.product || '', mold = m.mold || lr?.mold || '';
-  const n = R.filter(r=>r.machine===m.no && (!mold || r.mold===mold)).length;
+  const n = mold ? R.filter(r=>r.mold===mold).length : R.filter(r=>r.machine===m.no).length;
   return `<div class="mc" style="--c:var(${s[2]})">
     <div class="mc-h"><span class="no">${m.no}<small>호기</small></span><span class="who"><b>${esc(mold||'금형 정보 없음')}</b>${m.worker?esc(m.worker):has?'':'MES 연결 전'}</span>
       <span class="pill ${m.status==='RUN'?'run':''}"><i></i>${s[0]}</span></div>
@@ -484,7 +484,7 @@ function card(m){
       <div class="mt-days">${['pad','clean'].map(k=>{ const r = lastMaint(m.no,k), dd = r?daysAgo(r._at):null, warn = dd!==null&&MK[k][2]&&dd>=MK[k][2];
         return `<span class="${warn?'warn':''}">${MK[k][0]} ${r?`<b>${dd}일 전</b>${warn?' ⚠':''}`:'기록 없음'}</span>`; }).join('')}</div>
     </div>
-    <div class="mc-f"><a class="btn sm" href="#list" data-go-no="${m.no}">기록 ${n}건</a><a class="btn sm pri" href="#new" data-new-no="${m.no}">+ 조건 등록</a></div>
+    <div class="mc-f"><a class="btn sm" href="#list" ${mold?`data-go-mold="${esc(mold)}"`:`data-go-no="${m.no}"`}>${mold?'이 금형 기록':'기록'} ${n}건</a><a class="btn sm pri" href="#new" data-new-no="${m.no}">+ 조건 등록</a></div>
   </div>`;
 }
 
@@ -765,11 +765,12 @@ document.addEventListener('click', e=>{
   const lz = e.target.closest('[data-lz]'); if (lz){ zoomLens(lz.dataset.lz); return; }
   const lfb = e.target.closest('[data-lf]'); if (lfb){ lensF = lfb.dataset.lf; renderLens(); return; }
   const mtfb = e.target.closest('[data-mtf]'); if (mtfb){ mtF = mtfb.dataset.mtf; renderMaint(); return; }
-  const t = e.target.closest('[data-mf],[data-p],[data-open],[data-go-no],[data-new-no],[data-copy],[data-gk]'); if (!t) return;
+  const t = e.target.closest('[data-mf],[data-p],[data-open],[data-go-no],[data-go-mold],[data-new-no],[data-copy],[data-gk]'); if (!t) return;
   if (t.dataset.mf){ mf = t.dataset.mf; renderMachines(); }
   else if (t.dataset.p){ lf.p = t.dataset.p; renderList(); }
   else if (t.dataset.open){ openRec(t.dataset.open); }
   else if (t.dataset.goNo){ fillSel(); ['lw','ls','lk'].forEach(id=>$(id).value=''); $('lq').value=''; $('lno').value = t.dataset.goNo; lf.p = 'all'; }
+  else if (t.dataset.goMold){ fillSel(); ['lno','lw','ls','lk'].forEach(id=>$(id).value=''); $('lq').value = t.dataset.goMold; lf.p = 'all'; }
   else if (t.dataset.newNo){ pre = { no:+t.dataset.newNo }; }
   else if (t.dataset.copy){ pre = { copy:t.dataset.copy }; }
   else if (t.dataset.gk){ fillSel(); lf.p = 'all'; ['lno','lw','ls','lk'].forEach(id=>$(id).value=''); $('lq').value = ''; if (t.dataset.gk==='technician') $('lw').value = t.dataset.gv; else $('lq').value = t.dataset.gv; }
