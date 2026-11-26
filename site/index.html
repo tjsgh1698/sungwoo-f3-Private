@@ -99,11 +99,13 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .rate{display:flex;align-items:center;gap:8px;font-size:.82rem}.rate span{color:var(--mut);white-space:nowrap}.rate .bar2{flex:1;height:6px;border-radius:3px;background:var(--line2);overflow:hidden}.rate .bar2 i{display:block;height:100%;background:var(--ok)}.rate .bar2 i.hi{background:var(--bad)}.rate b{font-variant-numeric:tabular-nums}
 .kv{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.84rem}
 .kv span{color:var(--mut);white-space:nowrap}.kv b{font-variant-numeric:tabular-nums;text-align:right;font-weight:600}
-.lastrec{display:flex;align-items:center;gap:8px;border-top:1px dashed var(--line);padding-top:8px;font-size:.92rem}
-.lastrec b{font-size:.98rem}.lastrec small{font-size:.86rem}
+.lastrec{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:9px;margin-top:1px}
+.lastrec>div{flex:1;min-width:0}
+.lastrec b{display:block;font-size:.9rem;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lastrec small{display:block;font-size:.8rem;color:var(--mut);margin-top:1px}
 .av{width:26px;height:26px;border-radius:50%;background:#10264a;color:#fff;display:grid;place-items:center;font-size:.72rem;font-weight:700;flex:none}
 .av.none{background:var(--unk-bg);color:var(--unk)}
-.lastrec div{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lastrec small{color:var(--mut)}
+.lastrec .tag{flex:none;background:var(--panel);color:var(--ink2);border-radius:999px;padding:3px 10px;font-size:.73rem;font-weight:600;white-space:nowrap}
 .mc-f{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 12px 12px}
 .mc-f .btn{justify-content:center}
 .vmode{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex:none}
@@ -488,7 +490,7 @@ function card(m){
       <div class="stats"><div><span>지시</span><b>${d(m.target.toLocaleString())}</b></div><div><span>양품</span><b>${d(m.prod.toLocaleString())}</b></div><div class="${m.ng?'bad':''}"><span>불량</span><b>${d(m.ng.toLocaleString())}</b></div><div><span>효율</span><b>${d(eff+'%')}</b></div></div>
       <div class="rate"><span>불량률</span><span class="bar2"><i class="${isBad(m)?'hi':''}" style="width:${has?Math.min(100,rate*10):0}%"></i></span><b class="${isBad(m)?'red':''}" style="${isBad(m)?'color:var(--bad)':''}">${d(rate.toFixed(2)+'%')}</b></div>
       <div class="kv"><span>C/T 기준 · 실</span><b>${has&&m.stdCt?m.stdCt+'s':'-'} · ${has&&m.ct?m.ct+'s':'-'} ${ctd!==null?`<span class="tag ${ctd>5?'':'g'}">${ctd>0?'+':''}${ctd}%</span>`:''}</b></div>
-      <div class="lastrec">${lr?`<div><b>${esc(lr.reason||lr.status||'조건 기록')}</b><br><small>${fmt(lr._at)} · ${esc(lr.technician)}</small></div>`:'<div><small>조건 기록 없음</small></div>'}${lr&&!cur?'<span class="tag">현재 금형 기록 없음</span>':''}</div>
+      <div class="lastrec">${lr?`<div><b>${esc(lr.reason||lr.status||'조건 기록')}</b><small>${fmt(lr._at)} · ${esc(lr.technician)}</small></div>`:'<div><small>조건 기록 없음</small></div>'}${lr&&!cur?'<span class="tag">이 금형 조건 미등록</span>':''}</div>
       <div class="mt-days">${['pad','clean'].map(k=>{ const r = lastMaint(m.no,k), dd = r?daysAgo(r._at):null, warn = dd!==null&&MK[k][2]&&dd>=MK[k][2];
         return `<span class="${warn?'warn':''}">${MK[k][0]} ${r?`<b>${dd}일 전</b>${warn?' ⚠':''}`:'기록 없음'}</span>`; }).join('')}</div>
     </div>
