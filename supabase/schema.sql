@@ -59,3 +59,13 @@ create policy "all read maint" on maintenance for select to anon, authenticated 
 create policy "all add maint" on maintenance for insert to anon, authenticated with check (true);
 create policy "all del maint" on maintenance for delete to anon, authenticated using (true);
 grant select, insert, delete on public.maintenance to anon, authenticated;
+
+-- 제품 사진 (MES TB_BASE_FILE FILE_GBN='ITEM', FILE_ID=품번). 회사 PC가 품목당 1회 업로드
+alter table machines_live add column if not exists item_code text;
+create table if not exists item_photos (
+  item_code text primary key, img text, ext text, updated_at timestamptz default now());
+alter table item_photos enable row level security;
+create policy "all read itemph" on item_photos for select to anon, authenticated using (true);
+create policy "all add itemph" on item_photos for insert to anon, authenticated with check (true);
+create policy "all upd itemph" on item_photos for update to anon, authenticated using (true) with check (true);
+grant select, insert, update on public.item_photos to anon, authenticated;
