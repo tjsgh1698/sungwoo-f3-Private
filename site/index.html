@@ -118,8 +118,8 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .rrow{display:grid;grid-template-columns:96px 54px minmax(0,1.5fr) 70px minmax(0,1.4fr) 92px 60px;gap:12px;align-items:center;padding:11px 14px;border-top:1px solid var(--line2);cursor:pointer;font-size:.9rem}
 .rrow:hover{background:var(--pri-bg)}
 .c-del{display:flex;justify-content:flex-end}
-.delx{border:1px solid var(--line2);background:#fff;color:var(--mut);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:.8rem;line-height:1;display:flex;align-items:center;justify-content:center}
-.delx:hover{border-color:var(--bad);background:#fff0f0;color:var(--bad)}
+.delx{border:1px solid var(--bad);background:#fff0f0;color:var(--bad);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:.95rem;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center}
+.delx:hover,.delx:active{background:var(--bad);color:#fff}
 .rrow.open{background:var(--pri-bg);box-shadow:inset 3px 0 0 var(--pri)}
 .rhead{background:var(--head);font-weight:700;color:var(--ink2);font-size:.8rem;cursor:default;border-top:0}.rhead:hover{background:var(--head)}
 .c-at b{display:block;font-variant-numeric:tabular-nums}.c-at small{color:var(--mut)}
@@ -699,7 +699,7 @@ function renderMaint(){
   const q = $('mtq').value.trim();
   const list = MT.filter(x=>(mtF==='all'||x.kind===mtF) && (!q || `${x.machine}호기 ${x.mold} ${x.worker} ${x.note}`.includes(q)));
   const wd = ['일','월','화','수','목','금','토'];
-  const gc = 'grid-template-columns:96px 54px 92px minmax(0,1.3fr) 70px minmax(0,1.6fr) 40px';
+  const gc = 'grid-template-columns:96px 54px 92px minmax(0,1.3fr) 70px minmax(0,1.6fr) 46px';
   $('mtlist').innerHTML = list.length ? `<li class="rrow rhead" style="${gc}"><span>일시</span><span>호기</span><span>종류</span><span>금형</span><span>기사</span><span>메모</span><span></span></li>` +
     list.slice(0,300).map(x=>`<li><div class="rrow" style="${gc};cursor:default">
       <span class="c-at"><b>${x._at.getMonth()+1}/${x._at.getDate()} (${wd[x._at.getDay()]})</b><small>${pad(x._at.getHours())}:${pad(x._at.getMinutes())}</small></span>
