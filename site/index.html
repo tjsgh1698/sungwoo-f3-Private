@@ -541,8 +541,16 @@ function initForm(){
   mesInfo(); pre = null;
 }
 $('fno').addEventListener('input', ()=>{ $('fmold').value=''; $('fprod').value=''; mesInfo(); });
-function prodForMold(mold){ if (!mold) return ''; const mm = M.find(m=>m.mold && m.mold===mold && m.part); if (mm) return mm.part;
-  const r = R.filter(x=>x.mold===mold && x.product).sort((a,b)=>b._at-a._at)[0]; return r ? r.product : ''; }
+function moldPairs(){ const seen = new Set(), out = [];
+  M.forEach(m=>{ if (m.mold && m.part && !seen.has(m.mold)){ seen.add(m.mold); out.push([m.mold, m.part]); } });
+  R.slice().sort((a,b)=>b._at-a._at).forEach(r=>{ if (r.mold && r.product && !seen.has(r.mold)){ seen.add(r.mold); out.push([r.mold, r.product]); } });
+  return out; }
+function prodForMold(v){ v = (v||'').trim(); if (!v) return ''; const pairs = moldPairs();
+  let hit = pairs.find(p=>p[0].toLowerCase()===v.toLowerCase());               // 정확히 일치
+  const vd = v.replace(/\D/g,'');                                              // 숫자만 비교 (예: 'SW12345' ↔ '12345')
+  if (!hit && vd) hit = pairs.find(p=>p[0].replace(/\D/g,'')===vd);
+  if (!hit && vd.length>=3) hit = pairs.find(p=>{ const d=p[0].replace(/\D/g,''); return d && (d.endsWith(vd)||vd.endsWith(d)); });
+  return hit ? hit[1] : ''; }
 $('fmold').addEventListener('input', ()=>{ const p = prodForMold($('fmold').value.trim()); if (p) $('fprod').value = p; });
 $('pgrid').addEventListener('input', e=>{ if (e.target.classList.contains('pa')){ const b = e.target.previousElementSibling; e.target.classList.toggle('ch', e.target.value!=='' && e.target.value!==b.value); } });
 $('fst').addEventListener('click', e=>{ const b = e.target.closest('[data-s]'); if (b){ fst = b.dataset.s; [...$('fst').children].forEach(c=>c.classList.toggle('on', c===b)); } });
