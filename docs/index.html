@@ -474,9 +474,32 @@ async function sb(path, opt = {}){
 }
 let M = [], R = [], MT = [], mesAt = null, PH = new Map();
 const ctHist = new Map();
+/* 사진 캐시(IndexedDB) — 전송량(egress) 절감: 사진은 폰에 한 번만 받고, 바뀐 것만 다시 받음 */
+const idb = { db:null,
+  open(){ return this.db ? Promise.resolve(this.db) : new Promise((res,rej)=>{ const r = indexedDB.open('f3cache',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>{ this.db=r.result; res(this.db); }; r.onerror=()=>rej(r.error); }); },
+  async get(k){ try{ const db=await this.open(); return await new Promise((res,rej)=>{ const q=db.transaction('kv').objectStore('kv').get(k); q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); }); }catch{ return undefined; } },
+  async set(k,v){ try{ const db=await this.open(); await new Promise((res,rej)=>{ const q=db.transaction('kv','readwrite').objectStore('kv').put(v,k); q.onsuccess=()=>res(); q.onerror=()=>rej(q.error); }); }catch{} } };
+async function loadPhotos(){
+  let meta = [];
+  try { meta = await sb('item_photos?select=item_code,updated_at') || []; } catch { return; }  // 실패해도 사진만 비고 나머지는 동작
+  const cached = (await idb.get('photos')) || { map:{}, stamp:{} };
+  const stamp = {}, need = [];
+  for (const r of meta){ stamp[r.item_code] = r.updated_at;
+    if (!cached.map[r.item_code] || cached.stamp[r.item_code] !== r.updated_at) need.push(r.item_code); }
+  const map = {};
+  for (const c of Object.keys(stamp)) if (cached.map[c]) map[c] = cached.map[c];   // 캐시에 있는 건 재사용
+  if (need.length){                                                                 // 새로 생겼거나 바뀐 것만 다운로드
+    const inList = need.map(c=>'"'+c.replace(/"/g,'')+'"').join(',');
+    try { const rows = await sb(`item_photos?select=item_code,img&item_code=in.(${encodeURIComponent(inList)})`) || [];
+      for (const r of rows) map[r.item_code] = r.img; } catch {}
+  }
+  PH = new Map(Object.entries(map));
+  await idb.set('photos', { map, stamp });
+}
 async function load(){
-  const [ms, rs, mts, phs] = await Promise.all([ sb('machines_live?select=*&order=no'), R.length ? sb(`logbook?select=data&updated_at=gt.${encodeURIComponent(R.reduce((a,r)=>r.updatedAt>a?r.updatedAt:a,''))}&limit=1000`) : sb('logbook?select=data&order=recorded_at.desc&limit=5000'), sb('maintenance?select=*&order=at.desc&limit=2000'), sb('item_photos?select=item_code,img').catch(()=>[]) ]);
-  PH = new Map((phs||[]).map(p=>[p.item_code, p.img]));
+  const since = new Date(Date.now()-120*86400000).toISOString();   // 처음 로드는 최근 120일만(전송량 절감), 이후엔 증분
+  const [ms, rs, mts] = await Promise.all([ sb('machines_live?select=*&order=no'), R.length ? sb(`logbook?select=data&updated_at=gt.${encodeURIComponent(R.reduce((a,r)=>r.updatedAt>a?r.updatedAt:a,''))}&limit=1000`) : sb(`logbook?select=data&recorded_at=gte.${encodeURIComponent(since)}&order=recorded_at.desc&limit=3000`), sb('maintenance?select=*&order=at.desc&limit=2000') ]);
+  await loadPhotos();
   MT = mts.map(m=>({ ...m, _at:new Date(m.at) }));
   const got = new Map(ms.map(m=>[+m.no, m]));
   mesAt = ms.reduce((a,m)=>m.updated_at > a ? m.updated_at : a, '') || null;
