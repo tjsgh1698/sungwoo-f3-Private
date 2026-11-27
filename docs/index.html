@@ -479,6 +479,7 @@ const idb = { db:null,
   open(){ return this.db ? Promise.resolve(this.db) : new Promise((res,rej)=>{ const r = indexedDB.open('f3cache',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>{ this.db=r.result; res(this.db); }; r.onerror=()=>rej(r.error); }); },
   async get(k){ try{ const db=await this.open(); return await new Promise((res,rej)=>{ const q=db.transaction('kv').objectStore('kv').get(k); q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); }); }catch{ return undefined; } },
   async set(k,v){ try{ const db=await this.open(); await new Promise((res,rej)=>{ const q=db.transaction('kv','readwrite').objectStore('kv').put(v,k); q.onsuccess=()=>res(); q.onerror=()=>rej(q.error); }); }catch{} } };
+async function cacheLog(){ try { await idb.set('logbook', R.map(({_at,...r})=>r)); } catch {} }   // 로그북을 폰에 저장 — 다음엔 바뀐 것만 받아 전송량 절감
 async function loadPhotos(){
   let meta = [];
   try { meta = await sb('item_photos?select=item_code,updated_at') || []; } catch { return; }  // 실패해도 사진만 비고 나머지는 동작
@@ -498,7 +499,9 @@ async function loadPhotos(){
 }
 async function load(){
   const since = new Date(Date.now()-120*86400000).toISOString();   // 처음 로드는 최근 120일만(전송량 절감), 이후엔 증분
-  const [ms, rs, mts] = await Promise.all([ sb('machines_live?select=*&order=no'), R.length ? sb(`logbook?select=data&updated_at=gt.${encodeURIComponent(R.reduce((a,r)=>r.updatedAt>a?r.updatedAt:a,''))}&limit=1000`) : sb(`logbook?select=data&recorded_at=gte.${encodeURIComponent(since)}&order=recorded_at.desc&limit=3000`), sb('maintenance?select=*&order=at.desc&limit=2000') ]);
+  if (!R.length){ try { const cached = await idb.get('logbook'); if (Array.isArray(cached) && cached.length) R = cached.map(r=>({ ...r, _at:new Date(r.recordedAt.length<=16 ? r.recordedAt+':00+09:00' : r.recordedAt) })); } catch {} }   // 폰 캐시 먼저 → 서버에선 바뀐 것만
+  const maxUp = R.reduce((a,r)=>r.updatedAt>a?r.updatedAt:a,'');
+  const [ms, rs, mts] = await Promise.all([ sb('machines_live?select=*&order=no'), R.length ? sb(`logbook?select=data&updated_at=gt.${encodeURIComponent(maxUp)}&limit=1000`) : sb(`logbook?select=data&recorded_at=gte.${encodeURIComponent(since)}&order=recorded_at.desc&limit=3000`), sb('maintenance?select=*&order=at.desc&limit=2000') ]);
   await loadPhotos();
   MT = mts.map(m=>({ ...m, _at:new Date(m.at) }));
   const got = new Map(ms.map(m=>[+m.no, m]));
@@ -509,6 +512,7 @@ async function load(){
     return { ...m, no, stdCt:+m.std_ct||0, ct:+m.ct||0, prod:+m.prod||0, ng:+m.ng||0, target:+m.target||0, since:new Date(m.since||m.updated_at).getTime() }; });
   const byId = new Map(R.map(r=>[r.id,r])); rs.forEach(x=>byId.set(x.data.id, x.data));
   R = [...byId.values()].map(r=>({ ...r, _at:new Date(r.recordedAt.length<=16 ? r.recordedAt+':00+09:00' : r.recordedAt) }));
+  if (rs.length) await cacheLog();   // 새로 받은 게 있을 때만 캐시 갱신
 }
 const lastRec = (no, mold) => R.filter(r=>r.machine===no && (!mold || r.mold===mold)).sort((a,b)=>b._at-a._at)[0];
 const ngRate = m => (m.prod+m.ng) ? m.ng/(m.prod+m.ng)*100 : 0;
@@ -636,7 +640,7 @@ function detail(x){
     <div class="rd-top"><span class="rd-ti"><b>${x.machine}호기</b> · ${esc(x.mold||'-')}${x.product?` · ${esc(x.product)}`:''}</span>${chCount?`<span class="rd-chg">이번에 바뀐 조건 ${chCount}개</span>`:`<span class="rd-chg n">초기 등록 · 변경 없음</span>`}</div>
     <div class="sheet">${sheet || '<div class="sg"><div class="srow"><span class="srv">기록된 조건 없음</span></div></div>'}</div>
     <div class="rd-meta">${x.reason?`<span>사유</span><b>${esc(x.reason)}</b>`:''}${(x.beam?.lh||x.beam?.rh)?`<span>배광</span><b>LH ${esc(x.beam.lh||'-')} · RH ${esc(x.beam.rh||'-')}</b>`:''}${mat?`<span>원재료</span><b>${mat}</b>`:''}${x.notes?`<span>메모</span><b>${esc(x.notes)}</b>`:''}${x.operator?`<span>작업자</span><b>${esc(x.operator)}</b>`:''}
-    <a class="btn sm" href="#new" data-copy="${esc(x.id)}" style="margin-left:auto">이 조건으로 새 기록</a></div></div>`;
+    <a class="btn sm" href="#new" data-copy="${esc(x.id)}" style="margin-left:auto">${L('이 조건으로 새 기록')}</a>${auth?`<button type="button" class="btn sm" data-editrec="${esc(x.id)}">${L('수정')}</button><button type="button" class="btn sm" data-delrec="${esc(x.id)}" style="color:var(--bad);border-color:#f3c0c0">${L('삭제')}</button>`:''}</div></div>`;
 }
 function openRec(id){ const x = R.find(r=>r.id===id); if (!x) return;
   closeRec();
@@ -662,7 +666,13 @@ function renderGroup(kind){
 }
 
 /* ---------- 기록 등록 (일지식 단별 조건) ---------- */
-let fst = '미확인', pre = null;
+let fst = '미확인', pre = null, recEdit = null;
+function editRec(id){ if (!auth) return; pre = { edit:id }; closeRec(); location.hash = '#new'; if (location.hash==='#new') route(); }
+async function delRec(id){ if (!auth) return; const r = R.find(x=>x.id===id); if (!r) return;
+  if (!confirm(lang==='vi'?`Xóa bản ghi ${r.machine} · ${r.mold||''}?\nKhông thể hoàn tác.`:`${r.machine}호기 · ${r.mold||''} 조건기록을 삭제할까요?\n되돌릴 수 없어요.`)) return;
+  try { await sb(`logbook?id=eq.${encodeURIComponent(id)}`, { method:'DELETE', headers:{ Prefer:'return=minimal' } });
+    R = R.filter(x=>x.id!==id); await cacheLog(); closeRec(); route(); }
+  catch { alert(lang==='vi'?'Xóa thất bại. Kiểm tra mạng.':'삭제 실패. 인터넷 확인 후 다시.'); } }
 function pgrid(vals = {}){
   $('pgrid').innerHTML = KINDS.map(([k,n,vn,u,st])=>`<div class="prow"><div class="pk">${n}${u?` (${u})`:''}<span>${vn}</span></div><div class="stg">${st.map(s=>{ const v = vals[k+'|'+s]||'';
     return `<div>${s||'값'}<input data-k="${k}" data-s="${s}" data-u="${u}" class="pb" inputmode="decimal" placeholder="전" value="${esc(v)}"><input data-k="${k}" data-s="${s}" class="pa" inputmode="decimal" placeholder="후"></div>`; }).join('')}</div></div>`).join('');
@@ -677,16 +687,28 @@ function mesInfo(){
 function fillFrom(r){ const v = {}; (r.parameters||[]).forEach(p=>{ v[p.kind+'|'+p.stage] = (p.after!==''&&p.after!=null) ? p.after : p.before; }); pgrid(v); }
 function initForm(){
   const now = new Date(); now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
+  recEdit = null;
+  const er = pre?.edit ? R.find(x=>x.id===pre.edit) : null;
+  fst = er ? (er.status||'미확인') : '미확인';
   $('fno').innerHTML = opt('','사출기 선택 · Chọn máy') + NOS.map(n=>opt(n,`${n}호기 · Máy ${n}`, pre?.no)).join('');
   $('fw').innerHTML = opt('','기사 선택 · Chọn KTV') + [...new Set(WORKERS.concat(R.map(r=>r.technician).filter(Boolean)))].map(w=>opt(w,w)).join('');
   $('fat').value = now.toISOString().slice(0,16);
   $('reasons').innerHTML = REASONS.map(r=>`<option value="${esc(r)}">`).join('');
   $('molds').innerHTML = [...new Set(M.map(m=>m.mold).concat(R.map(r=>r.mold)).filter(Boolean))].sort().map(md=>`<option value="${esc(md)}">`).join('');
   $('fst').innerHTML = ['정상','이상','미확인'].map(s=>`<button type="button" class="gchip${fst===s?' on':''}" data-s="${s}">${s}</button>`).join('');
-  $('fmold').value = ''; $('fprod').value = ''; $('fblh').value = ''; $('fbrh').value = '';
-  if (pre?.copy){ const r = R.find(x=>x.id===pre.copy); if (r){ $('fno').value = r.machine; $('fmold').value = r.mold; $('fprod').value = r.product; $('fblh').value = r.beam?.lh||''; $('fbrh').value = r.beam?.rh||''; fillFrom(r); } }
-  else pgrid();
-  mesInfo(); pre = null;
+  $('fmold').value = ''; $('fprod').value = ''; $('fblh').value = ''; $('fbrh').value = ''; $('fr').value = ''; $('fmemo').value = '';
+  const subBtn = $('fm').querySelector('button[type=submit]');
+  if (er){ recEdit = er.id; $('fno').value = er.machine; $('fw').value = er.technician||''; if (er.recordedAt) $('fat').value = er.recordedAt.slice(0,16);
+    $('fmold').value = er.mold||''; $('fprod').value = er.product||''; $('fblh').value = er.beam?.lh||''; $('fbrh').value = er.beam?.rh||''; $('fr').value = er.reason||''; $('fmemo').value = er.notes||''; fillEdit(er);
+    if (subBtn) subBtn.textContent = L('수정 저장'); }
+  else if (pre?.copy){ const r = R.find(x=>x.id===pre.copy); if (r){ $('fno').value = r.machine; $('fmold').value = r.mold; $('fprod').value = r.product; $('fblh').value = r.beam?.lh||''; $('fbrh').value = r.beam?.rh||''; fillFrom(r); }
+    if (subBtn) subBtn.textContent = lang==='vi'?'Lưu':'등록하기 · Lưu'; }
+  else { pgrid(); if (subBtn) subBtn.textContent = lang==='vi'?'Lưu':'등록하기 · Lưu'; }
+  if (!er) mesInfo();   // 편집 중엔 MES 현재값으로 덮어쓰지 않음
+  pre = null;
+}
+function fillEdit(r){ const vb = {}; (r.parameters||[]).forEach(p=>{ vb[p.kind+'|'+p.stage] = p.before; }); pgrid(vb);   // 전(before) 채우고
+  (r.parameters||[]).forEach(p=>{ const pa = $('pgrid').querySelector(`.pa[data-k="${p.kind}"][data-s="${p.stage}"]`); if (pa && p.after!=='' && p.after!=null){ pa.value = p.after; pa.classList.toggle('ch', String(p.after)!==String(p.before)); } });  // 후(after)도 채움
 }
 $('fno').addEventListener('input', ()=>{ $('fmold').value=''; $('fprod').value=''; mesInfo(); });
 function moldPairs(){ const seen = new Set(), out = [];
@@ -706,14 +728,20 @@ $('fm').addEventListener('submit', async e=>{
   e.preventDefault();
   const params = [...$('pgrid').querySelectorAll('.pb')].map(b=>({ kind:b.dataset.k, stage:b.dataset.s, unit:b.dataset.u||'미확인', before:b.value.trim(), after:b.nextElementSibling.value.trim() })).filter(p=>p.before!==''||p.after!=='');
   if (!params.length){ $('fmsg').textContent = '조건을 하나 이상 입력해 주세요'; return; }
-  const now = new Date().toISOString(), id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
+  const now = new Date().toISOString();
+  const old = recEdit ? R.find(r=>r.id===recEdit) : null;
+  const id = old ? old.id : (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()));
   const rec = { id, recordedAt:$('fat').value, machine:+$('fno').value, machineLabel:'', mold:$('fmold').value.trim(), product:$('fprod').value.trim(), operator:'', technician:$('fw').value,
-    reason:$('fr').value.trim(), status:fst, result:'', notes:$('fmemo').value.trim(), parameters:params, beam:{ lh:$('fblh').value.trim(), rh:$('fbrh').value.trim() }, createdAt:now, updatedAt:now, revision:1, source:'f3-site' };
+    reason:$('fr').value.trim(), status:fst, result:'', notes:$('fmemo').value.trim(), parameters:params, beam:{ lh:$('fblh').value.trim(), rh:$('fbrh').value.trim() }, createdAt:old?.createdAt||now, updatedAt:now, revision:(old?.revision||0)+1, source:'f3-site' };
+  const body = JSON.stringify({ id, machine:rec.machine, mold:rec.mold, product:rec.product, technician:rec.technician, status:rec.status, reason:rec.reason, recorded_at:rec.recordedAt+':00+09:00', updated_at:now, data:rec });
   try {
-    await sb('logbook', { method:'POST', headers:{ Prefer:'return=minimal' }, body:JSON.stringify({ id, machine:rec.machine, mold:rec.mold, product:rec.product, technician:rec.technician, status:rec.status, reason:rec.reason, recorded_at:rec.recordedAt+':00+09:00', data:rec }) });
-    R.push({ ...rec, _at:new Date(rec.recordedAt+':00+09:00') });
-    $('fm').reset(); fst = '미확인'; $('fmsg').textContent = ''; location.hash = '#list';
-  } catch { $('fmsg').textContent = '등록 실패. 인터넷 연결을 확인하고 다시 눌러 주세요.'; }
+    if (old){ await sb(`logbook?id=eq.${encodeURIComponent(id)}`, { method:'PATCH', headers:{ Prefer:'return=minimal' }, body });
+      R = R.map(r=>r.id===id ? { ...rec, _at:new Date(rec.recordedAt+':00+09:00') } : r); }
+    else { await sb('logbook', { method:'POST', headers:{ Prefer:'return=minimal' }, body });
+      R.push({ ...rec, _at:new Date(rec.recordedAt+':00+09:00') }); }
+    await cacheLog();
+    $('fm').reset(); fst = '미확인'; recEdit = null; $('fmsg').textContent = ''; location.hash = '#list';
+  } catch { $('fmsg').textContent = L('등록 실패. 인터넷 연결을 확인하고 다시 눌러 주세요.'); }
 });
 
 /* ---------- 렌즈 한도기준 ---------- */
@@ -895,6 +923,8 @@ document.addEventListener('click', e=>{
   const vm = e.target.closest('[data-vm]'); if (vm){ lean = vm.dataset.vm==='1'; try{ localStorage.setItem('f3lean', lean?'1':'0'); }catch(e){} renderMachines(); return; }
   const led = e.target.closest('[data-ledit]'); if (led){ e.stopPropagation(); editLens(led.dataset.ledit); return; }
   const ldl = e.target.closest('[data-ldel]'); if (ldl){ e.stopPropagation(); delLens(ldl.dataset.ldel); return; }
+  const edr = e.target.closest('[data-editrec]'); if (edr){ e.stopPropagation(); editRec(edr.dataset.editrec); return; }
+  const dlr = e.target.closest('[data-delrec]'); if (dlr){ e.stopPropagation(); delRec(dlr.dataset.delrec); return; }
   const lz = e.target.closest('[data-lz]'); if (lz){ zoomLens(lz.dataset.lz); return; }
   const lfb = e.target.closest('[data-lf]'); if (lfb){ lensF = lfb.dataset.lf; renderLens(); return; }
   const mtfb = e.target.closest('[data-mtf]'); if (mtfb){ mtF = mtfb.dataset.mtf; renderMaint(); return; }

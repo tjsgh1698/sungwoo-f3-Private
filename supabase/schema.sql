@@ -39,6 +39,10 @@ alter table logbook enable row level security;
 create policy "all read logbook" on logbook for select to anon, authenticated using (true);
 create policy "all add logbook" on logbook for insert to anon, authenticated with check (true);
 grant select, insert on public.logbook to anon, authenticated;
+-- 2026-11-27: 조건기록 수정·삭제 — 관리자(사이트 로그인 0121)만 UI 노출. 렌즈/정비와 동일 모델(anon도 DB 허용, 진짜 잠금은 추후 RLS). 사용자 요청: 전체 수정·삭제.
+create policy "all upd logbook" on logbook for update to anon, authenticated using (true) with check (true);
+create policy "all del logbook" on logbook for delete to anon, authenticated using (true);
+grant update, delete on public.logbook to anon, authenticated;
 
 -- 렌즈 한도기준 (기존 일지 사이트에서 15건 이전, 사진은 회전 반영 JPEG data URL)
 create table if not exists lens_limits (
