@@ -430,7 +430,7 @@ function applyStatic(){
     if (el.children.length && el.firstChild && el.firstChild.nodeType===3) el.firstChild.nodeValue = tx; // 자식(input 등) 보존, 앞 텍스트만 교체
     else el.textContent = tx; });
   document.querySelectorAll('[data-tp]').forEach(el=>{ el.placeholder = L(el.dataset.tp); });
-  const lt = $('langtog'); if (lt) lt.innerHTML = [['ko','한국어'],['vi','Tiếng Việt']].map(([v,t])=>`<button data-lang="${v}" class="${lang===v?'on':''}">${t}</button>`).join('');
+  const lt = $('langtog'); if (lt) lt.innerHTML = [['ko','한국어'],['vi','Tiếng Việt']].map(([v,t])=>`<button data-setlang="${v}" class="${lang===v?'on':''}">${t}</button>`).join('');
   if (typeof admLabel === 'function') admLabel();
 }
 function setLang(l){ if (l!==lang){ lang = l; try { localStorage.setItem('f3lang', l); } catch {} } applyStatic(); route(); }
@@ -867,7 +867,7 @@ function route(){
 addEventListener('hashchange', ()=>{ closeRec(); route(); scrollTo(0,0); });
 addEventListener('keydown', e=>{ if (e.key==='Escape') closeRec(); });
 document.addEventListener('click', e=>{
-  const lgb = e.target.closest('[data-lang]'); if (lgb){ setLang(lgb.dataset.lang); return; }
+  const lgb = e.target.closest('[data-setlang]'); if (lgb){ setLang(lgb.dataset.setlang); return; }
   const ph = e.target.closest('[data-ph]'); if (ph){ openPhoto(ph.dataset.ph); return; }
   const vm = e.target.closest('[data-vm]'); if (vm){ lean = vm.dataset.vm==='1'; try{ localStorage.setItem('f3lean', lean?'1':'0'); }catch(e){} renderMachines(); return; }
   const led = e.target.closest('[data-ledit]'); if (led){ e.stopPropagation(); editLens(led.dataset.ledit); return; }
