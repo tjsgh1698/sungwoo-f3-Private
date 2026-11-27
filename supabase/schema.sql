@@ -79,3 +79,33 @@ create policy "all read itemph" on item_photos for select to anon, authenticated
 create policy "all add itemph" on item_photos for insert to anon, authenticated with check (true);
 create policy "all upd itemph" on item_photos for update to anon, authenticated using (true) with check (true);
 grant select, insert, update on public.item_photos to anon, authenticated;
+
+-- 2026-11-27: 생산 이력(기간별 생산·불량). PC 업로더가 MES TB_PROD_RESULT 최근 N일치를 10분마다 upsert.
+-- 목적: 각 조건기록이 돌아간 기간의 실제 불량률을 계산 → 제품(금형)별 최저불량 조건을 '표준'으로 자동 선정.
+-- id = machine|item_code|mold|work_date (중복 방지, 재업로드 시 갱신). 숫자 위주라 용량 거의 안 먹음(egress 안전).
+create table if not exists prod_history (
+  id text primary key,
+  machine int, item_code text, mold text, cav int,
+  work_date date,
+  prod_qty int default 0, bad_qty int default 0,
+  start_dtm timestamptz, end_dtm timestamptz,
+  updated_at timestamptz default now());
+create index if not exists prod_history_md on prod_history (mold, work_date desc);
+create index if not exists prod_history_up on prod_history (updated_at desc);
+alter table prod_history enable row level security;
+create policy "all read prod" on prod_history for select to anon, authenticated using (true);
+create policy "all add prod" on prod_history for insert to anon, authenticated with check (true);
+create policy "all upd prod" on prod_history for update to anon, authenticated using (true) with check (true);
+grant select, insert, update on public.prod_history to anon, authenticated;
+grant select, insert, update on public.prod_history to service_role;
+
+-- 2026-11-27: 금형별 표준조건 지정(관리자 확정). logbook.id를 가리켜 "이 기록이 이 금형의 표준".
+create table if not exists mold_standard (
+  mold text primary key, logbook_id text, product text,
+  set_by text, note text, updated_at timestamptz default now());
+alter table mold_standard enable row level security;
+create policy "all read std" on mold_standard for select to anon, authenticated using (true);
+create policy "all add std" on mold_standard for insert to anon, authenticated with check (true);
+create policy "all upd std" on mold_standard for update to anon, authenticated using (true) with check (true);
+create policy "all del std" on mold_standard for delete to anon, authenticated using (true);
+grant select, insert, update, delete on public.mold_standard to anon, authenticated;
