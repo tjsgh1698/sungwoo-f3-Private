@@ -312,9 +312,9 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
           <label data-t="메모(선택)">메모(선택)<input id="mtnote" placeholder="예: 3번 패드 자국, 전체 교체"></label>
         </div>
         <div class="qreg-act"><span class="note" id="mtmsg" data-t="종류를 누르면 바로 기록돼요">종류를 누르면 바로 기록돼요</span>
-          <button class="btn big pad" type="submit" data-kind="pad" data-t="흡착패드 교체 기록">흡착패드 교체 기록</button>
-          <button class="btn big clean" type="submit" data-kind="clean" data-t="금형 세척 기록">금형 세척 기록</button>
-          <button class="btn big etc" type="submit" data-kind="etc" data-t="기타 정비">기타 정비</button></div>
+          <button class="btn big pad" type="submit" data-kind="pad" data-t="흡착패드 교체 등록">흡착패드 교체 등록</button>
+          <button class="btn big clean" type="submit" data-kind="clean" data-t="금형 세척 등록">금형 세척 등록</button>
+          <button class="btn big etc" type="submit" data-kind="etc" data-t="기타 정비 등록">기타 정비 등록</button></div>
       </form>
       <div class="mt-sum" id="mtOverdue"></div>
       <div class="bar"><span id="mtchips" class="chips"></span><input class="search" id="mtq" placeholder="금형, 기사, 메모 검색"></div>
@@ -415,7 +415,7 @@ const VI = {
   '이 금형 기록':'Bản ghi khuôn này','기록':'Bản ghi','흡착패드 교체':'Thay pad hút','금형 세척':'Vệ sinh khuôn','기타 정비':'Bảo trì khác','기록 없음':'Chưa có','초과':'Quá hạn',
   'MES 연결 전':'Chưa kết nối MES','조건 기록 없음':'Chưa có thông số','기사 미상':'KTV ?','이 금형 조건 미등록':'Khuôn này chưa có thông số',
   '사출기':'Máy ép','금형번호':'Mã khuôn','기사':'KTV','일시':'Thời gian','메모(선택)':'Ghi chú (tùy chọn)','종류를 누르면 바로 기록돼요':'Chọn loại để ghi ngay',
-  '흡착패드 교체 기록':'Ghi thay pad hút','금형 세척 기록':'Ghi vệ sinh khuôn','흡착패드':'Pad hút','금형세척':'Vệ sinh khuôn','기타':'Khác','종류':'Loại','금형':'Khuôn','메모':'Ghi chú',
+  '흡착패드 교체 등록':'Đăng ký thay pad hút','금형 세척 등록':'Đăng ký vệ sinh khuôn','기타 정비 등록':'Đăng ký bảo trì khác','흡착패드':'Pad hút','금형세척':'Vệ sinh khuôn','기타':'Khác','종류':'Loại','금형':'Khuôn','메모':'Ghi chú',
   '관리자 전용':'Chỉ quản trị','렌즈 한도기준은 관리자만 볼 수 있어요. 4자리 비밀번호를 입력하세요.':'Chỉ quản trị xem được. Nhập mật khẩu 4 số.',
   '조건변경 등록':'Thêm thay đổi thông số','새 한도기준 등록':'Thêm giới hạn mới','제품명':'Sản phẩm','불량 내용':'Nội dung lỗi','위치':'Vị trí','판정':'Phán định','승인자':'Người duyệt','승인일':'Ngày duyệt','조건·메모':'Thông số·ghi chú',
   '수정':'Sửa','삭제':'Xóa','수정 저장':'Lưu sửa',
