@@ -152,6 +152,9 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .rd-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .rd-ti{font-size:.98rem;color:var(--ink2)}.rd-ti b{color:var(--pri);font-weight:800}
 .rd-chg{margin-left:auto;background:var(--pri);color:#fff;font-weight:700;font-size:.8rem;border-radius:999px;padding:4px 12px}
+.rd-std{margin-left:auto;background:#eaf6ee;color:#1b7a46;border:1px solid #bfe3cd;font-weight:800;font-size:.8rem;border-radius:999px;padding:4px 12px}.rd-std+.rd-chg{margin-left:8px}.rd-std.rec{background:#eef3fb;color:#2d5fa6;border-color:#c5d6ef}
+.stdtag{background:#eaf6ee;color:#1b7a46;border:1px solid #bfe3cd;font-weight:800;font-size:.68rem;border-radius:6px;padding:1px 6px;margin-left:6px;white-space:nowrap}
+.stdhint{background:#eef7f1;color:#1b6b40;border:1px solid #cfe8d8;border-radius:9px;padding:9px 12px;font-size:.86rem;font-weight:600;margin:0 0 10px}
 .rd-chg.n{background:var(--panel);color:var(--mut);font-weight:500;border:1px solid var(--line2)}
 .sheet{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:10px}
 .sg{background:#fff;border:1px solid var(--line2);border-radius:10px;overflow:hidden}
@@ -363,6 +366,7 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
           <label>제품명 <span class="vn">Sản phẩm</span><input id="fprod" placeholder="금형번호 입력 시 자동"></label>
         </div>
         <div class="bar"><span class="subh">조건 <span class="vn" style="display:inline">Thông số</span></span></div>
+        <div class="stdhint" id="fstdhint" style="display:none"></div>
         <div class="pgrid" id="pgrid"></div>
         <div><div class="subh">배광 (측정) <span class="vn" style="display:inline">Phối sáng · LH/RH 따로</span></div>
           <div class="fgrid" style="margin-top:6px">
@@ -419,7 +423,11 @@ const VI = {
   '관리자 전용':'Chỉ quản trị','렌즈 한도기준은 관리자만 볼 수 있어요. 4자리 비밀번호를 입력하세요.':'Chỉ quản trị xem được. Nhập mật khẩu 4 số.',
   '조건변경 등록':'Thêm thay đổi thông số','새 한도기준 등록':'Thêm giới hạn mới','제품명':'Sản phẩm','불량 내용':'Nội dung lỗi','위치':'Vị trí','판정':'Phán định','승인자':'Người duyệt','승인일':'Ngày duyệt','조건·메모':'Thông số·ghi chú',
   '수정':'Sửa','삭제':'Xóa','수정 저장':'Lưu sửa',
-  '이상 보고':'Báo bất thường','조회 기록':'Bản ghi','등록':'lưu','대':' máy','건':'','호기':'','MES 자료 시각':'Cập nhật MES','불량 높음 · 실불량':'Lỗi cao · thực tế','이 금형 조건 미등록':'Khuôn này chưa có thông số','일 전':'ngày trước'
+  '이상 보고':'Báo bất thường','조회 기록':'Bản ghi','등록':'lưu','대':' máy','건':'','호기':'','MES 자료 시각':'Cập nhật MES','불량 높음 · 실불량':'Lỗi cao · thực tế','이 금형 조건 미등록':'Khuôn này chưa có thông số','일 전':'ngày trước',
+  '✔ 표준':'✔ Chuẩn','✔ 표준조건':'✔ Thông số chuẩn','추천 조건 · 실적 최고':'Đề xuất · tốt nhất','관리자 지정 표준조건 있음':'Có thông số chuẩn do QT đặt',
+  '이 조건 실적':'Kết quả thông số này','양품률':'Tỷ lệ tốt','생산':'SX','표준 해제':'Bỏ chuẩn','이 조건을 표준으로':'Đặt làm chuẩn',
+  "✔ 이 금형의 표준조건을 불러왔어요. 바뀐 값만 '후'에 입력하세요.":"✔ Đã tải thông số chuẩn của khuôn. Chỉ nhập giá trị đã đổi vào 'Sau'.",
+  "실적이 가장 좋았던 조건을 참고로 불러왔어요(표준 아님). 바뀐 값만 '후'에 입력하세요.":"Đã tải thông số có kết quả tốt nhất để tham khảo (không phải chuẩn). Chỉ nhập giá trị đã đổi vào 'Sau'."
 };
 let lang = (()=>{ try { return localStorage.getItem('f3lang')==='vi' ? 'vi':'ko'; } catch { return 'ko'; } })();
 const L = s => lang==='vi' ? (VI[s] ?? s) : s;          // 한국어 문자열 → 현재 언어
@@ -500,8 +508,10 @@ async function loadPhotos(){
 async function load(){
   const since = new Date(Date.now()-120*86400000).toISOString();   // 처음 로드는 최근 120일만(전송량 절감), 이후엔 증분
   if (!R.length){ try { const cached = await idb.get('logbook'); if (Array.isArray(cached) && cached.length) R = cached.map(r=>({ ...r, _at:new Date(r.recordedAt.length<=16 ? r.recordedAt+':00+09:00' : r.recordedAt) })); } catch {} }   // 폰 캐시 먼저 → 서버에선 바뀐 것만
+  if (!PR.length){ try { const cp = await idb.get('prod'); if (Array.isArray(cp) && cp.length) PR = cp.map(p=>({ ...p, _d:new Date(p.work_date+'T00:00:00+09:00').getTime() })); } catch {} }
   const maxUp = R.reduce((a,r)=>r.updatedAt>a?r.updatedAt:a,'');
-  const [ms, rs, mts] = await Promise.all([ sb('machines_live?select=*&order=no'), R.length ? sb(`logbook?select=data&updated_at=gt.${encodeURIComponent(maxUp)}&limit=1000`) : sb(`logbook?select=data&recorded_at=gte.${encodeURIComponent(since)}&order=recorded_at.desc&limit=3000`), sb('maintenance?select=*&order=at.desc&limit=2000') ]);
+  const prMax = PR.reduce((a,p)=>p.updated_at>a?p.updated_at:a,'');
+  const [ms, rs, mts, prs, stds] = await Promise.all([ sb('machines_live?select=*&order=no'), R.length ? sb(`logbook?select=data&updated_at=gt.${encodeURIComponent(maxUp)}&limit=1000`) : sb(`logbook?select=data&recorded_at=gte.${encodeURIComponent(since)}&order=recorded_at.desc&limit=3000`), sb('maintenance?select=*&order=at.desc&limit=2000'), PR.length ? sb(`prod_history?select=*&updated_at=gt.${encodeURIComponent(prMax)}&limit=8000`) : sb('prod_history?select=*&limit=30000'), sb('mold_standard?select=*') ]);
   await loadPhotos();
   MT = mts.map(m=>({ ...m, _at:new Date(m.at) }));
   const got = new Map(ms.map(m=>[+m.no, m]));
@@ -513,6 +523,11 @@ async function load(){
   const byId = new Map(R.map(r=>[r.id,r])); rs.forEach(x=>byId.set(x.data.id, x.data));
   R = [...byId.values()].map(r=>({ ...r, _at:new Date(r.recordedAt.length<=16 ? r.recordedAt+':00+09:00' : r.recordedAt) }));
   if (rs.length) await cacheLog();   // 새로 받은 게 있을 때만 캐시 갱신
+  const pById = new Map(PR.map(p=>[p.id,p])); (prs||[]).forEach(p=>pById.set(p.id,p));
+  PR = [...pById.values()].map(p=>({ ...p, _d:new Date(p.work_date+'T00:00:00+09:00').getTime() }));
+  if ((prs||[]).length) await cacheProd();
+  STD = new Map((stds||[]).map(s=>[s.mold,s]));
+  buildYields();
 }
 const lastRec = (no, mold) => R.filter(r=>r.machine===no && (!mold || r.mold===mold)).sort((a,b)=>b._at-a._at)[0];
 const ngRate = m => (m.prod+m.ng) ? m.ng/(m.prod+m.ng)*100 : 0;
@@ -523,6 +538,37 @@ const daysAgo = d => Math.floor((Date.now()-d)/86400000);
 /* 코팅품(흡착패드 교체 대상) 품번 목록 — 옆 직원 흡착패드 사이트 75품목 기준. 접미사(-M/-H) 떼고 8자리 기준번호로 매칭 */
 const COATING = new Set("00325289,00325290,00332818,00332819,00312011,00312012,00312017,00312018,00312052,00312053,00324932,00324933,00324965,00340679,00318439,00318440,00326498,00328265,00328266,00328379,00328380,00328381,00328382,00328736,00328737,00336572,00336573,00340380,00340381,00340365,00340366,00340399,00340400,00336860,00336861,00343686,00343687,00365823,00365824,00365829,00365830,00348871,00348872,00366815,00366816,00367643,00367644,00380361,00380362,00378001,00378002,00368117,00368118,00363817,00363818,00370610,00370611,00359702,00359703,00359790,00359791,00364542,00364543,00364548,00364573,00364574,00373078,00373079,00386558,00386559,00388085,00388086,00392162,00392163,00386592".split(","));
 const isCoating = m => COATING.has(String(m.item_code||'').split('-')[0]);
+
+/* ---------- 조건별 실제 불량률(생산이력 기반) + 금형별 표준조건 ---------- */
+let PR = [], STD = new Map(), MY = new Map();   // 생산이력, 금형별 표준지정, 금형별 조건 실적
+const MINVOL = 300;                              // '추천 표준' 후보가 되려면 이 생산수 이상이어야 믿을 만함
+async function cacheProd(){ try { await idb.set('prod', PR.map(({_d,...p})=>p)); } catch {} }
+function buildYields(){ MY = new Map();
+  const molds = new Set(R.map(r=>r.mold).filter(Boolean));
+  molds.forEach(mold=>{
+    const conds = R.filter(r=>r.mold===mold).sort((a,b)=>a._at-b._at); if (!conds.length) return;
+    const prods = PR.filter(p=>p.mold===mold);
+    const by = new Map(); conds.forEach(c=>by.set(c.id,{prod:0,bad:0}));
+    prods.forEach(p=>{ const end = p._d + 86399000;                 // 그 생산일(날짜)에 '그 날 끝'까지 유효하던 가장 최근 조건에 귀속
+      let pick=null; for (const c of conds){ if (c._at.getTime()<=end) pick=c; else break; }
+      if (pick){ const a=by.get(pick.id); a.prod+=(+p.prod_qty||0); a.bad+=(+p.bad_qty||0); } });
+    let best=null, bestRate=Infinity, bestVol=0, total={prod:0,bad:0};
+    by.forEach((a,id)=>{ total.prod+=a.prod; total.bad+=a.bad; const v=a.prod+a.bad; if (v>=MINVOL){ const rate=a.bad/v;
+      if (rate < bestRate-1e-9 || (Math.abs(rate-bestRate)<1e-9 && v>bestVol)){ bestRate=rate; bestVol=v; best=id; } } });
+    MY.set(mold,{by,best,total}); });
+}
+function condStat(r){ const m=r&&MY.get(r.mold); if(!m) return null; const a=m.by.get(r.id); if(!a) return null; const v=a.prod+a.bad; if(!v) return null; return { prod:a.prod, bad:a.bad, vol:v, yield:a.prod/v*100, ng:a.bad/v*100 }; }
+const isDesignated = mold => STD.has(mold);                          // 관리자가 '표준'으로 확정한 금형
+function stdId(mold){ const s=STD.get(mold); if (s&&s.logbook_id) return s.logbook_id; const m=MY.get(mold); return m?m.best:null; }  // 지정 우선, 없으면 실적 최고(추천)
+async function setStd(id){ if(!auth) return; const r=R.find(x=>x.id===id); if(!r||!r.mold) return;
+  const row={ mold:r.mold, logbook_id:id, product:r.product||'', set_by:'admin', updated_at:new Date().toISOString() };
+  try { await sb('mold_standard?on_conflict=mold',{ method:'POST', headers:{ Prefer:'resolution=merge-duplicates,return=minimal' }, body:JSON.stringify(row) });
+    STD.set(r.mold,row); buildYields(); closeRec(); route(); }
+  catch { alert(lang==='vi'?'Lỗi mạng':'표준 지정 실패. 인터넷 확인 후 다시.'); } }
+async function unStd(mold){ if(!auth) return;
+  try { await sb(`mold_standard?mold=eq.${encodeURIComponent(mold)}`,{ method:'DELETE', headers:{ Prefer:'return=minimal' } });
+    STD.delete(mold); buildYields(); closeRec(); route(); }
+  catch { alert(lang==='vi'?'Lỗi mạng':'표준 해제 실패. 인터넷 확인 후 다시.'); } }
 
 /* ---------- 사출기별 현황 (4공장식 카드) ---------- */
 let mf = 'all';
@@ -568,7 +614,7 @@ function card(m){
   const prod = m.part || lr?.product || '', mold = m.mold || lr?.mold || '';
   const n = mold ? R.filter(r=>r.mold===mold).length : R.filter(r=>r.machine===m.no).length;
   return `<div class="mc" style="--c:var(${s[2]})">
-    <div class="mc-h"><span class="no">${m.no}<small>${L('호기')}</small></span><span class="who"><b>${esc(mold||L('금형 정보 없음'))}</b>${m.worker?esc(m.worker):has?'':L('MES 연결 전')}</span>
+    <div class="mc-h"><span class="no">${m.no}<small>${L('호기')}</small></span><span class="who"><b>${esc(mold||L('금형 정보 없음'))}</b>${mold&&isDesignated(mold)?`<span class="stdtag" title="${L('관리자 지정 표준조건 있음')}">${L('✔ 표준')}</span>`:''}${m.worker?esc(m.worker):has?'':L('MES 연결 전')}</span>
       <span class="pill ${m.status==='RUN'?'run':''}"><i></i>${S(s)}</span></div>
     <div class="mc-b">
       <div class="pntop"><div class="pnl"><div class="pn" title="${esc(prod)}">${esc(prod||L('제품 정보 없음'))}</div>${isCoating(m)?`<div class="padchk">${L('코팅품 · 흡착패드 확인')}</div>`:''}</div>${m.item_code&&PH.has(m.item_code)?`<button type="button" class="pphoto" data-ph="${esc(m.item_code)}" title="제품 사진 크게 보기"><img loading="lazy" src="${PH.get(m.item_code)}" alt="제품 사진"></button>`:''}</div>
@@ -627,6 +673,7 @@ const hasVal = p => (p.before!==''&&p.before!=null) || (p.after!==''&&p.after!=n
 function cell(p, multi){ const ch = chgd(p), v = p.after!==''&&p.after!=null ? p.after : p.before;
   return `<span class="cl${ch?' chg':''}">${multi&&p.stage?`<em>${esc(p.stage)}</em>`:''}${ch?`<s>${esc(p.before||'–')}</s><b>${esc(p.after)}</b>`:`<b>${esc(v)}</b>`}</span>`; }
 function detail(x){
+  const cs = condStat(x);   // 이 조건이 돌아간 기간의 실적(양품률) — 관리자만 표시
   const by = new Map(); (x.parameters||[]).forEach(p=>{ if (hasVal(p)){ if (!by.has(p.kind)) by.set(p.kind, []); by.get(p.kind).push(p); } });
   const chCount = [...by.values()].filter(ps=>ps.some(chgd)).length;
   const used = new Set();
@@ -637,10 +684,11 @@ function detail(x){
   const extra = [...by.keys()].filter(k=>!used.has(k)); if (extra.length) sheet += sect('기타', extra);
   const mat = x.material?.materials?.length ? x.material.materials.map(esc).join(', ') : '';
   return `<div class="rd">
-    <div class="rd-top"><span class="rd-ti"><b>${x.machine}호기</b> · ${esc(x.mold||'-')}${x.product?` · ${esc(x.product)}`:''}</span>${chCount?`<span class="rd-chg">이번에 바뀐 조건 ${chCount}개</span>`:`<span class="rd-chg n">초기 등록 · 변경 없음</span>`}</div>
+    <div class="rd-top"><span class="rd-ti"><b>${x.machine}호기</b> · ${esc(x.mold||'-')}${x.product?` · ${esc(x.product)}`:''}</span>${x.mold&&stdId(x.mold)===x.id?`<span class="rd-std${isDesignated(x.mold)?'':' rec'}">${isDesignated(x.mold)?L('✔ 표준조건'):L('추천 조건 · 실적 최고')}</span>`:''}${chCount?`<span class="rd-chg">이번에 바뀐 조건 ${chCount}개</span>`:`<span class="rd-chg n">초기 등록 · 변경 없음</span>`}</div>
     <div class="sheet">${sheet || '<div class="sg"><div class="srow"><span class="srv">기록된 조건 없음</span></div></div>'}</div>
     <div class="rd-meta">${x.reason?`<span>사유</span><b>${esc(x.reason)}</b>`:''}${(x.beam?.lh||x.beam?.rh)?`<span>배광</span><b>LH ${esc(x.beam.lh||'-')} · RH ${esc(x.beam.rh||'-')}</b>`:''}${mat?`<span>원재료</span><b>${mat}</b>`:''}${x.notes?`<span>메모</span><b>${esc(x.notes)}</b>`:''}${x.operator?`<span>작업자</span><b>${esc(x.operator)}</b>`:''}
-    <a class="btn sm" href="#new" data-copy="${esc(x.id)}" style="margin-left:auto">${L('이 조건으로 새 기록')}</a>${auth?`<button type="button" class="btn sm" data-editrec="${esc(x.id)}">${L('수정')}</button><button type="button" class="btn sm" data-delrec="${esc(x.id)}" style="color:var(--bad);border-color:#f3c0c0">${L('삭제')}</button>`:''}</div></div>`;
+    ${auth&&cs?`<span>${L('이 조건 실적')}</span><b>${L('양품률')} ${cs.yield.toFixed(1)}% · ${L('생산')} ${cs.vol.toLocaleString()} · ${L('불량')} ${cs.bad.toLocaleString()}</b>`:''}
+    <a class="btn sm" href="#new" data-copy="${esc(x.id)}" style="margin-left:auto">${L('이 조건으로 새 기록')}</a>${auth&&x.mold?(isDesignated(x.mold)&&(STD.get(x.mold)?.logbook_id)===x.id?`<button type="button" class="btn sm" data-unstd="${esc(x.mold)}">${L('표준 해제')}</button>`:`<button type="button" class="btn sm" data-setstd="${esc(x.id)}" style="color:#1b7a46;border-color:#bfe3cd">${L('이 조건을 표준으로')}</button>`):''}${auth?`<button type="button" class="btn sm" data-editrec="${esc(x.id)}">${L('수정')}</button><button type="button" class="btn sm" data-delrec="${esc(x.id)}" style="color:var(--bad);border-color:#f3c0c0">${L('삭제')}</button>`:''}</div></div>`;
 }
 function openRec(id){ const x = R.find(r=>r.id===id); if (!x) return;
   closeRec();
@@ -671,7 +719,7 @@ function editRec(id){ if (!auth) return; pre = { edit:id }; closeRec(); location
 async function delRec(id){ if (!auth) return; const r = R.find(x=>x.id===id); if (!r) return;
   if (!confirm(lang==='vi'?`Xóa bản ghi ${r.machine} · ${r.mold||''}?\nKhông thể hoàn tác.`:`${r.machine}호기 · ${r.mold||''} 조건기록을 삭제할까요?\n되돌릴 수 없어요.`)) return;
   try { await sb(`logbook?id=eq.${encodeURIComponent(id)}`, { method:'DELETE', headers:{ Prefer:'return=minimal' } });
-    R = R.filter(x=>x.id!==id); await cacheLog(); closeRec(); route(); }
+    R = R.filter(x=>x.id!==id); await cacheLog(); buildYields(); closeRec(); route(); }
   catch { alert(lang==='vi'?'Xóa thất bại. Kiểm tra mạng.':'삭제 실패. 인터넷 확인 후 다시.'); } }
 function pgrid(vals = {}){
   $('pgrid').innerHTML = KINDS.map(([k,n,vn,u,st])=>`<div class="prow"><div class="pk">${n}${u?` (${u})`:''}<span>${vn}</span></div><div class="stg">${st.map(s=>{ const v = vals[k+'|'+s]||'';
@@ -685,10 +733,17 @@ function mesInfo(){
     if (lr){ if (!$('fmold').value) $('fmold').value = lr.mold; if (!$('fprod').value) $('fprod').value = lr.product; } }
 }
 function fillFrom(r){ const v = {}; (r.parameters||[]).forEach(p=>{ v[p.kind+'|'+p.stage] = (p.after!==''&&p.after!=null) ? p.after : p.before; }); pgrid(v); }
+const gridEmpty = () => [...$('pgrid').querySelectorAll('.pb')].every(b=>!b.value);
+function applyStdPrefill(){ const hint=$('fstdhint'); const mold=$('fmold').value.trim();
+  const sid = mold ? stdId(mold) : null; const sr = sid ? R.find(r=>r.id===sid) : null;
+  if (sr){ fillFrom(sr); if(hint){ hint.style.display='block';
+      hint.innerHTML = isDesignated(mold) ? L("✔ 이 금형의 표준조건을 불러왔어요. 바뀐 값만 '후'에 입력하세요.") : L("실적이 가장 좋았던 조건을 참고로 불러왔어요(표준 아님). 바뀐 값만 '후'에 입력하세요."); } }
+  else if (hint){ hint.style.display='none'; hint.innerHTML=''; } }
 function initForm(){
   const now = new Date(); now.setMinutes(now.getMinutes()-now.getTimezoneOffset());
   recEdit = null;
   const er = pre?.edit ? R.find(x=>x.id===pre.edit) : null;
+  const copying = !!pre?.copy;
   fst = er ? (er.status||'미확인') : '미확인';
   $('fno').innerHTML = opt('','사출기 선택 · Chọn máy') + NOS.map(n=>opt(n,`${n}호기 · Máy ${n}`, pre?.no)).join('');
   $('fw').innerHTML = opt('','기사 선택 · Chọn KTV') + [...new Set(WORKERS.concat(R.map(r=>r.technician).filter(Boolean)))].map(w=>opt(w,w)).join('');
@@ -704,7 +759,8 @@ function initForm(){
   else if (pre?.copy){ const r = R.find(x=>x.id===pre.copy); if (r){ $('fno').value = r.machine; $('fmold').value = r.mold; $('fprod').value = r.product; $('fblh').value = r.beam?.lh||''; $('fbrh').value = r.beam?.rh||''; fillFrom(r); }
     if (subBtn) subBtn.textContent = lang==='vi'?'Lưu':'등록하기 · Lưu'; }
   else { pgrid(); if (subBtn) subBtn.textContent = lang==='vi'?'Lưu':'등록하기 · Lưu'; }
-  if (!er) mesInfo();   // 편집 중엔 MES 현재값으로 덮어쓰지 않음
+  if (!er){ $('fstdhint').style.display='none'; mesInfo(); }   // 편집 중엔 MES 현재값으로 덮어쓰지 않음
+  if (!er && !copying) applyStdPrefill();                       // 신규 등록이면 표준/추천 조건을 '전'에 미리 채움
   pre = null;
 }
 function fillEdit(r){ const vb = {}; (r.parameters||[]).forEach(p=>{ vb[p.kind+'|'+p.stage] = p.before; }); pgrid(vb);   // 전(before) 채우고
@@ -722,6 +778,7 @@ function prodForMold(v){ v = (v||'').trim(); if (!v) return ''; const pairs = mo
   if (!hit && vd.length>=3) hit = pairs.find(p=>{ const d=p[0].replace(/\D/g,''); return d && (d.endsWith(vd)||vd.endsWith(d)); });
   return hit ? hit[1] : ''; }
 $('fmold').addEventListener('input', ()=>{ const p = prodForMold($('fmold').value.trim()); if (p) $('fprod').value = p; });
+$('fmold').addEventListener('change', ()=>{ if (!recEdit && gridEmpty()) applyStdPrefill(); });   // 금형 바꾸면(비어있을 때만) 표준/추천 조건 불러오기
 $('pgrid').addEventListener('input', e=>{ if (e.target.classList.contains('pa')){ const b = e.target.previousElementSibling; e.target.classList.toggle('ch', e.target.value!=='' && e.target.value!==b.value); } });
 $('fst').addEventListener('click', e=>{ const b = e.target.closest('[data-s]'); if (b){ fst = b.dataset.s; [...$('fst').children].forEach(c=>c.classList.toggle('on', c===b)); } });
 $('fm').addEventListener('submit', async e=>{
@@ -739,7 +796,7 @@ $('fm').addEventListener('submit', async e=>{
       R = R.map(r=>r.id===id ? { ...rec, _at:new Date(rec.recordedAt+':00+09:00') } : r); }
     else { await sb('logbook', { method:'POST', headers:{ Prefer:'return=minimal' }, body });
       R.push({ ...rec, _at:new Date(rec.recordedAt+':00+09:00') }); }
-    await cacheLog();
+    await cacheLog(); buildYields();
     $('fm').reset(); fst = '미확인'; recEdit = null; $('fmsg').textContent = ''; location.hash = '#list';
   } catch { $('fmsg').textContent = L('등록 실패. 인터넷 연결을 확인하고 다시 눌러 주세요.'); }
 });
@@ -925,6 +982,8 @@ document.addEventListener('click', e=>{
   const ldl = e.target.closest('[data-ldel]'); if (ldl){ e.stopPropagation(); delLens(ldl.dataset.ldel); return; }
   const edr = e.target.closest('[data-editrec]'); if (edr){ e.stopPropagation(); editRec(edr.dataset.editrec); return; }
   const dlr = e.target.closest('[data-delrec]'); if (dlr){ e.stopPropagation(); delRec(dlr.dataset.delrec); return; }
+  const sst = e.target.closest('[data-setstd]'); if (sst){ e.stopPropagation(); setStd(sst.dataset.setstd); return; }
+  const ust = e.target.closest('[data-unstd]'); if (ust){ e.stopPropagation(); unStd(ust.dataset.unstd); return; }
   const lz = e.target.closest('[data-lz]'); if (lz){ zoomLens(lz.dataset.lz); return; }
   const lfb = e.target.closest('[data-lf]'); if (lfb){ lensF = lfb.dataset.lf; renderLens(); return; }
   const mtfb = e.target.closest('[data-mtf]'); if (mtfb){ mtF = mtfb.dataset.mtf; renderMaint(); return; }
