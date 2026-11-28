@@ -210,6 +210,9 @@ select,input,textarea{border:1px solid var(--line);border-radius:4px;padding:7px
 .mt-sum .ok0{grid-column:1/-1;color:var(--mut);font-size:.88rem;padding:4px 2px}
 .mk{display:inline-block;border-radius:4px;padding:2px 8px;font-size:.78rem;font-weight:700;white-space:nowrap}
 .mk.pad{background:#eaf2fd;color:#1f5fe0}.mk.clean{background:#e3f5ec;color:#0e8a6b}.mk.etc{background:var(--panel);color:var(--ink2)}
+.padwhen{display:flex;align-items:center;gap:7px;font-size:.8rem;background:var(--unk-bg);color:#8a6d1a;border:1px solid #f0d08a;border-radius:8px;padding:5px 10px;margin-top:6px}
+.padwhen b{font-weight:800;font-variant-numeric:tabular-nums}.padwhen em{margin-left:auto;font-style:normal;color:#a98a2e}
+.padwhen.warn{background:var(--bad-bg);color:var(--bad);border-color:#f3c0c0}.padwhen.warn em{color:var(--bad)}
 .cleanchip{display:flex;align-items:center;gap:7px;font-size:.82rem;background:#eef3fb;color:#2d5fa6;border:1px solid #d3e0f3;border-radius:8px;padding:5px 10px}
 .cleanchip b{font-weight:800;font-variant-numeric:tabular-nums}.cleanchip em{margin-left:auto;font-style:normal;color:var(--mut)}
 .cleanchip.warn{background:var(--bad-bg);color:var(--bad);border-color:#f3c0c0}.cleanchip.warn em{color:var(--bad)}
@@ -620,7 +623,7 @@ function card(m){
     <div class="mc-h"><span class="no">${m.no}<small>${L('호기')}</small></span><span class="who"><b>${esc(mold||L('금형 정보 없음'))}</b>${mold&&isDesignated(mold)?`<span class="stdtag" title="${L('관리자 지정 표준조건 있음')}">${L('✔ 표준')}</span>`:''}${m.worker?esc(m.worker):has?'':L('MES 연결 전')}</span>
       <span class="pill ${m.status==='RUN'?'run':''}"><i></i>${S(s)}</span></div>
     <div class="mc-b">
-      <div class="pntop"><div class="pnl"><div class="pn" title="${esc(prod)}">${esc(prod||L('제품 정보 없음'))}</div>${isCoating(m)?`<div class="padchk">${L('코팅품 · 흡착패드 확인')}</div>`:''}</div>${m.item_code&&PH.has(m.item_code)?`<button type="button" class="pphoto" data-ph="${esc(m.item_code)}" title="제품 사진 크게 보기"><img loading="lazy" src="${PH.get(m.item_code)}" alt="제품 사진"></button>`:''}</div>
+      <div class="pntop"><div class="pnl"><div class="pn" title="${esc(prod)}">${esc(prod||L('제품 정보 없음'))}</div>${isCoating(m)?`<div class="padchk">${L('코팅품 · 흡착패드 확인')}</div>${(()=>{ const r=lastMaintMold(mold,'pad'); if(!r) return ''; const dd=daysAgo(r._at), warn=CFG.padWarnDays&&dd>=CFG.padWarnDays; return `<div class="padwhen${warn?' warn':''}"><span>${L('흡착패드 교체')}</span><b>${fmt(r._at)}</b><em>${dd}${lang==='vi'?' '+L('일 전'):'일 전'}${warn?' · '+L('초과'):''}</em></div>`; })()}`:''}</div>${m.item_code&&PH.has(m.item_code)?`<button type="button" class="pphoto" data-ph="${esc(m.item_code)}" title="제품 사진 크게 보기"><img loading="lazy" src="${PH.get(m.item_code)}" alt="제품 사진"></button>`:''}</div>
       ${m.status!=='RUN'&&m.alarm?`<div class="alert" style="background:color-mix(in srgb,var(--c) 10%,#fff);color:var(--c)">${esc(m.alarm)}${m.since?' · '+fmt(new Date(m.since))+(lang==='vi'?'':'부터'):''}</div>`:''}
       ${isBad(m)?`<div class="alert">${L('불량 높음 · 실불량')} ${rate.toFixed(1)}%</div>`:''}
       <div class="stats"><div><span>${L('지시')}</span><b>${d(m.target.toLocaleString())}</b></div><div><span>${L('양품')}</span><b>${d(m.prod.toLocaleString())}</b></div><div class="${m.ng?'bad':''}"><span>${L('불량')}</span><b>${d(m.ng.toLocaleString())}</b></div><div><span>${L('효율')}</span><b>${d(eff+'%')}</b></div></div>
