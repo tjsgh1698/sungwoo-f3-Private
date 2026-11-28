@@ -494,10 +494,10 @@ const idb = { db:null,
   async get(k){ try{ const db=await this.open(); return await new Promise((res,rej)=>{ const q=db.transaction('kv').objectStore('kv').get(k); q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); }); }catch{ return undefined; } },
   async set(k,v){ try{ const db=await this.open(); await new Promise((res,rej)=>{ const q=db.transaction('kv','readwrite').objectStore('kv').put(v,k); q.onsuccess=()=>res(); q.onerror=()=>rej(q.error); }); }catch{} } };
 async function cacheLog(){ try { await idb.set('logbook', R.map(({_at,...r})=>r)); } catch {} }   // 로그북을 폰에 저장 — 다음엔 바뀐 것만 받아 전송량 절감
-async function loadPhotos(){
+async function loadPhotos(liveCodes){
   let meta = [];
   try { meta = await sb('item_photos?select=item_code,updated_at') || []; } catch { return; }  // 실패해도 사진만 비고 나머지는 동작
-  const live = new Set(M.map(m=>m.item_code).filter(Boolean));   // 지금 화면에 필요한(가동 중) 품번만 — 전체 다 받지 않음
+  const live = liveCodes || new Set(M.map(m=>m.item_code).filter(Boolean));   // 지금 화면에 필요한(가동 중) 품번만 — 전체 다 받지 않음
   let cached = { map:{}, stamp:{} }; try { cached = (await idb.get('photos')) || cached; } catch {}
   const next = new Map(), nextStamp = new Map(), need = [];
   for (const r of meta){ const c = r.item_code, st = r.updated_at;
@@ -521,7 +521,7 @@ async function load(){
   const maxUp = R.reduce((a,r)=>r.updatedAt>a?r.updatedAt:a,'');
   const prMax = PR.reduce((a,p)=>p.updated_at>a?p.updated_at:a,'');
   const [ms, rs, mts, prs, stds] = await Promise.all([ sb('machines_live?select=*&order=no'), R.length ? sb(`logbook?select=data&updated_at=gt.${encodeURIComponent(maxUp)}&limit=1000`) : sb(`logbook?select=data&recorded_at=gte.${encodeURIComponent(since)}&order=recorded_at.desc&limit=3000`), sb('maintenance?select=*&order=at.desc&limit=2000'), PR.length ? sb(`prod_history?select=*&updated_at=gt.${encodeURIComponent(prMax)}&limit=8000`) : sb('prod_history?select=*&limit=30000'), sb('mold_standard?select=*') ]);
-  await loadPhotos();
+  await loadPhotos(new Set(ms.map(m=>m.item_code).filter(Boolean)));   // 방금 받은 가동현황 기준 품번만 사진 로드
   MT = mts.map(m=>({ ...m, _at:new Date(m.at) }));
   const got = new Map(ms.map(m=>[+m.no, m]));
   mesAt = ms.reduce((a,m)=>m.updated_at > a ? m.updated_at : a, '') || null;
