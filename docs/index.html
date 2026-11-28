@@ -486,7 +486,7 @@ async function sb(path, opt = {}){
   if (r.status === 401 && auth){ saveAuth(null); return sb(path, opt); }
   if (!r.ok) throw new Error(await r.text()); return r.status === 201 || r.status === 204 ? null : r.json();
 }
-let M = [], R = [], MT = [], mesAt = null, PH = new Map();
+let M = [], R = [], MT = [], mesAt = null, PH = new Map(), PHS = new Map();
 const ctHist = new Map();
 /* 사진 캐시(IndexedDB) — 전송량(egress) 절감: 사진은 폰에 한 번만 받고, 바뀐 것만 다시 받음 */
 const idb = { db:null,
@@ -497,19 +497,22 @@ async function cacheLog(){ try { await idb.set('logbook', R.map(({_at,...r})=>r)
 async function loadPhotos(){
   let meta = [];
   try { meta = await sb('item_photos?select=item_code,updated_at') || []; } catch { return; }  // 실패해도 사진만 비고 나머지는 동작
-  const cached = (await idb.get('photos')) || { map:{}, stamp:{} };
-  const stamp = {}, need = [];
-  for (const r of meta){ stamp[r.item_code] = r.updated_at;
-    if (!cached.map[r.item_code] || cached.stamp[r.item_code] !== r.updated_at) need.push(r.item_code); }
-  const map = {};
-  for (const c of Object.keys(stamp)) if (cached.map[c]) map[c] = cached.map[c];   // 캐시에 있는 건 재사용
+  const live = new Set(M.map(m=>m.item_code).filter(Boolean));   // 지금 화면에 필요한(가동 중) 품번만 — 전체 다 받지 않음
+  let cached = { map:{}, stamp:{} }; try { cached = (await idb.get('photos')) || cached; } catch {}
+  const next = new Map(), nextStamp = new Map(), need = [];
+  for (const r of meta){ const c = r.item_code, st = r.updated_at;
+    if (live.size && !live.has(c)) continue;
+    if (PH.has(c) && PHS.get(c) === st){ next.set(c, PH.get(c)); nextStamp.set(c, st); continue; }           // 메모리 재사용(세션 내 재다운로드 방지 — IndexedDB 안 되는 기기 포함)
+    if (cached.map[c] && cached.stamp[c] === st){ next.set(c, cached.map[c]); nextStamp.set(c, st); continue; } // IndexedDB 재사용(세션 간)
+    need.push(c); nextStamp.set(c, st); }
   if (need.length){                                                                 // 새로 생겼거나 바뀐 것만 다운로드
     const inList = need.map(c=>'"'+c.replace(/"/g,'')+'"').join(',');
     try { const rows = await sb(`item_photos?select=item_code,img&item_code=in.(${encodeURIComponent(inList)})`) || [];
-      for (const r of rows) map[r.item_code] = r.img; } catch {}
+      for (const r of rows) next.set(r.item_code, r.img); } catch {}
   }
-  PH = new Map(Object.entries(map));
-  await idb.set('photos', { map, stamp });
+  PH = next; PHS = nextStamp;
+  const map = {}, stamp = {}; next.forEach((v,k)=>{ map[k] = v; stamp[k] = nextStamp.get(k); });
+  try { await idb.set('photos', { map, stamp }); } catch {}
 }
 async function load(){
   const since = new Date(Date.now()-120*86400000).toISOString();   // 처음 로드는 최근 120일만(전송량 절감), 이후엔 증분
